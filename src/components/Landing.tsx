@@ -1,8 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { CentivMark, CentivWordmark, Nib, Stamp } from "./Logo";
 import LedgerField from "./LedgerField";
 import Reveal from "./Reveal";
+import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
+import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
 import { DecisionTag, GateSourceLabel, ProvenanceBadge, VerdictTag } from "./ui";
 import VerifiedRun from "./VerifiedRun";
 
@@ -130,7 +133,6 @@ function RunPreview() {
   );
 }
 
-/** Kite-style list card: text, a hairline leader, and a gold line icon in a ring. */
 function LeaderList({ rows }: { rows: { k: Parameters<typeof Icon>[0]["kind"]; t: string; s?: string; m?: string }[] }) {
   return (
     <ul className="space-y-1">
@@ -172,7 +174,7 @@ const buys = [
 const steps = [
   ["Find the gap", "Centiv breaks your question into the data it doesn’t have yet — a search, a scrape or a dataset."],
   ["Weigh the call", "SERV Reasoning asks one thing per call: is this worth what’s left of your budget?"],
-  ["Pay per call — or don’t", "If it’s worth it, Centiv pays the x402 quote from your Kite Passport session. If not, it skips. If the price breaks your cap, it declines before signing."],
+  ["Pay per call — or don’t", "If it’s worth it, Centiv pays the x402 quote from your Kite Passport session. If not, it skips. In the simulated example, the cap check declines an over-budget call before signing. In the verified run, Kite Passport declined the third call with session_total_exceeded, and nothing was signed."],
   ["Stamp and check", "Every buy, skip and decline lands in the audit trail. A quality gate (Reppo-ready; built-in check until a Reppo key is connected) scores the brief before it reaches you."],
 ];
 
@@ -216,6 +218,16 @@ export default function Landing() {
                 </svg>
               </a>
             </div>
+            <a
+              href={GITHUB_REPO}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Centiv source on GitHub"
+              title="Source on GitHub"
+              className="grid h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone"
+            >
+              <GitHubMark size={16} />
+            </a>
             <Link href="/app" className="pill pill-olive h-10 px-5 text-[13.5px]">
               Open the app <NE />
             </Link>
@@ -231,18 +243,34 @@ export default function Landing() {
             <p className="badge-live rise">
               SERV Hackathon 02 · Kite track <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--color-live)]" />
             </p>
+            <div className="rise mt-6 w-full max-w-[820px]">
+              <Suspense fallback={<StatusStripFallback />}>
+                <StatusStripServer />
+              </Suspense>
+            </div>
             <h1
               id="landing-title"
               className="rise mt-7 text-[44px] font-normal leading-[1.08] tracking-[-0.04em] text-bone sm:text-[62px] lg:text-[76px]"
               style={{ animationDelay: "90ms" }}
             >
-              A research agent that <span className="serif-em">pays per call</span> for the data it needs
+              Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport
             </h1>
-            <p className="rise mt-6 max-w-[560px] text-[16.5px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
-              Centiv buys search, scraping and market data one call at a time — only when the call is worth it. You set the cap
-              with Kite Passport. When a call would break it, Centiv stops.
+            <p className="rise mt-6 max-w-[580px] text-[16.5px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
+              Centiv is a research agent that buys search, scraping and market data one call at a time — only when the call is
+              worth it, inside a cap you set with Kite Passport. On the verified run it paid twice in USDC on Base; Passport
+              refused the third with session_total_exceeded, and nothing was signed.
+            </p>
+            <p className="rise mt-4 max-w-[520px] text-[15px] leading-[1.55] text-mute" style={{ animationDelay: "220ms" }}>
+              For teams and agents that need data-backed answers without handing an AI an open wallet.
             </p>
             <div className="rise mt-10 flex flex-wrap items-center justify-center gap-3" style={{ animationDelay: "270ms" }}>
+              <a
+                href="#verified-run"
+                className="inline-flex h-11 items-center gap-2.5 rounded-full border border-[rgba(201,146,46,0.65)] bg-white px-5 text-[14px] font-medium text-gold-deep transition hover:bg-[#fff6e3]"
+              >
+                <ProvenanceBadge p="replay" short />
+                See the verified run
+              </a>
               <Link href="/app" className={olive}>
                 Open the app <NE />
               </Link>
@@ -250,12 +278,6 @@ export default function Landing() {
                 Run the 30-second demo <NE />
               </Link>
             </div>
-            <p className="num rise mt-5 text-[11.5px] uppercase tracking-[0.12em] text-dim" style={{ animationDelay: "320ms" }}>
-              Two paid calls · one declined at the session total · USDC on Base
-            </p>
-            <a href="#verified-run" className="rise mt-4 inline-flex items-center gap-2 rounded-full text-[13.5px] text-gold-deep underline decoration-[rgba(201,146,46,0.5)] underline-offset-4 hover:text-bone" style={{ animationDelay: "360ms" }}>
-              See the verified run: 2 real Base USDC payments and 1 Passport decline ↓
-            </a>
           </div>
           <div className="rise relative mx-auto mt-16 max-w-[720px] px-5" style={{ animationDelay: "420ms" }}>
             <RunPreview />
@@ -324,14 +346,15 @@ export default function Landing() {
                 <Nib size={52} mood="stop" />
                 <div>
                   <p className="text-[15px] font-semibold text-stop">Declined — over the per-transaction cap.</p>
-                  <p className="mt-0.5 text-[13px] text-mute">Nothing was signed. Centiv answers from the data it already bought, and says so.</p>
+                  <p className="mt-0.5 text-[13px] text-mute">The cap check declined it before signing. Centiv answers from the data it already bought, and says so.</p>
                 </div>
               </div>
             </Reveal>
             <div className="order-1 lg:order-2">
               <SectionText label="And it can stop" id="cap-title" title={<>You hold the cap. Passport <span className="serif-em">enforces it.</span></>}>
-                Approve one spending session with your passkey. Centiv can’t go past it — an over-cap call is declined before
-                anything is signed, and the answer says what it couldn’t buy.
+                Approve one spending session with your passkey. Centiv can’t go past it. In the example here, the cap check
+                declines the call before anything is signed. In the verified run, Kite Passport declined the third call with
+                session_total_exceeded — nothing was signed — and the answer says what it couldn’t buy.
               </SectionText>
               <Reveal delay={120}>
                 <dl className="mt-8 flex flex-wrap gap-2.5">
@@ -360,6 +383,10 @@ export default function Landing() {
             </h2>
             <p className="mt-4 text-[16px] leading-[1.6] text-mute">
               The decision, the amount, what was left, the receipt, and how the quality gate scored the answer it fed.
+            </p>
+            <p className="mt-3 text-[13.5px] leading-[1.55] text-dim">
+              Each run gets its own quality-gate score (built-in check, simulated), so a 0.86 Accept and a 0.64 Revise belong
+              to different example runs, not the same brief.
             </p>
             <p className="mt-4 flex justify-center"><ProvenanceBadge p="simulated" /></p>
           </Reveal>
@@ -430,7 +457,18 @@ export default function Landing() {
       <footer className="border-t border-[rgba(201,146,46,0.3)]">
         <div className="mx-auto flex max-w-[1140px] flex-col gap-5 px-5 py-10 md:px-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CentivWordmark size={18} />
+            <div className="flex flex-wrap items-center gap-4">
+              <CentivWordmark size={18} />
+              <a
+                href={GITHUB_REPO}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg text-[13.5px] text-mute transition hover:text-bone"
+              >
+                <GitHubMark size={14} />
+                Source on GitHub
+              </a>
+            </div>
             <a
               href="https://gokite.ai/"
               target="_blank"

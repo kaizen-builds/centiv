@@ -20,7 +20,7 @@ import { AuditTrail } from "./AuditTrail";
 import { DemoBar, DemoPhase } from "./DemoBar";
 import VerifiedRun from "./VerifiedRun";
 import { LivePanel } from "./LivePanel";
-import { ProvenanceBadge } from "./ui";
+import { GITHUB_REPO, GitHubMark, StatusStrip } from "./StatusStrip";
 
 class Cancelled extends Error {}
 
@@ -374,12 +374,16 @@ export default function CentivApp() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <span className="badge-live hidden !py-1 !text-[11px] xl:inline-flex" title={modeHint}>
-              {engineMode?.integrations.serv === "live" ? "SERV live" : modeLabel}
-            </span>
-            <span className="hidden lg:inline-flex" title="Visitors' payments are simulated: no funds move and receipts are sim_-prefixed.">
-              <ProvenanceBadge p="simulated" />
-            </span>
+            <a
+              href={GITHUB_REPO}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Centiv source on GitHub"
+              title="Source on GitHub"
+              className="grid h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone"
+            >
+              <GitHubMark size={16} />
+            </a>
             <button onClick={runDemo} className="pill pill-olive group h-10 px-5 text-[13.5px]">
               <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l8 5-8 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
@@ -391,6 +395,12 @@ export default function CentivApp() {
       </header>
 
       <main id="top" className="mx-auto max-w-[1240px] px-5 md:px-8">
+        <StatusStrip
+          serv={engineMode?.integrations.serv === "live" ? "live" : "simulated"}
+          reppo={engineMode?.integrations.reppo === "live" ? "live" : "simulated"}
+          align="start"
+          className="pt-5"
+        />
         <Hero session={session} spent={spent} audit={audit} onRunDemo={runDemo} />
 
         <section className="mt-6 grid gap-5 lg:grid-cols-12" aria-label="Agent console">
@@ -422,7 +432,18 @@ export default function CentivApp() {
         <AuditTrail rows={audit} session={session} spent={spent} presenting={presenting} onPresent={setPresenting} />
 
         <footer className="mt-20 flex flex-col gap-3 border-t hairline pt-8 text-[12px] text-dim md:flex-row md:items-center md:justify-between">
-          <CentivWordmark size={20} />
+          <div className="flex flex-wrap items-center gap-4">
+            <CentivWordmark size={20} />
+            <a
+              href={GITHUB_REPO}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-[13px] text-mute transition hover:text-bone"
+            >
+              <GitHubMark size={14} />
+              Source on GitHub
+            </a>
+          </div>
           <p className="max-w-xl">
             Built for SERV Hackathon 02 · Kite track. {modeLabel}:{" "}
             {engineMode?.mode === "simulated"
