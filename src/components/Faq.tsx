@@ -30,16 +30,6 @@ const items: { q: string; a: ReactNode }[] = [
     ),
   },
   {
-    q: "Why Base and not Kite chain?",
-    a: (
-      <>
-        Passport has supported settlement on Base since its{" "}
-        <a className={a} href="https://docs.gokite.ai/changelog/2026/2026-07-08-release" {...ext}>8 July 2026 release</a>. Kite-chain
-        settlement needs USDC.e, which isn’t practical for this wallet yet.
-      </>
-    ),
-  },
-  {
     q: "What does SERV do?",
     a: (
       <>

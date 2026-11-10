@@ -43,10 +43,6 @@ Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589f
 
 Live payments are owner-only and cannot run on the public Vercel site.
 
-## Why Base
-
-The verified run settled in USDC on Base, which Passport has supported since the [8 July 2026 release](https://docs.gokite.ai/changelog/2026/2026-07-08-release). Settling on Kite chain needs bridged USDC (USDC.e), which isn't practical for this wallet yet.
-
 ## What's next
 
 - Connect Reppo so the quality gate is a live score rather than the built-in check.
