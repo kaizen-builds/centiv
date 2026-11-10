@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Centiv: cream paper, olive brand, ochre secondary */
+  --color-ink: #fff9f0; /* page — warm paper */
+  --color-ink-2: #fffdf9; /* cards */
+  --color-ink-3: #f7efe3; /* wells */
+  --color-ink-4: #efe5d5; /* selected */
+  --color-bone: #121212; /* primary text */
+  --color-mute: #4a4a4a; /* body */
+  --color-dim: #6f6f6f; /* muted */
+  --color-cent: #485c11; /* olive — main brand: logo, CTAs, charts, badges */
+  --color-cent-hover: #3a4b0d;
+  --color-cent-ink: #485c11;
+  --color-gold: #c9922e; /* ochre — secondary: hairlines, small ticks, occasional stamp ink */
+  --color-gold-deep: #8a6412; /* ochre as text on cream (contrast) */
+  --color-pass: #5a7015;
+  --color-sage: #e6eed6; /* status pills */
+  --color-live: #1f9d55; /* live dot */
+  --color-hold: #a5660e; /* revise / decline — deep amber */
+  --color-stop: #a5660e;
+  --color-skip: #6f6f6f;
+  --font-display: var(--font-sans-ui);
+  --font-sans: var(--font-sans-ui);
+  --font-mono: var(--font-mono-ui);
+  --font-serif: var(--font-serif-ui);
+}
+
+:root {
+  color-scheme: light;
+  --line: #ece4d7;
+  --line-strong: #dcd2c2;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Ledger backdrop: faint horizontal rules (static CSS, also used by LedgerField) */
+.ledger-bg {
+  background-color: var(--color-ink);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 39px, rgba(72, 92, 17, 0.07) 39px 40px);
+}
+
+.num {
+  font-family: var(--font-mono-ui), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+/* Monetary figures */
+.fig {
+  font-family: var(--font-sans-ui), ui-sans-serif, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Distinctive serif touch for key headline words */
+.serif-em {
+  font-family: var(--font-serif-ui), ui-serif, Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+::selection { background: rgba(72, 92, 17, 0.18); }
+
+.eyebrow {
+  font-family: var(--font-mono-ui), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-dim);
+}
+
+.hairline { border-color: var(--line); }
+.hairline-strong { border-color: var(--line-strong); }
+
+.card {
+  background: var(--color-ink-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+}
+/* Soft ochre hairline card with a faint drafting grid — landing signature surface */
+.card-gold {
+  background-color: #fffcf6;
+  background-image:
+    linear-gradient(rgba(201, 146, 46, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 146, 46, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border: 1px solid rgba(201, 146, 46, 0.45);
+  border-radius: 24px;
+}
+/* Pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  border-radius: 999px; font-weight: 700; letter-spacing: -0.01em;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.pill-olive { background: var(--color-cent); color: #fff; }
+.pill-olive:hover { background: var(--color-cent-hover); }
+.pill-olive:active { transform: translateY(1px); }
+.pill-olive .ne { transition: transform 180ms ease; }
+.pill-olive:hover .ne { transform: translate(2px, -2px); }
+.pill-sage {
+  background: #E8EDD8;
+  color: var(--color-bone);
+  border: 1px solid rgba(72, 92, 17, 0.18);
+  box-shadow: 0 1px 2px rgba(72, 92, 17, 0.04);
+}
+.pill-sage:hover { background: #DCE4C8; }
+.pill-sage a:hover, .pill-sage button:hover {
+  background: #DCE4C8;
+  color: var(--color-bone);
+}
+/* Compact white chip for non-nav surfaces (budget tags, etc.) */
+.pill-chip {
+  background: #fff;
+  color: var(--color-bone);
+  box-shadow: 0 1px 2px rgba(18, 18, 18, 0.04), 0 0 0 1px rgba(18, 18, 18, 0.04);
+}
+.badge-live {
+  display: inline-flex; align-items: center; gap: 10px;
+  border-radius: 999px; background: var(--color-sage); color: #1a1a1a;
+  font-family: var(--font-sans-ui); font-weight: 500; font-size: 12.5px;
+  letter-spacing: 0.02em; text-transform: uppercase; padding: 7px 14px;
+}
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 800ms cubic-bezier(0.2, 0.7, 0.1, 1), transform 800ms cubic-bezier(0.2, 0.7, 0.1, 1); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+:focus-visible {
+  outline: 2px solid var(--color-cent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- Motion ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.rise { animation: rise 700ms cubic-bezier(0.2, 0.7, 0.1, 1) both; }
+
+@keyframes rowIn {
+  0% { opacity: 0; background: rgba(72, 92, 17, 0.14); }
+  30% { opacity: 1; }
+  100% { background: transparent; }
+}
+.row-in { animation: rowIn 1400ms cubic-bezier(0.2, 0.7, 0.1, 1) both; }
+
+@keyframes flashStop {
+  0% { background: rgba(165, 102, 14, 0.14); }
+  100% { background: rgba(165, 102, 14, 0.04); }
+}
+
+/* Stamp-in: pressed down onto the ledger — scale, rotate, settle */
+@keyframes stampIn {
+  0% { opacity: 0; transform: scale(2.15) rotate(-18deg) translateY(-6px); filter: blur(1px); }
+  45% { opacity: 1; filter: none; transform: scale(0.88) rotate(-7deg) translateY(1px); }
+  68% { transform: scale(1.06) rotate(-5deg) translateY(0); }
+  100% { opacity: 1; transform: scale(1) rotate(-6deg) translateY(0); }
+}
+.stamp-in { animation: stampIn 720ms cubic-bezier(0.28, 0.75, 0.2, 1) both; transform-origin: center; }
+.row-stop { animation: rowIn 1400ms cubic-bezier(0.2, 0.7, 0.1, 1) both, flashStop 1600ms ease-out both; }
+
+@keyframes scoreIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: none; }
+}
+.score-in { animation: scoreIn 500ms cubic-bezier(0.2, 0.9, 0.2, 1.2) both; }
+
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(72, 92, 17, 0.55); }
+  50% { box-shadow: 0 0 0 5px rgba(72, 92, 17, 0); }
+}
+.pulse-dot { animation: pulseDot 1.6s ease-in-out infinite; }
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes breathe { 50% { opacity: 0.45; } }
+.shimmer-text { color: var(--color-bone); animation: breathe 1.4s ease-in-out infinite; }
+
+@keyframes drawRing {
+  from { stroke-dashoffset: var(--ring-len); }
+  to { stroke-dashoffset: 0; }
+}
+.ring-draw { animation: drawRing 1100ms cubic-bezier(0.6, 0, 0.2, 1) both; }
+
+@keyframes caret { 50% { opacity: 0; } }
+.caret { animation: caret 1s steps(1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* Preview lines that print in sequence, then hold. */
+@keyframes printIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.print { animation: printIn 500ms cubic-bezier(0.2, 0.7, 0.1, 1) both; }
+
+/* ---------- Provenance badges: Live · Simulated · Replay ---------- */
+.prov {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 999px; border: 1px solid transparent;
+  font-family: var(--font-mono-ui), ui-monospace, monospace;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 9px; line-height: 1.3; white-space: nowrap;
+}
+.prov-live { background: var(--color-cent); color: #fff; }
+.prov-live .prov-dot { background: #8fe0a8; }
+.prov-sim {
+  background: repeating-linear-gradient(135deg, rgba(111,111,111,0.09) 0 4px, transparent 4px 8px);
+  color: var(--color-dim); border: 1px dashed rgba(111,111,111,0.55);
+}
+.prov-replay { background: #fff6e3; color: var(--color-gold-deep); border-color: rgba(201,146,46,0.65); }
+.prov-dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.receipt-sim { font-style: italic; color: var(--color-dim); }
