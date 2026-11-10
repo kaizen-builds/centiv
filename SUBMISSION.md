@@ -3,6 +3,7 @@
 Centiv is a research agent that buys data one call at a time, inside a Kite Passport spending cap the owner approves with a passkey.
 In a verified run on Base, Passport paid two calls and declined the third with `session_total_exceeded`, and no money moved.
 Built for the Kite track of [SERV Hackathon 02](https://www.openserv.ai/hackathon-2), with live SERV Reasoning and x402 payments.
+Everything here was built from scratch during the hackathon (2 to 15 November 2026).
 
 ## The problem
 
