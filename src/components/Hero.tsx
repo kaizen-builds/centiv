@@ -42,7 +42,7 @@ export function Hero({
           <ol className="rise mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-mute" style={d(2)} aria-label="Steps">
             {["Approve a session", "Ask a question", "Watch it buy, skip or decline", "Check the audit trail"].map((t, i) => (
               <li key={t} className="flex items-center gap-2">
-                <span className="grid h-5 w-5 place-items-center rounded-full border border-[rgba(72,92,17,0.45)] bg-white text-[10.5px] font-semibold text-cent">{i + 1}</span>
+                <span className="grid h-5 w-5 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-[10.5px] font-semibold text-cent">{i + 1}</span>
                 {t}
               </li>
             ))}
@@ -50,7 +50,7 @@ export function Hero({
           <div className="rise mt-7 flex flex-wrap items-center gap-4" style={d(3)}>
             <button
               onClick={onRunDemo}
-              className="pill pill-olive group h-11 px-6 text-[14px]"
+              className="pill pill-cent group h-11 px-6 text-[14px]"
             >
               <svg width="11" height="12" viewBox="0 0 11 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l9 5-9 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />

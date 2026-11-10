@@ -368,13 +368,13 @@ export default function CentivApp() {
               ["verified-run", "Verified run"],
               ["audit", "Audit trail"],
             ].map(([id, l]) => (
-              <a key={id} href={`#${id}`} className="whitespace-nowrap rounded-full px-3 py-1.5 text-bone transition-colors hover:bg-[#DCE4C8]">
+              <a key={id} href={`#${id}`} className="whitespace-nowrap rounded-full px-3 py-1.5 text-bone transition-colors hover:bg-sage-hover">
                 {l}
               </a>
             ))}
           </nav>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <a href="#verified-run" className="whitespace-nowrap rounded-full px-2 py-1.5 text-[13.5px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
+            <a href="#verified-run" className="whitespace-nowrap rounded-full px-2 py-1.5 text-[13.5px] font-medium text-bone transition hover:bg-sage lg:hidden">
               Verified run
             </a>
             <a
@@ -383,11 +383,11 @@ export default function CentivApp() {
               rel="noopener noreferrer"
               aria-label="Centiv source on GitHub"
               title="Source on GitHub"
-              className="hidden h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
+              className="hidden h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-sage hover:text-bone sm:grid"
             >
               <GitHubMark size={16} />
             </a>
-            <button onClick={runDemo} className="pill pill-olive group h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
+            <button onClick={runDemo} className="pill pill-cent group h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
               <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l8 5-8 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
               </svg>

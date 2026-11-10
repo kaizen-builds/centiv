@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Centiv: cream paper, olive brand, ochre secondary */
+  /* Centiv: cream paper, plum brand, ochre secondary */
   --color-ink: #fff9f0; /* page — warm paper */
   --color-ink-2: #fffdf9; /* cards */
   --color-ink-3: #f7efe3; /* wells */
@@ -9,13 +9,14 @@
   --color-bone: #121212; /* primary text */
   --color-mute: #4a4a4a; /* body */
   --color-dim: #6f6f6f; /* muted */
-  --color-cent: #485c11; /* olive — main brand: logo, CTAs, charts, badges */
-  --color-cent-hover: #3a4b0d;
-  --color-cent-ink: #485c11;
+  --color-cent: #5B2A4E; /* plum — main brand: logo, CTAs, charts, badges */
+  --color-cent-hover: #45203B;
+  --color-cent-ink: #5B2A4E;
   --color-gold: #c9922e; /* ochre — secondary: hairlines, small ticks, occasional stamp ink */
   --color-gold-deep: #8a6412; /* ochre as text on cream (contrast) */
-  --color-pass: #5a7015;
-  --color-sage: #e6eed6; /* status pills */
+  --color-pass: #2E5E57; /* muted teal — Paid / success / live status */
+  --color-sage: #EFE3EB; /* plum wash — pills, badges */
+  --color-sage-hover: #E4D4DE;
   --color-live: #1f9d55; /* live dot */
   --color-hold: #a5660e; /* revise / decline — deep amber */
   --color-stop: #a5660e;
@@ -47,7 +48,7 @@ body {
 /* Ledger backdrop: faint horizontal rules (static CSS, also used by LedgerField) */
 .ledger-bg {
   background-color: var(--color-ink);
-  background-image: repeating-linear-gradient(to bottom, transparent 0 39px, rgba(72, 92, 17, 0.07) 39px 40px);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 39px, rgba(91, 42, 78, 0.07) 39px 40px);
 }
 
 .num {
@@ -71,7 +72,7 @@ body {
   letter-spacing: -0.02em;
 }
 
-::selection { background: rgba(72, 92, 17, 0.18); }
+::selection { background: rgba(91, 42, 78, 0.18); }
 
 .eyebrow {
   font-family: var(--font-mono-ui), ui-monospace, monospace;
@@ -105,20 +106,20 @@ body {
   border-radius: 999px; font-weight: 700; letter-spacing: -0.01em;
   transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
-.pill-olive { background: var(--color-cent); color: #fff; }
-.pill-olive:hover { background: var(--color-cent-hover); }
-.pill-olive:active { transform: translateY(1px); }
-.pill-olive .ne { transition: transform 180ms ease; }
-.pill-olive:hover .ne { transform: translate(2px, -2px); }
+.pill-cent { background: var(--color-cent); color: #fff; }
+.pill-cent:hover { background: var(--color-cent-hover); }
+.pill-cent:active { transform: translateY(1px); }
+.pill-cent .ne { transition: transform 180ms ease; }
+.pill-cent:hover .ne { transform: translate(2px, -2px); }
 .pill-sage {
-  background: #E8EDD8;
+  background: var(--color-sage);
   color: var(--color-bone);
-  border: 1px solid rgba(72, 92, 17, 0.18);
-  box-shadow: 0 1px 2px rgba(72, 92, 17, 0.04);
+  border: 1px solid rgba(91, 42, 78, 0.18);
+  box-shadow: 0 1px 2px rgba(91, 42, 78, 0.04);
 }
-.pill-sage:hover { background: #DCE4C8; }
+.pill-sage:hover { background: var(--color-sage-hover); }
 .pill-sage a:hover, .pill-sage button:hover {
-  background: #DCE4C8;
+  background: var(--color-sage-hover);
   color: var(--color-bone);
 }
 /* Compact white chip for non-nav surfaces (budget tags, etc.) */
@@ -152,7 +153,7 @@ body {
 .rise { animation: rise 700ms cubic-bezier(0.2, 0.7, 0.1, 1) both; }
 
 @keyframes rowIn {
-  0% { opacity: 0; background: rgba(72, 92, 17, 0.14); }
+  0% { opacity: 0; background: rgba(91, 42, 78, 0.14); }
   30% { opacity: 1; }
   100% { background: transparent; }
 }
@@ -180,8 +181,8 @@ body {
 .score-in { animation: scoreIn 500ms cubic-bezier(0.2, 0.9, 0.2, 1.2) both; }
 
 @keyframes pulseDot {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(72, 92, 17, 0.55); }
-  50% { box-shadow: 0 0 0 5px rgba(72, 92, 17, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(91, 42, 78, 0.55); }
+  50% { box-shadow: 0 0 0 5px rgba(91, 42, 78, 0); }
 }
 .pulse-dot { animation: pulseDot 1.6s ease-in-out infinite; }
 
@@ -226,7 +227,7 @@ body {
   padding: 3px 9px; line-height: 1.3; white-space: nowrap;
 }
 .prov-live { background: var(--color-cent); color: #fff; }
-.prov-live .prov-dot { background: #8fe0a8; }
+.prov-live .prov-dot { background: #F6DDEC; }
 .prov-sim {
   background: repeating-linear-gradient(135deg, rgba(111,111,111,0.09) 0 4px, transparent 4px 8px);
   color: var(--color-dim); border: 1px dashed rgba(111,111,111,0.55);

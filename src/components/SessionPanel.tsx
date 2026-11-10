@@ -57,7 +57,7 @@ function Field({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="col-span-2 h-1 w-full cursor-pointer accent-[#485c11] disabled:cursor-not-allowed disabled:opacity-40"
+        className="col-span-2 h-1 w-full cursor-pointer accent-cent disabled:cursor-not-allowed disabled:opacity-40"
       />
     </div>
   );

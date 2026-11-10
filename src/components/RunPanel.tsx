@@ -39,7 +39,7 @@ function Node({ s }: { s: Step }) {
     );
   const paid = s.kind === "pay";
   return (
-    <span className={`${base} ${paid ? "border-cent bg-cent text-white" : "border-[var(--line-strong)] bg-ink-3 text-mute"}`}>
+    <span className={`${base} ${paid ? "border-pass bg-pass text-white" : "border-[var(--line-strong)] bg-ink-3 text-mute"}`}>
       <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 5.2 4.2 7.4 8 3" stroke="currentColor" strokeWidth="1.25" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
     </span>
   );

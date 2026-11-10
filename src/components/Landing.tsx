@@ -16,7 +16,7 @@ const NE = () => (
   </svg>
 );
 
-const primary = "pill pill-olive h-12 px-7 text-[15px]";
+const primary = "pill pill-cent h-12 px-7 text-[15px]";
 const textLink =
   "inline-flex min-h-11 items-center text-[15px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent";
 
@@ -159,13 +159,13 @@ export default function Landing() {
               ["#try", "Try it"],
               ["#real", "What’s real"],
             ].map(([h, l]) => (
-              <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-2 text-mute transition hover:bg-[#E8EDD8] hover:text-bone">
+              <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-2 text-mute transition hover:bg-sage hover:text-bone">
                 {l}
               </a>
             ))}
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
+            <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-sage lg:hidden">
               Proof
             </a>
             <a
@@ -174,11 +174,11 @@ export default function Landing() {
               rel="noopener noreferrer"
               aria-label="Centiv source on GitHub"
               title="Source on GitHub"
-              className="hidden h-11 w-11 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
+              className="hidden h-11 w-11 place-items-center rounded-full text-mute transition hover:bg-sage hover:text-bone sm:grid"
             >
               <GitHubMark size={17} />
             </a>
-            <Link href="/app" className="pill pill-olive h-10 shrink-0 whitespace-nowrap px-4 text-[14px] sm:px-5">
+            <Link href="/app" className="pill pill-cent h-10 shrink-0 whitespace-nowrap px-4 text-[14px] sm:px-5">
               Open the app <NE />
             </Link>
           </div>
@@ -231,7 +231,7 @@ export default function Landing() {
               {steps.map((s, i) => (
                 <Reveal as="li" key={s.t} delay={i * 90} className="card-gold flex flex-col p-6">
                   <div className="flex items-center justify-between">
-                    <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(72,92,17,0.45)] bg-white text-cent">
+                    <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
                       <StepIcon kind={s.k} />
                     </span>
                     <span className="num text-[12px] text-dim">0{i + 1}</span>

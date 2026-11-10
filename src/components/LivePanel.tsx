@@ -79,14 +79,14 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
       <div className="mt-4 flex flex-wrap gap-2">
         <input type="password" autoComplete="off" placeholder="Owner token" value={token} onChange={(e) => setToken(e.target.value)} className="num h-10 w-56 rounded-full border hairline-strong bg-white px-4 text-[12.5px]" aria-label="Owner token" />
         <input value={topic} onChange={(e) => setTopic(e.target.value)} className="h-10 w-44 rounded-full border hairline-strong bg-white px-4 text-[13px]" aria-label="Topic (one or two words)" />
-        <button onClick={pay} disabled={busy || !token} className="pill pill-olive h-10 px-5 text-[13px] disabled:opacity-50">
+        <button onClick={pay} disabled={busy || !token} className="pill pill-cent h-10 px-5 text-[13px] disabled:opacity-50">
           {busy ? "Paying…" : "Pay & fetch (Live)"}
         </button>
       </div>
       {results.length > 0 && (
         <ul className="mt-4 space-y-2">
           {results.map((r, i) => (
-            <li key={i} className={`rounded-md border px-3 py-2 text-[12.5px] ${r.status === "paid" ? "border-cent/40" : "border-stop/45 bg-stop/[0.06]"}`}>
+            <li key={i} className={`rounded-md border px-3 py-2 text-[12.5px] ${r.status === "paid" ? "border-pass/40 bg-pass/[0.06]" : "border-stop/45 bg-stop/[0.06]"}`}>
               <span className="font-semibold">{r.status === "paid" ? "Paid" : r.status === "declined" ? "Declined" : "Error"}</span> · “{r.topic}”
               {r.basescan_url && (
                 <>

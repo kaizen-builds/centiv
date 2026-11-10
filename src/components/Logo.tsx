@@ -1,12 +1,11 @@
 import { useId } from "react";
 
-// Centiv identity: an olive press-stamp / milled-coin die with a cent-mark C
-// cut through it. Cream shows through the cut. Original geometry — not a kite
-// shard and not a generic rounded-square C. Reads at 16px. Default fill is olive.
+// Centiv identity: a press-stamp / milled-coin die with a cent-mark C
+// cut through it. Cream shows through the cut. Reads at 16px. Default fill is plum.
 
 /**
- * The Centiv mark: an olive milled-coin die with a cent-mark C carved through
- * it. Cream of the page shows in the cut. Default colour is olive (`--color-cent`).
+ * The Centiv mark: a milled-coin die with a cent-mark C carved through
+ * it. Cream of the page shows in the cut. Default colour is plum (`--color-cent`).
  */
 export function CentivMark({
   size = 24,
@@ -110,7 +109,7 @@ export function Stamp({
 }
 
 /**
- * Nib — the mint inspector: a rubber-stamp figure in an olive coat with an
+ * Nib — the mint inspector: a rubber-stamp figure in a plum coat with an
  * ochre coin-edge collar, holding a tally punch. Used sparingly.
  */
 export function Nib({ size = 72, mood = "idle" }: { size?: number; mood?: "idle" | "stop" }) {

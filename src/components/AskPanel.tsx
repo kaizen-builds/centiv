@@ -45,7 +45,7 @@ export function AskPanel({
             placeholder={locked ? "Approve a session first — Centiv can’t spend without one." : "Ask something that might be worth a call."}
             className="block w-full resize-none bg-transparent px-4 pb-14 pt-3.5 font-display text-[20px] font-medium tracking-[-0.02em] leading-[1.35] text-bone outline-none placeholder:text-[18px] placeholder:text-dim"
           />
-          {typing && <span className="caret pointer-events-none absolute right-4 top-4 h-5 w-[2px] bg-pass" aria-hidden="true" />}
+          {typing && <span className="caret pointer-events-none absolute right-4 top-4 h-5 w-[2px] bg-cent" aria-hidden="true" />}
           <div className="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3">
             <span className="hidden text-[11px] text-dim sm:inline">
               <kbd className="num rounded border hairline-strong px-1">Ctrl</kbd> + <kbd className="num rounded border hairline-strong px-1">Enter</kbd>
