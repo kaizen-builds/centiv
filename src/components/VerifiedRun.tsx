@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Stamp } from "./Logo";
 import { DecisionTag, ProvenanceBadge } from "./ui";
 import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls } from "@/lib/verified-run";
@@ -11,7 +12,7 @@ const date = (wat: string) => wat.split(", ")[0] ?? wat;
  * src/data/verified-run.json, verified against Base mainnet. Badged Replay — this
  * section never spends; visitors click through to public on-chain proof.
  */
-export default function VerifiedRun({ compact = false, id = "verified-run" }: { compact?: boolean; id?: string }) {
+export default function VerifiedRun({ compact = false, id = "verified-run", children }: { compact?: boolean; id?: string; children?: ReactNode }) {
   const r = VERIFIED_RUN;
   const p = r.passport;
   const caps = p.caps;
@@ -34,6 +35,7 @@ export default function VerifiedRun({ compact = false, id = "verified-run" }: { 
           Otto AI news reports for $0.001 each, paid in real USDC, and Passport refused the third call at the cap. Click
           either receipt to check it on Basescan. Nothing on this page spends money.
         </p>
+        {children}
 
         {/* Session strip */}
         <dl className="mt-7 grid gap-px overflow-hidden rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-[rgba(201,146,46,0.3)] sm:grid-cols-2 lg:grid-cols-4">

@@ -356,11 +356,11 @@ export default function CentivApp() {
   return (
     <div className="min-h-screen bg-ink pb-36">
       <header className="sticky top-0 z-30 bg-ink/80 backdrop-blur-md">
-        <div className="relative mx-auto flex h-[68px] max-w-[1240px] items-center justify-between px-5 md:px-8">
-          <a href="/" className="rounded-md" aria-label="Centiv — back to the landing page">
+        <div className="relative mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
+          <a href="/" className="shrink-0 rounded-md" aria-label="Centiv — back to the landing page">
             <CentivWordmark size={21} />
           </a>
-          <nav aria-label="Sections" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full px-1.5 py-1 text-[13px] font-medium md:flex">
+          <nav aria-label="Sections" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full px-1.5 py-1 text-[13px] font-medium lg:flex">
             {[
               ["session", "Session"],
               ["ask", "Ask"],
@@ -368,23 +368,26 @@ export default function CentivApp() {
               ["verified-run", "Verified run"],
               ["audit", "Audit trail"],
             ].map(([id, l]) => (
-              <a key={id} href={`#${id}`} className="rounded-full px-3 py-1.5 text-bone transition-colors hover:bg-[#DCE4C8]">
+              <a key={id} href={`#${id}`} className="whitespace-nowrap rounded-full px-3 py-1.5 text-bone transition-colors hover:bg-[#DCE4C8]">
                 {l}
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <a href="#verified-run" className="whitespace-nowrap rounded-full px-2 py-1.5 text-[13.5px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
+              Verified run
+            </a>
             <a
               href={GITHUB_REPO}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Centiv source on GitHub"
               title="Source on GitHub"
-              className="grid h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone"
+              className="hidden h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
             >
               <GitHubMark size={16} />
             </a>
-            <button onClick={runDemo} className="pill pill-olive group h-10 px-5 text-[13.5px]">
+            <button onClick={runDemo} className="pill pill-olive group h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
               <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l8 5-8 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
               </svg>

@@ -89,10 +89,12 @@ const previewRows: {
 
 function RunPreview() {
   return (
-    <div className="card-gold p-5 text-left sm:p-7" aria-label="Example run">
-      <div className="flex items-center justify-between">
-        <p className="num text-[11px] uppercase tracking-[0.14em] text-gold-deep">Example run</p>
-        <ProvenanceBadge p="simulated" />
+    <div className="card-gold p-5 text-left sm:p-7" aria-label="How it decides, simulated example">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="decides-title" className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">
+          How it decides
+        </h2>
+        <ProvenanceBadge p="simulated" short />
       </div>
       <p className="print mt-4 text-[19px] font-normal leading-[1.4] tracking-[-0.02em] text-bone" style={{ animationDelay: "500ms" }}>
         “Are ETH perp funding rates turning negative this week? I need a data-backed brief.”
@@ -190,11 +192,11 @@ export default function Landing() {
     <div className="min-h-screen bg-ink">
       {/* Floating nav: wordmark left, sage pill centre, icon pill + olive CTA right */}
       <header className="fixed inset-x-0 top-0 z-40">
-        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-4 px-5 md:px-8">
-          <Link href="/" aria-label="Centiv home" className="rounded-lg">
+        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
+          <Link href="/" aria-label="Centiv home" className="shrink-0 rounded-lg">
             <CentivWordmark size={22} />
           </Link>
-          <nav aria-label="Main" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full px-2 py-1.5 text-[13.5px] font-medium md:flex">
+          <nav aria-label="Main" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full px-2 py-1.5 text-[13.5px] font-medium lg:flex">
             {[
               ["#verified-run", "Verified run"],
               ["#buys", "What it buys"],
@@ -202,13 +204,16 @@ export default function Landing() {
               ["#cap", "Your cap"],
               ["#audit", "Audit trail"],
             ].map(([h, l]) => (
-              <a key={h} href={h} className="rounded-full px-3.5 py-1.5 text-bone transition hover:bg-[#DCE4C8]">
+              <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-1.5 text-bone transition hover:bg-[#DCE4C8]">
                 {l}
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-2.5">
-            <div className="pill-sage hidden items-center gap-0.5 rounded-full p-1 sm:flex">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+            <a href="#verified-run" className="whitespace-nowrap rounded-full px-2 py-1.5 text-[13.5px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
+              Verified run
+            </a>
+            <div className="pill-sage hidden items-center gap-0.5 rounded-full p-1 xl:flex">
               <Link href="/app?demo=ab" aria-label="Run the demo" title="Run the demo" className="grid h-8 w-8 place-items-center rounded-full text-mute transition hover:bg-[#DCE4C8] hover:text-bone">
                 <Play />
               </Link>
@@ -224,12 +229,13 @@ export default function Landing() {
               rel="noopener noreferrer"
               aria-label="Centiv source on GitHub"
               title="Source on GitHub"
-              className="grid h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone"
+              className="hidden h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
             >
               <GitHubMark size={16} />
             </a>
-            <Link href="/app" className="pill pill-olive h-10 px-5 text-[13.5px]">
-              Open the app <NE />
+            <Link href="/app" className="pill pill-olive h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
+              <span className="sm:hidden">Open app</span>
+              <span className="hidden sm:inline">Open the app</span> <NE />
             </Link>
           </div>
         </div>
@@ -243,51 +249,50 @@ export default function Landing() {
             <p className="badge-live rise">
               SERV Hackathon 02 · Kite track <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--color-live)]" />
             </p>
-            <div className="rise mt-6 w-full max-w-[820px]">
-              <Suspense fallback={<StatusStripFallback />}>
-                <StatusStripServer />
-              </Suspense>
-            </div>
             <h1
               id="landing-title"
-              className="rise mt-7 text-[44px] font-normal leading-[1.08] tracking-[-0.04em] text-bone sm:text-[62px] lg:text-[76px]"
+              className="rise mt-6 text-[44px] font-normal leading-[1.08] tracking-[-0.04em] text-bone sm:text-[62px] lg:text-[76px]"
               style={{ animationDelay: "90ms" }}
             >
-              Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport
+              Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport.
             </h1>
-            <p className="rise mt-6 max-w-[580px] text-[16.5px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
-              Centiv is a research agent that buys search, scraping and market data one call at a time — only when the call is
-              worth it, inside a cap you set with Kite Passport. On the verified run it paid twice in USDC on Base; Passport
-              refused the third with session_total_exceeded, and nothing was signed.
+            <p className="rise mt-6 max-w-[540px] text-[16.5px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
+              A research agent that buys data per call, inside a cap you set.
             </p>
-            <p className="rise mt-4 max-w-[520px] text-[15px] leading-[1.55] text-mute" style={{ animationDelay: "220ms" }}>
-              For teams and agents that need data-backed answers without handing an AI an open wallet.
-            </p>
-            <div className="rise mt-10 flex flex-wrap items-center justify-center gap-3" style={{ animationDelay: "270ms" }}>
-              <a
-                href="#verified-run"
-                className="inline-flex h-11 items-center gap-2.5 rounded-full border border-[rgba(201,146,46,0.65)] bg-white px-5 text-[14px] font-medium text-gold-deep transition hover:bg-[#fff6e3]"
-              >
-                <ProvenanceBadge p="replay" short />
+            <div className="rise mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-3" style={{ animationDelay: "270ms" }}>
+              <a href="#verified-run" className={olive}>
                 See the verified run
               </a>
-              <Link href="/app" className={olive}>
-                Open the app <NE />
-              </Link>
-              <Link href="/app?demo=ab" className={olive}>
-                Run the 30-second demo <NE />
+              <Link
+                href="/app?demo=ab"
+                className="text-[14px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent"
+              >
+                Try the demo
               </Link>
             </div>
-          </div>
-          <div className="rise relative mx-auto mt-16 max-w-[720px] px-5" style={{ animationDelay: "420ms" }}>
-            <RunPreview />
+            <div className="rise mt-6 w-full max-w-[720px]" style={{ animationDelay: "330ms" }}>
+              <Suspense fallback={<StatusStripFallback variant="line" />}>
+                <StatusStripServer variant="line" />
+              </Suspense>
+            </div>
           </div>
         </section>
 
         {/* Verified live run — real on-chain proof, replayed */}
-        <div className="mx-auto max-w-[1140px] px-5 pb-24 md:px-8">
-          <VerifiedRun />
+        <div className="mx-auto max-w-[1140px] px-5 pb-16 md:px-8">
+          <VerifiedRun>
+            <Suspense fallback={<StatusStripFallback className="mt-5" />}>
+              <StatusStripServer className="mt-5" align="start" />
+            </Suspense>
+          </VerifiedRun>
         </div>
+
+        {/* Simulated example — how a run decides, clearly labelled */}
+        <section id="how-it-decides" className="scroll-mt-24" aria-labelledby="decides-title">
+          <div className="mx-auto max-w-[720px] px-5 pb-16 md:px-8">
+            <RunPreview />
+          </div>
+        </section>
 
         {/* What it buys */}
         <section id="buys" className="scroll-mt-24" aria-labelledby="buys-title">
@@ -442,6 +447,9 @@ export default function Landing() {
               Ask something that might be <span className="serif-em">worth a call</span>
             </h2>
             <p className="mt-4 text-[16px] text-mute">Approve a cap, ask a question, and watch every cent get accounted for.</p>
+            <p className="mt-3 max-w-[520px] text-[15px] leading-[1.55] text-dim">
+              For teams and agents that need data-backed answers without handing an AI an open wallet.
+            </p>
             <div className="mt-9 flex flex-wrap justify-center gap-3">
               <Link href="/app" className={oliveLg}>
                 Open the app <NE />

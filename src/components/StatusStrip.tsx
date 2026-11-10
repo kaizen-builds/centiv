@@ -22,20 +22,36 @@ function Item({ label, detail, p }: { label: string; detail?: string; p: Provena
   );
 }
 
-/** One-line truth strip. SERV is Live only when a key is configured; visitor payments stay Simulated. */
+/** Truth strip. SERV is Live only when a key is configured; visitor payments stay Simulated.
+ *  `line` is a single typographic sentence for the landing hero; `badges` keeps the detailed legend. */
 export function StatusStrip({
   serv,
   reppo,
   className = "",
   align = "center",
+  variant = "badges",
 }: {
   serv: StatusKind;
   reppo: StatusKind;
   className?: string;
   align?: "center" | "start";
+  variant?: "badges" | "line";
 }) {
   const servP: Provenance = serv === "live" ? "live" : "simulated";
   const gateP: Provenance = reppo === "live" ? "live" : "simulated";
+  if (variant === "line") {
+    const reasoning = serv === "live" ? "Live reasoning" : "Simulated reasoning";
+    const gate = reppo === "live" ? " · Live quality gate" : "";
+    return (
+      <p
+        className={`whitespace-nowrap text-[12px] leading-snug text-dim sm:text-[12.5px] ${align === "center" ? "text-center" : "text-left"} ${className}`}
+        aria-label="What's live, simulated, and replayed"
+      >
+        {reasoning}
+        {gate} · Real payments replay · Simulated demo
+      </p>
+    );
+  }
   return (
     <p
       className={`flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[12px] ${align === "center" ? "justify-center" : "justify-start"} ${className}`}
