@@ -13,7 +13,7 @@ Every run, receipt and audit row carries exactly one of three badges:
 | Badge | What it means | Where |
 | --- | --- | --- |
 | **Live · real payment** | A real x402 payment through an owner-approved Kite Passport session. | Owner-only, on a local machine (`/api/live`). **Never on the public Vercel site.** |
-| **Simulated · no funds move** | The Passport cap check is real, but settlement is simulated. Receipts are `sim_`-prefixed, set in italics and never linked, so they can't be mistaken for on-chain hashes. | Every visitor's question on the public site. SERV reasoning is live there. |
+| **Simulated · no funds move** | Centiv applies the same per-call, total and time limits itself, and settlement is simulated. The real Passport refusal is in the verified run. Receipts are `sim_`-prefixed, set in italics and never linked, so they can't be mistaken for on-chain hashes. | Every visitor's question on the public site. SERV reasoning is live there. |
 | **Replay · real on-chain run** | A replay of the real run on 10 Nov 2026. It has real Basescan receipts and spends nothing. | The "Verified live run" section on `/` and `/app`, and the "Verified run" tab in the audit trail. |
 
 `GET /api/status` reports the engine mode, the integrations, `payments.public` (always `simulated`), `replay` (session ID and transaction hashes) and `live_demo.enabled`, which is always `false` on Vercel.
@@ -91,7 +91,7 @@ Keep the Passport balance small. Live mode only spends from the session you appr
 - **Scene A · paid call** — ETH funding brief. SERV buys 7-day funding history (0.18 USDC), skips a low-value sentiment scrape, and the built-in quality check accepts (labelled Simulated until a Reppo key is connected).
 - **Scene B · cap hit** — 1-minute order-book depth (0.35 USDC). Passport fails the per-call cap / remaining budget; Centiv declines before signing; the built-in quality check returns *revise* (labelled Simulated until a Reppo key is connected).
 
-Limit checks are real against your session — raise the per-call cap to 0.35 and Scene B will buy instead of declining.
+Centiv checks these limits itself against your session settings — raise the per-call cap to 0.35 and Scene B will buy instead of declining.
 
 ## Environment variables
 
