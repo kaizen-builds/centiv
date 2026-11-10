@@ -115,7 +115,7 @@ See [`.env.example`](.env.example). Summary:
 ### What you need for a fully live path
 
 1. **OpenServ** — account + API key + credits ([hackathon](https://www.openserv.ai/hackathon-2)).
-2. **Kite Passport** — install `kpass`, passkey, fund USDC.e on Kite, approve a spending session ([Passport](https://docs.gokite.ai/passport), [CLI](https://docs.gokite.ai/reference/kpass-cli), [payments](https://docs.gokite.ai/passport/payments)). There is no public HTTP Passport API yet, so live payments go through `kpass session execute`, and only via the owner-gated `/api/live` route.
+2. **Kite Passport** — install `kpass`, passkey, fund the Passport wallet with USDC on Base (the verified run used 2.16 USDC sent on Base), approve a capped spending session ([Passport](https://docs.gokite.ai/passport), [CLI](https://docs.gokite.ai/reference/kpass-cli), [payments](https://docs.gokite.ai/passport/payments)). There is no public HTTP Passport API yet, so live payments go through `kpass session execute`, and only via the owner-gated `/api/live` route.
 3. **x402 data source** — one research feed. Centiv ships a funding catalogue at `/api/data/funding`. For a real seller, wrap an upstream with [`kite-x402-hono`](https://www.npmjs.com/package/kite-x402-hono) / explorer / axum (hackathon priority repos). Optional test URL: `https://x402.dev.gokite.ai/api/weather?location=San%20Francisco`.
 4. **Reppo** — optional. API key from [eval.reppo.xyz](https://eval.reppo.xyz). Without `REPPO_API_KEY`, Centiv uses the built-in check and labels it **Built-in check · Simulated**. With a key, results are labelled **Reppo**. Do not submit private data (evaluations are public on the network feed). The demo polls briefly (~45s) then falls back with the `evalId` if still settling.
 
