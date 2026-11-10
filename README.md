@@ -142,6 +142,4 @@ src/components/CentivApp.tsx   workspace UI (calls the API)
 - Kite Passport: https://docs.gokite.ai/passport · payments · kpass CLI
 - Reppo Evaluation: https://docs.reppo.ai/concepts/evaluation-api · https://eval.reppo.xyz/agents.md
 
-Typefaces: DM Sans, Newsreader italic (key headline words), Geist Mono. Palette: paper #FFF9F0, olive #485C11, ochre #C9922E. Built on Kite credit in the footer uses their official mark for attribution only.
-
 Released under the [MIT License](LICENSE).
