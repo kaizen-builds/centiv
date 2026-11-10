@@ -1,10 +1,8 @@
 # Centiv
 
-A research agent that buys data one call at a time, inside a Kite Passport spending cap the owner approves with a passkey. When the cap is reached, Passport itself refuses the payment and no money moves.
-
-## Track
-
-Kite track, [SERV Hackathon 02](https://www.openserv.ai/hackathon-2).
+Centiv is a research agent that buys data one call at a time, inside a Kite Passport spending cap the owner approves with a passkey.
+In a verified run on Base, Passport paid two calls and declined the third with `session_total_exceeded`, and no money moved.
+Built for the Kite track of [SERV Hackathon 02](https://www.openserv.ai/hackathon-2), with live SERV Reasoning and x402 payments.
 
 ## The problem
 
@@ -47,45 +45,15 @@ Live payments are owner-only and cannot run on the public Vercel site.
 
 ## Why Base
 
-The verified run settled on Base (`eip155:8453`), not on Kite chain (`eip155:2366`). A Kite-chain settlement would have needed bridged USDC (USDC.e) on that chain. In the dev environment we tried, the wallet did not hold USDC.e, and the official dev test merchant returned `payment_target_forbidden`.
-
-Passport has supported settlement on Base since the [8 July 2026 release](https://docs.gokite.ai/changelog/2026/2026-07-08-release). No written hackathon rule excludes Base.
-
-## How to run it
-
-Requires Node 20+.
-
-```bash
-cp .env.example .env.local   # optional keys
-npm install
-npm run dev                  # http://localhost:3000
-```
-
-Routes: `/` (landing), `/app` (workspace), `/app?demo=ab` (30-second simulated demo). Real Passport payments run only locally, via the owner-gated `/api/live` route, with `kpass` and an approved session. See the README for the live-mode gates.
+The verified run settled in USDC on Base, which Passport has supported since the [8 July 2026 release](https://docs.gokite.ai/changelog/2026/2026-07-08-release). Settling on Kite chain needs bridged USDC (USDC.e), which isn't practical for this wallet yet.
 
 ## What's next
 
-- Record a short demo video of a fresh, small Passport session: two paid calls, then the third declined. Link: [VIDEO LINK].
-- Optionally connect Reppo so the quality gate is a live score rather than the built-in check.
-- If USDC.e on Kite chain becomes practical for this wallet, repeat the same capped run against a Kite-chain merchant.
+- Connect Reppo so the quality gate is a live score rather than the built-in check.
 
 ## Links
 
 - Live site: https://centiv-gilt.vercel.app
 - App: https://centiv-gilt.vercel.app/app
 - Evidence: https://centiv-gilt.vercel.app/api/evidence
-- Source: https://github.com/kaizen-builds/centiv
-- Demo video: [VIDEO LINK]
-- X post: [X POST LINK]
-
----
-
-## Short version
-
-Centiv is a research agent that buys data one call at a time inside a Kite Passport spending cap the owner approves with a passkey. SERV Reasoning (live) decides whether each call is worth the remaining budget. Payments use x402 (EIP-3009, USDC on Base).
-
-On 10 November 2026, session `agent_session_01a1c57f-7107-7b6e-92dc-a6313394ee07` was capped at $0.001 per call and $0.002 in total. Two Otto AI `/filtered-news` calls paid ([tx 1](https://basescan.org/tx/0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353), [tx 2](https://basescan.org/tx/0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d)). Passport declined the third with `session_total_exceeded`; no money moved. The refusal came from Passport, not from app logic.
-
-Settlement is on Base because a Kite-chain payment needed USDC.e, which the dev environment did not have, and the dev test merchant returned `payment_target_forbidden`. Passport has supported Base settlement since [8 July 2026](https://docs.gokite.ai/changelog/2026/2026-07-08-release). The public demo is simulated; Reppo is not wired in.
-
-https://centiv-gilt.vercel.app · https://github.com/kaizen-builds/centiv · Video: [VIDEO LINK] · X: [X POST LINK]
+- Source: https://github.com/kaizen-builds/centiv (setup steps are in the [README](https://github.com/kaizen-builds/centiv#readme))
