@@ -7,6 +7,9 @@ import { RealVsSimulated, RealVsSimulatedFallback } from "./RealVsSimulated";
 import Reveal from "./Reveal";
 import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
 import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
+import Faq from "./Faq";
+import HeroProof from "./HeroProof";
+import StatusPill from "./StatusPill";
 import { DecisionTag, ProvenanceBadge, VerdictTag } from "./ui";
 import VerifiedRun from "./VerifiedRun";
 
@@ -158,6 +161,7 @@ export default function Landing() {
               ["#how", "How it works"],
               ["#try", "Try it"],
               ["#real", "What’s real"],
+              ["#faq", "FAQ"],
             ].map(([h, l]) => (
               <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-2 text-mute transition hover:bg-sage hover:text-bone">
                 {l}
@@ -165,6 +169,7 @@ export default function Landing() {
             ))}
           </nav>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <StatusPill className="mr-1 hidden md:inline-flex" />
             <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-sage lg:hidden">
               Proof
             </a>
@@ -189,32 +194,37 @@ export default function Landing() {
         {/* 1. Hero: what it is, plus the proof hook */}
         <section className="relative overflow-hidden pb-14 pt-[120px] md:pb-20 md:pt-[160px]" aria-labelledby="landing-title">
           <LedgerField />
-          <div className="relative mx-auto flex max-w-[960px] flex-col items-center px-5 text-center">
-            <p className="badge-live rise">SERV Hackathon 02 · Kite track</p>
-            <h1
-              id="landing-title"
-              className="rise mt-6 text-[42px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:text-[60px] lg:text-[72px]"
-              style={{ animationDelay: "90ms" }}
-            >
-              Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport.
-            </h1>
-            <p className="rise mt-6 max-w-[560px] text-[17px] leading-[1.6] text-mute md:text-[18px]" style={{ animationDelay: "180ms" }}>
-              Centiv is a research agent that buys data one call at a time, inside a spending cap you approve. When the cap is
-              reached, it stops.
-            </p>
-            <div className="rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2" style={{ animationDelay: "270ms" }}>
-              <a href="#verified-run" className={primary}>
-                See the proof
+          <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 px-5 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14">
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+              <p className="badge-live rise">SERV Hackathon 02 · Kite track</p>
+              <h1
+                id="landing-title"
+                className="rise mt-6 text-[42px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:text-[60px] lg:text-[64px] xl:text-[68px]"
+                style={{ animationDelay: "90ms" }}
+              >
+                Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport.
+              </h1>
+              <p className="rise mt-6 max-w-[560px] text-[17px] leading-[1.6] text-mute md:text-[18px]" style={{ animationDelay: "180ms" }}>
+                Centiv is a research agent that buys data one call at a time, inside a spending cap you approve. When the cap is
+                reached, it stops.
+              </p>
+              <div className="rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start" style={{ animationDelay: "270ms" }}>
+                <a href="#verified-run" className={primary}>
+                  See the proof
+                </a>
+                <Link href="/app?demo=ab" className={textLink}>
+                  Try the demo
+                </Link>
+              </div>
+              <a href="#real" className="rise mt-6 rounded-lg px-2 py-1 transition hover:opacity-80 lg:-ml-2" style={{ animationDelay: "330ms" }}>
+                <Suspense fallback={<StatusStripFallback variant="line" />}>
+                  <StatusStripServer variant="line" className="lg:text-left" />
+                </Suspense>
               </a>
-              <Link href="/app?demo=ab" className={textLink}>
-                Try the demo
-              </Link>
             </div>
-            <a href="#real" className="rise mt-6 rounded-lg px-2 py-1 transition hover:opacity-80" style={{ animationDelay: "330ms" }}>
-              <Suspense fallback={<StatusStripFallback variant="line" />}>
-                <StatusStripServer variant="line" />
-              </Suspense>
-            </a>
+            <div className="rise hidden lg:block" style={{ animationDelay: "360ms" }}>
+              <HeroProof />
+            </div>
           </div>
         </section>
 
@@ -340,6 +350,15 @@ export default function Landing() {
                   );
                 })}
               </ul>
+            </Reveal>
+          </div>
+        </section>
+        {/* 7. Questions */}
+        <section id="faq" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="faq-title">
+          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+            <SectionHead label="FAQ" id="faq-title" title={<>Questions</>} />
+            <Reveal delay={100} className="mt-10">
+              <Faq />
             </Reveal>
           </div>
         </section>

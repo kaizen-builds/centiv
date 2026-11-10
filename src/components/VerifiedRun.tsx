@@ -73,7 +73,7 @@ export default function VerifiedRun({
           {[
             ["Passport session", <span key="s" className="num break-all text-[12.5px]">{p.session_id}</span>],
             ["Caps, set with a passkey", <span key="c" className="fig text-[15px]">${caps.max_amount_per_tx} per call · ${caps.max_total_amount} total · {ttlMin} min</span>],
-            ["Scope", <span key="sc" className="num text-[12.5px]">{p.scope.method} {p.scope.host}{p.scope.path_prefix}</span>],
+            ["Scope", <span key="sc" className="num text-[12px]"><span className="whitespace-nowrap">{p.scope.method} {p.scope.host}</span><wbr /><span className="whitespace-nowrap">{p.scope.path_prefix}</span></span>],
             ["Approved", <span key="a" className="fig text-[15px]">{time(p.approved_at_wat)}</span>],
           ].map(([k, v]) => (
             <div key={k as string} className={`bg-white px-4 py-3.5 ${k === "Passport session" ? "sm:col-span-3" : ""}`}>
