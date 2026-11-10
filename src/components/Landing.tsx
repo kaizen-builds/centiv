@@ -1,45 +1,30 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { CentivMark, CentivWordmark, Nib, Stamp } from "./Logo";
+import { CentivWordmark, Stamp } from "./Logo";
 import LedgerField from "./LedgerField";
+import { RealVsSimulated, RealVsSimulatedFallback } from "./RealVsSimulated";
 import Reveal from "./Reveal";
 import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
 import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
-import { DecisionTag, GateSourceLabel, ProvenanceBadge, VerdictTag } from "./ui";
+import { DecisionTag, ProvenanceBadge, VerdictTag } from "./ui";
 import VerifiedRun from "./VerifiedRun";
 
-const Play = () => (
-  <svg width="10" height="12" viewBox="0 0 11 12" aria-hidden="true">
-    <path d="M1 1l9 5-9 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
-  </svg>
-);
 const NE = () => (
   <svg className="ne" width="9" height="9" viewBox="0 0 10 10" aria-hidden="true">
     <path d="M2 8 8 2M3.5 2H8v4.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const olive = "pill pill-olive h-11 px-6 text-[14px]";
-const oliveLg = "pill pill-olive h-12 px-7 text-[15px]";
+const primary = "pill pill-olive h-12 px-7 text-[15px]";
+const textLink =
+  "inline-flex min-h-11 items-center text-[15px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent";
 
-function Icon({ kind }: { kind: "search" | "scrape" | "market" | "budget" | "weigh" | "pay" | "stamp" }) {
+function StepIcon({ kind }: { kind: "cap" | "weigh" | "pay" }) {
   const c = { stroke: "currentColor", strokeWidth: 1.25, fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-      {kind === "search" && (
-        <>
-          <circle cx="10.5" cy="10.5" r="6" {...c} />
-          <path d="M15 15l5 5" {...c} />
-        </>
-      )}
-      {kind === "scrape" && (
-        <>
-          <rect x="4" y="4" width="16" height="16" rx="2.5" {...c} />
-          <path d="M4 9h16M8 13h8M8 16.5h5" {...c} />
-        </>
-      )}
-      {kind === "budget" && (
+      {kind === "cap" && (
         <>
           <circle cx="12" cy="12" r="8" {...c} />
           <path d="M12 4v8l5.5 5.5" {...c} />
@@ -57,59 +42,70 @@ function Icon({ kind }: { kind: "search" | "scrape" | "market" | "budget" | "wei
           <circle cx="12" cy="12" r="2.5" {...c} />
         </>
       )}
-      {kind === "stamp" && (
-        <>
-          <path d="M9 4h6v5l3 3H6l3-3z" {...c} />
-          <path d="M5 15h14v3H5zM8 21h8" {...c} />
-        </>
-      )}
-      {kind === "market" && (
-        <>
-          <path d="M4 19h16" {...c} />
-          <path d="M5 15l4-4 3 3 6-7" {...c} />
-          <path d="M15 7h3v3" {...c} />
-        </>
-      )}
     </svg>
   );
 }
 
-const previewRows: {
-  d: "spend" | "skip" | "decline";
-  kind: string;
-  call: string;
-  amount: string;
-  note: string;
-}[] = [
-  { d: "spend", kind: "Market data", call: "Perp funding history · 7 days", amount: "−$0.18", note: "Core evidence. Worth it." },
-  { d: "skip", kind: "Scrape", call: "Social sentiment · 24 h", amount: "$0.12", note: "Would restate the funding data." },
-  { d: "decline", kind: "Market data", call: "Order-book depth · 1-min", amount: "$0.35", note: "Over the $0.20 per-call cap." },
+function SectionHead({ label, id, title, children, center = false }: { label: string; id: string; title: ReactNode; children?: ReactNode; center?: boolean }) {
+  return (
+    <Reveal className={center ? "mx-auto max-w-[680px] text-center" : "max-w-[760px]"}>
+      <p className="text-[14px] font-medium text-cent">{label}</p>
+      <h2 id={id} className="mt-3 text-[34px] font-normal leading-[1.1] tracking-[-0.035em] text-bone md:text-[44px]">
+        {title}
+      </h2>
+      {children && <div className="mt-4 text-[16px] leading-[1.6] text-mute">{children}</div>}
+    </Reveal>
+  );
+}
+
+const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string; tag: string }[] = [
+  {
+    k: "cap",
+    t: "You set the cap",
+    s: "Approve a Kite Passport spending session with your passkey: a limit per call, a total and a time window. Centiv can only spend inside it.",
+    tag: "Kite Passport",
+  },
+  {
+    k: "weigh",
+    t: "SERV weighs each call",
+    s: "Before it buys anything, SERV Reasoning asks one question: is this data worth what’s left of the budget? Then it buys, skips or stops.",
+    tag: "SERV Reasoning",
+  },
+  {
+    k: "pay",
+    t: "Passport pays or refuses",
+    s: "Data is paid for with x402, a standard for paying an API per request. Inside the cap, Passport pays. Over it, Passport refuses and nothing is signed. Every decision is logged.",
+    tag: "x402 · Kite Passport",
+  },
 ];
 
+const exampleRows: { d: "spend" | "skip" | "decline"; call: string; amount: string; note: string }[] = [
+  { d: "spend", call: "Perp funding history · 7 days", amount: "$0.18", note: "Core evidence. Worth it." },
+  { d: "skip", call: "Social sentiment · 24 h", amount: "$0.12", note: "Would repeat the funding data." },
+  { d: "decline", call: "Order-book depth · 1-min", amount: "$0.35", note: "Over the $0.20 per-call cap." },
+];
 
-function RunPreview() {
+function ExampleRun() {
   return (
-    <div className="card-gold p-5 text-left sm:p-7" aria-label="How it decides, simulated example">
+    <div className="card-gold p-5 text-left sm:p-7" aria-label="Example run, simulated">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="decides-title" className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">
-          How it decides
-        </h2>
-        <ProvenanceBadge p="simulated" short />
+        <p className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">Example run</p>
+        <ProvenanceBadge p="simulated" />
       </div>
-      <p className="print mt-4 text-[19px] font-normal leading-[1.4] tracking-[-0.02em] text-bone" style={{ animationDelay: "500ms" }}>
+      <p className="mt-4 text-[18px] leading-[1.4] tracking-[-0.02em] text-bone">
         “Are ETH perp funding rates turning negative this week? I need a data-backed brief.”
       </p>
-      <ul className="mt-5 divide-y divide-[rgba(218,161,57,0.25)] border-y border-[rgba(218,161,57,0.3)]">
-        {previewRows.map((r, i) => (
-          <li key={r.call} className="print flex items-start gap-3 py-3.5" style={{ animationDelay: `${1000 + i * 650}ms` }}>
+      <p className="mt-2 text-[12.5px] text-dim">Example cap: $0.50 total, $0.20 per call.</p>
+      <ul className="mt-4 divide-y divide-[rgba(218,161,57,0.25)] border-y border-[rgba(218,161,57,0.3)]">
+        {exampleRows.map((r) => (
+          <li key={r.call} className="flex items-start gap-3 py-3.5">
             <Stamp
               size={26}
-              className={`stamp-in mt-0.5 shrink-0 ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`}
+              className={`mt-0.5 shrink-0 ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`}
               notch={r.d === "spend" ? "var(--color-cent)" : undefined}
             />
             <div className="min-w-0 flex-1">
-              <p className="num text-[10px] uppercase tracking-[0.12em] text-dim">{r.kind}</p>
-              <p className="truncate text-[14.5px] font-medium tracking-[-0.015em] text-bone">{r.call}</p>
+              <p className="text-[14.5px] font-medium tracking-[-0.015em] text-bone">{r.call}</p>
               <p className="text-[12.5px] text-dim">{r.note}</p>
             </div>
             <div className="flex flex-col items-end gap-1.5">
@@ -119,379 +115,253 @@ function RunPreview() {
           </li>
         ))}
       </ul>
-      <div className="print mt-4 flex flex-wrap items-center justify-between gap-3" style={{ animationDelay: "3000ms" }}>
-        <div className="flex items-center gap-3">
-          <span className="text-[12.5px] text-dim">Built-in check · Simulated</span>
-          <VerdictTag v="accept" score={0.86} />
-        </div>
-        <span className="text-[12.5px] text-dim">
-          Remaining <span className="fig text-[15px] text-bone">$0.32</span> of $0.50
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-dim">
+        <span className="inline-flex items-center gap-2">
+          Quality gate (built-in check) <VerdictTag v="accept" score={0.86} />
         </span>
-      </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[rgba(72,92,17,0.12)]">
-        <div className="h-full w-[36%] rounded-full bg-cent" />
+        <span>
+          Spent <span className="fig text-[15px] text-bone">$0.18</span> of $0.50
+        </span>
       </div>
     </div>
   );
 }
 
-function LeaderList({ rows }: { rows: { k: Parameters<typeof Icon>[0]["kind"]; t: string; s?: string; m?: string }[] }) {
-  return (
-    <ul className="space-y-1">
-      {rows.map((r, i) => (
-        <Reveal as="li" key={r.t} delay={i * 90} className="flex items-center gap-4 py-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-medium tracking-[-0.015em] text-bone">{r.t}</p>
-            {r.s && <p className="mt-0.5 text-[13.5px] leading-[1.5] text-mute">{r.s}</p>}
-            {r.m && <p className="num mt-1.5 text-[11px] uppercase tracking-[0.1em] text-gold-deep">{r.m}</p>}
-          </div>
-          <span aria-hidden="true" className="hidden h-px w-10 shrink-0 bg-[rgba(201,146,46,0.4)] sm:block" />
-          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-[rgba(72,92,17,0.45)] bg-white text-cent">
-            <Icon kind={r.k} />
-          </span>
-        </Reveal>
-      ))}
-    </ul>
-  );
-}
-
-function SectionText({ label, id, title, children }: { label: string; id: string; title: ReactNode; children: ReactNode }) {
-  return (
-    <Reveal>
-      <p className="text-[14px] font-medium text-cent">{label}</p>
-      <h2 id={id} className="mt-3 text-[36px] font-normal leading-[1.1] tracking-[-0.035em] text-bone md:text-[46px]">
-        {title}
-      </h2>
-      <div className="mt-5 max-w-[460px] text-[16px] leading-[1.6] text-mute">{children}</div>
-    </Reveal>
-  );
-}
-
-const buys = [
-  { k: "search" as const, t: "Search", s: "Web and news queries when the answer needs something recent.", e: "e.g. $0.02 a query" },
-  { k: "scrape" as const, t: "Scraping", s: "A page or feed read on demand, only when no cheaper source will do.", e: "e.g. $0.05 a page" },
-  { k: "market" as const, t: "Market data", s: "Funding rates, order books and prices — the evidence a trader actually needs.", e: "e.g. $0.18 a dataset" },
+const builtWith: { name: string; role: string; href: string }[] = [
+  { name: "Kite Passport", role: "Agent identity and spending caps, approved with a passkey. Enforced the real refusal.", href: "https://docs.gokite.ai/passport" },
+  { name: "x402", role: "Pay-per-request payments over HTTP. Each data call carries its own price.", href: "https://docs.gokite.ai/passport/payments" },
+  { name: "SERV Reasoning", role: "Decides, call by call, whether paid data is worth what’s left of the budget.", href: "https://docs.openserv.ai/serv-reasoning/api" },
+  { name: "Reppo-ready gate", role: "Scores each brief. A built-in check stands in until a Reppo key is connected.", href: "https://docs.reppo.ai/concepts/evaluation-api" },
 ];
 
-const steps = [
-  ["Find the gap", "Centiv breaks your question into the data it doesn’t have yet — a search, a scrape or a dataset."],
-  ["Weigh the call", "SERV Reasoning asks one thing per call: is this worth what’s left of your budget?"],
-  ["Pay per call — or don’t", "If it’s worth it, Centiv pays the x402 quote from your Kite Passport session. If not, it skips. In the simulated example, the cap check declines an over-budget call before signing. In the verified run, Kite Passport declined the third call with session_total_exceeded, and nothing was signed."],
-  ["Stamp and check", "Every buy, skip and decline lands in the audit trail. A quality gate (Reppo-ready; built-in check until a Reppo key is connected) scores the brief before it reaches you."],
+const resources: { label: string; href: string; external?: boolean; note: string }[] = [
+  { label: "Source code", href: GITHUB_REPO, external: true, note: "Public repo on GitHub, MIT licence" },
+  { label: "Open the app", href: "/app", note: "Ask your own question, payments simulated" },
+  { label: "Run the 30-second demo", href: "/app?demo=ab", note: "One paid call, then one declined" },
+  { label: "Evidence JSON", href: "/api/evidence", note: "The verified run, checked against Base" },
 ];
-
-const auditRows = [
-  { d: "spend" as const, call: "Perp funding history · 7d", amt: "−$0.18", left: "$0.32", v: "accept" as const, s: 0.86, r: "sim_5709…4f8" },
-  { d: "skip" as const, call: "Social sentiment scrape", amt: "$0.12", left: "$0.32", v: "accept" as const, s: 0.86, r: "—" },
-  { d: "decline" as const, call: "Order-book depth · 1-min", amt: "$0.35", left: "$0.32", v: "revise" as const, s: 0.64, r: "not signed" },
-];
-
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-ink">
-      {/* Floating nav: wordmark left, sage pill centre, icon pill + olive CTA right */}
-      <header className="fixed inset-x-0 top-0 z-40">
-        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
+        Skip to content
+      </a>
+      <header className="fixed inset-x-0 top-0 z-40 bg-[rgba(255,249,240,0.86)] backdrop-blur-sm">
+        <div className="mx-auto flex h-[64px] max-w-[1180px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
           <Link href="/" aria-label="Centiv home" className="shrink-0 rounded-lg">
             <CentivWordmark size={22} />
           </Link>
-          <nav aria-label="Main" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full px-2 py-1.5 text-[13.5px] font-medium lg:flex">
+          <nav aria-label="Main" className="hidden items-center gap-1 text-[14px] font-medium lg:flex">
             {[
-              ["#verified-run", "Verified run"],
-              ["#buys", "What it buys"],
+              ["#verified-run", "Proof"],
               ["#how", "How it works"],
-              ["#cap", "Your cap"],
-              ["#audit", "Audit trail"],
+              ["#try", "Try it"],
+              ["#real", "What’s real"],
             ].map(([h, l]) => (
-              <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-1.5 text-bone transition hover:bg-[#DCE4C8]">
+              <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-2 text-mute transition hover:bg-[#E8EDD8] hover:text-bone">
                 {l}
               </a>
             ))}
           </nav>
-          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
-            <a href="#verified-run" className="whitespace-nowrap rounded-full px-2 py-1.5 text-[13.5px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
-              Verified run
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-[#E8EDD8] lg:hidden">
+              Proof
             </a>
-            <div className="pill-sage hidden items-center gap-0.5 rounded-full p-1 xl:flex">
-              <Link href="/app?demo=ab" aria-label="Run the demo" title="Run the demo" className="grid h-8 w-8 place-items-center rounded-full text-mute transition hover:bg-[#DCE4C8] hover:text-bone">
-                <Play />
-              </Link>
-              <a href="#audit" aria-label="See the audit trail" title="See the audit trail" className="grid h-8 w-8 place-items-center rounded-full text-mute transition hover:bg-[#DCE4C8] hover:text-bone">
-                <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="M3 2.5h10v11H3zM5.5 6h5M5.5 8.5h5M5.5 11h3" stroke="currentColor" strokeWidth="1.25" fill="none" strokeLinecap="round" />
-                </svg>
-              </a>
-            </div>
             <a
               href={GITHUB_REPO}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Centiv source on GitHub"
               title="Source on GitHub"
-              className="hidden h-10 w-10 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
+              className="hidden h-11 w-11 place-items-center rounded-full text-mute transition hover:bg-[#E8EDD8] hover:text-bone sm:grid"
             >
-              <GitHubMark size={16} />
+              <GitHubMark size={17} />
             </a>
-            <Link href="/app" className="pill pill-olive h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
-              <span className="sm:hidden">Open app</span>
-              <span className="hidden sm:inline">Open the app</span> <NE />
+            <Link href="/app" className="pill pill-olive h-10 shrink-0 whitespace-nowrap px-4 text-[14px] sm:px-5">
+              Open the app <NE />
             </Link>
           </div>
         </div>
       </header>
 
-      <main>
-        {/* Hero — stacked and centred over the ambient ledger lines */}
-        <section className="relative overflow-hidden pb-16 pt-[150px] md:pt-[176px]" aria-labelledby="landing-title">
+      <main id="main">
+        {/* 1. Hero: what it is, plus the proof hook */}
+        <section className="relative overflow-hidden pb-14 pt-[120px] md:pb-20 md:pt-[160px]" aria-labelledby="landing-title">
           <LedgerField />
-          <div className="relative mx-auto flex max-w-[980px] flex-col items-center px-5 text-center">
-            <p className="badge-live rise">
-              SERV Hackathon 02 · Kite track <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--color-live)]" />
-            </p>
+          <div className="relative mx-auto flex max-w-[960px] flex-col items-center px-5 text-center">
+            <p className="badge-live rise">SERV Hackathon 02 · Kite track</p>
             <h1
               id="landing-title"
-              className="rise mt-6 text-[44px] font-normal leading-[1.08] tracking-[-0.04em] text-bone sm:text-[62px] lg:text-[76px]"
+              className="rise mt-6 text-[42px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:text-[60px] lg:text-[72px]"
               style={{ animationDelay: "90ms" }}
             >
               Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport.
             </h1>
-            <p className="rise mt-6 max-w-[540px] text-[16.5px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
-              A research agent that buys data per call, inside a cap you set.
+            <p className="rise mt-6 max-w-[560px] text-[17px] leading-[1.6] text-mute md:text-[18px]" style={{ animationDelay: "180ms" }}>
+              Centiv is a research agent that buys data one call at a time, inside a spending cap you approve. When the cap is
+              reached, it stops.
             </p>
-            <div className="rise mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-3" style={{ animationDelay: "270ms" }}>
-              <a href="#verified-run" className={olive}>
-                See the verified run
+            <div className="rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2" style={{ animationDelay: "270ms" }}>
+              <a href="#verified-run" className={primary}>
+                See the proof
               </a>
-              <Link
-                href="/app?demo=ab"
-                className="text-[14px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent"
-              >
+              <Link href="/app?demo=ab" className={textLink}>
                 Try the demo
               </Link>
             </div>
-            <div className="rise mt-6 w-full max-w-[720px]" style={{ animationDelay: "330ms" }}>
+            <a href="#real" className="rise mt-6 rounded-lg px-2 py-1 transition hover:opacity-80" style={{ animationDelay: "330ms" }}>
               <Suspense fallback={<StatusStripFallback variant="line" />}>
                 <StatusStripServer variant="line" />
               </Suspense>
-            </div>
+            </a>
           </div>
         </section>
 
-        {/* Verified live run — real on-chain proof, replayed */}
-        <div className="mx-auto max-w-[1140px] px-5 pb-16 md:px-8">
-          <VerifiedRun>
-            <Suspense fallback={<StatusStripFallback className="mt-5" />}>
-              <StatusStripServer className="mt-5" align="start" />
-            </Suspense>
-          </VerifiedRun>
+        {/* 2. Proof: the verified live run */}
+        <div className="mx-auto max-w-[1080px] px-4 pb-20 sm:px-5 md:px-8 md:pb-28">
+          <VerifiedRun collapseReplies />
         </div>
 
-        {/* Simulated example — how a run decides, clearly labelled */}
-        <section id="how-it-decides" className="scroll-mt-24" aria-labelledby="decides-title">
-          <div className="mx-auto max-w-[720px] px-5 pb-16 md:px-8">
-            <RunPreview />
-          </div>
-        </section>
-
-        {/* What it buys */}
-        <section id="buys" className="scroll-mt-24" aria-labelledby="buys-title">
-          <div className="mx-auto grid max-w-[1140px] items-center gap-14 px-5 py-28 md:px-8 lg:grid-cols-[1.05fr_0.95fr]">
-            <Reveal className="card-gold order-2 p-6 sm:p-9 lg:order-1">
-              <LeaderList
-                rows={buys.map((b) => ({ k: b.k, t: b.t, s: b.s, m: `${b.e} · example pricing` }))}
-              />
-            </Reveal>
-            <div className="order-1 lg:order-2">
-              <SectionText label="What Centiv pays for" id="buys-title" title={<>The data a good answer needs, bought <span className="serif-em">by the call</span></>}>
-                No subscriptions and no API keys handed to the agent. Each call is priced on request with an x402 quote and paid in
-                cents from your Passport session.
-              </SectionText>
-            </div>
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section id="how" className="scroll-mt-24" aria-labelledby="how-title">
-          <div className="mx-auto grid max-w-[1140px] items-center gap-14 px-5 py-28 md:px-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <SectionText label="How a paid call works" id="how-title" title={<>Four steps, every time it <span className="serif-em">reaches for data</span></>}>
-              SERV Reasoning weighs each call against what’s left of your budget. Kite Passport holds the line. A quality gate
-              (Reppo-ready; built-in check until a Reppo key is connected) scores the answer before it reaches you.
-            </SectionText>
-            <Reveal className="card-gold p-6 sm:p-9">
-              <LeaderList
-                rows={steps.map(([t, s], i) => ({ k: (["search", "weigh", "pay", "stamp"] as const)[i], t: `${i + 1}. ${t}`, s }))}
-              />
-            </Reveal>
-          </div>
-        </section>
-
-        {/* The cap */}
-        <section id="cap" className="scroll-mt-24" aria-labelledby="cap-title">
-          <div className="mx-auto grid max-w-[1140px] items-center gap-14 px-5 py-28 md:px-8 lg:grid-cols-[1.05fr_0.95fr]">
-            <Reveal className="card-gold order-2 p-6 sm:p-8 lg:order-1">
-              <p className="num text-[11px] uppercase tracking-[0.14em] text-gold-deep">Passport check</p>
-              <p className="mt-3 text-[22px] font-normal tracking-[-0.025em]">Buy this call for $0.35?</p>
-              <p className="mt-1 text-[13px] text-dim">Order-book depth · 1-min · 4 venues</p>
-              <ul className="mt-6 grid gap-2 sm:grid-cols-3">
-                {[
-                  ["Per-call cap", "0.35 > 0.20", false],
-                  ["Budget left", "0.35 > 0.32", false],
-                  ["Time window", "28 min left", true],
-                ].map(([l, d, ok]) => (
-                  <li key={l as string} className={`rounded-2xl border bg-white px-3.5 py-2.5 text-[12px] ${ok ? "border-[rgba(218,161,57,0.4)]" : "border-stop/45"}`}>
-                    <span className="text-dim">{l}</span>
-                    <span className={`num mt-0.5 block ${ok ? "text-bone" : "text-stop"}`}>
-                      {ok ? "✓" : "✕"} {d}
+        {/* 3. How it works */}
+        <section id="how" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="how-title">
+          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+            <SectionHead label="How it works" id="how-title" title={<>Three steps, every time it <span className="serif-em">reaches for data</span></>} />
+            <ol className="mt-10 grid gap-4 md:grid-cols-3">
+              {steps.map((s, i) => (
+                <Reveal as="li" key={s.t} delay={i * 90} className="card-gold flex flex-col p-6">
+                  <div className="flex items-center justify-between">
+                    <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(72,92,17,0.45)] bg-white text-cent">
+                      <StepIcon kind={s.k} />
                     </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-5 flex items-center gap-4 rounded-2xl border border-stop/35 bg-white p-4">
-                <Nib size={52} mood="stop" />
-                <div>
-                  <p className="text-[15px] font-semibold text-stop">Declined — over the per-transaction cap.</p>
-                  <p className="mt-0.5 text-[13px] text-mute">The cap check declined it before signing. Centiv answers from the data it already bought, and says so.</p>
-                </div>
-              </div>
-            </Reveal>
-            <div className="order-1 lg:order-2">
-              <SectionText label="And it can stop" id="cap-title" title={<>You hold the cap. Passport <span className="serif-em">enforces it.</span></>}>
-                Approve one spending session with your passkey. Centiv can’t go past it. In the example here, the cap check
-                declines the call before anything is signed. In the verified run, Kite Passport declined the third call with
-                session_total_exceeded — nothing was signed — and the answer says what it couldn’t buy.
-              </SectionText>
-              <Reveal delay={120}>
-                <dl className="mt-8 flex flex-wrap gap-2.5">
-                  {[
-                    ["Budget", "$0.50"],
-                    ["Per call", "$0.20"],
-                    ["Window", "30 min"],
-                  ].map(([k, v]) => (
-                    <div key={k} className="pill-chip rounded-full px-4 py-2">
-                      <dt className="num inline text-[11px] uppercase tracking-[0.1em] text-dim">{k}</dt>{" "}
-                      <dd className="fig inline pl-1 text-[16px] text-bone">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
+                    <span className="num text-[12px] text-dim">0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-5 text-[20px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
+                  <p className="mt-2 flex-1 text-[15px] leading-[1.6] text-mute">{s.s}</p>
+                  <p className="num mt-5 text-[11px] uppercase tracking-[0.1em] text-gold-deep">{s.tag}</p>
+                </Reveal>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* 4. Try it: simulated example, clearly labelled */}
+        <section id="try" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="try-title">
+          <div className="mx-auto grid max-w-[1080px] items-center gap-10 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+            <div>
+              <SectionHead label="Try it" id="try-title" title={<>Ask your own question. <span className="serif-em">No money moves.</span></>}>
+                <p>
+                  In the app, you set a cap, ask a research question and watch Centiv buy, skip or decline each data call. SERV
+                  Reasoning makes the decisions. Payments are simulated, so visitors never spend anything.
+                </p>
+              </SectionHead>
+              <Reveal delay={120} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
+                <Link href="/app?demo=ab" className={primary}>
+                  Run the 30-second demo <NE />
+                </Link>
+                <Link href="/app" className={textLink}>
+                  Ask your own question
+                </Link>
               </Reveal>
             </div>
+            <Reveal delay={120}>
+              <ExampleRun />
+            </Reveal>
           </div>
         </section>
 
-        {/* Audit */}
-        <section id="audit" className="mx-auto max-w-[1140px] scroll-mt-24 px-5 py-28 md:px-8" aria-labelledby="audit-title">
-          <Reveal className="mx-auto max-w-[640px] text-center">
-            <p className="text-[14px] font-medium text-cent">The audit trail</p>
-            <h2 id="audit-title" className="mt-3 text-[36px] font-normal leading-[1.1] tracking-[-0.035em] md:text-[46px]">
-              Every cent, <span className="serif-em">stamped</span>
-            </h2>
-            <p className="mt-4 text-[16px] leading-[1.6] text-mute">
-              The decision, the amount, what was left, the receipt, and how the quality gate scored the answer it fed.
-            </p>
-            <p className="mt-3 text-[13.5px] leading-[1.55] text-dim">
-              Each run gets its own quality-gate score (built-in check, simulated), so a 0.86 Accept and a 0.64 Revise belong
-              to different example runs, not the same brief.
-            </p>
-            <p className="mt-4 flex justify-center"><ProvenanceBadge p="simulated" /></p>
-          </Reveal>
-          <Reveal delay={120} className="mt-12 overflow-x-auto rounded-[24px] border border-[rgba(218,161,57,0.55)] bg-white">
-            <table className="w-full min-w-[760px] text-left">
-              <caption className="sr-only">Example audit trail</caption>
-              <thead>
-                <tr className="num border-b border-[rgba(218,161,57,0.35)] text-[10.5px] uppercase tracking-[0.12em] text-dim">
-                  <th scope="col" className="w-12 py-3.5 pl-6"><span className="sr-only">Stamp</span></th>
-                  <th scope="col" className="px-3 py-3.5 font-normal">Call</th>
-                  <th scope="col" className="px-3 py-3.5 font-normal">Decision</th>
-                  <th scope="col" className="px-3 py-3.5 text-right font-normal">Amount</th>
-                  <th scope="col" className="px-3 py-3.5 text-right font-normal">Remaining</th>
-                  <th scope="col" className="px-3 py-3.5 font-normal">Quality gate</th>
-                  <th scope="col" className="px-6 py-3.5 font-normal">Receipt</th>
-                </tr>
-              </thead>
-              <tbody>
-                {auditRows.map((r) => (
-                  <tr key={r.call} className="border-b border-[rgba(218,161,57,0.2)] last:border-0">
-                    <td className="py-4 pl-6">
-                      <Stamp size={28} className={`stamp-in ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`} notch={r.d === "spend" ? "var(--color-cent)" : undefined} />
-                    </td>
-                    <td className="px-3 py-4 text-[15px] font-medium tracking-[-0.015em]">{r.call}</td>
-                    <td className="px-3 py-4"><DecisionTag d={r.d} /></td>
-                    <td className={`fig px-3 py-4 text-right text-[16px] ${r.d === "spend" ? "" : r.d === "decline" ? "text-stop line-through" : "text-dim line-through"}`}>{r.amt}</td>
-                    <td className="fig px-3 py-4 text-right text-[16px]">{r.left}</td>
-                    <td className="px-3 py-4">
-                      <div className="flex flex-col items-start gap-1">
-                        <VerdictTag v={r.v} score={r.s} />
-                        <GateSourceLabel source="heuristic" />
-                      </div>
-                    </td>
-                    <td className={`num px-6 py-4 text-[12px] text-dim ${r.r.startsWith("sim_") ? "receipt-sim" : ""}`}>{r.r}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Reveal>
-          <Reveal delay={200} className="mt-8 flex justify-center">
-            <Link href="/app?demo=ab" className={olive}>
-              Watch it fill in <NE />
-            </Link>
-          </Reveal>
+        {/* 5. What's real and what's simulated */}
+        <section id="real" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="real-title">
+          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+            <SectionHead label="Honest labels" id="real-title" title={<>What’s real, and what’s <span className="serif-em">simulated</span></>}>
+              <p>Every result on this site carries one of three labels.</p>
+            </SectionHead>
+            <Reveal className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[13.5px] text-mute">
+              <span className="inline-flex items-center gap-2"><ProvenanceBadge p="live" short title="Live · real calls" /> real calls, right now</span>
+              <span className="inline-flex items-center gap-2"><ProvenanceBadge p="replay" short /> a real past run, replayed</span>
+              <span className="inline-flex items-center gap-2"><ProvenanceBadge p="simulated" short /> no real money or service</span>
+            </Reveal>
+            <Reveal delay={100} className="mt-8">
+              <Suspense fallback={<RealVsSimulatedFallback />}>
+                <RealVsSimulated />
+              </Suspense>
+            </Reveal>
+          </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="relative overflow-hidden py-32" aria-labelledby="cta-title">
-          <LedgerField />
-          <Reveal className="relative mx-auto flex max-w-[720px] flex-col items-center px-5 text-center">
-            <CentivMark size={44} />
-            <h2 id="cta-title" className="mt-6 text-[38px] font-normal leading-[1.1] tracking-[-0.035em] md:text-[54px]">
-              Ask something that might be <span className="serif-em">worth a call</span>
-            </h2>
-            <p className="mt-4 text-[16px] text-mute">Approve a cap, ask a question, and watch every cent get accounted for.</p>
-            <p className="mt-3 max-w-[520px] text-[15px] leading-[1.55] text-dim">
-              For teams and agents that need data-backed answers without handing an AI an open wallet.
-            </p>
-            <div className="mt-9 flex flex-wrap justify-center gap-3">
-              <Link href="/app" className={oliveLg}>
-                Open the app <NE />
-              </Link>
-              <Link href="/app?demo=ab" className={oliveLg}>
-                Run the demo <NE />
-              </Link>
-            </div>
-          </Reveal>
+        {/* 6. Built with, and links */}
+        <section id="built" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="built-title">
+          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+            <SectionHead label="Built with" id="built-title" title={<>The pieces, and where to <span className="serif-em">check them</span></>} />
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {builtWith.map((b, i) => (
+                <Reveal as="li" key={b.name} delay={i * 70}>
+                  <a
+                    href={b.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex h-full flex-col rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white p-5 transition hover:border-cent/50"
+                  >
+                    <span className="flex items-center justify-between text-[16px] font-medium tracking-[-0.015em] text-bone">
+                      {b.name}
+                      <span className="text-dim transition group-hover:text-cent"><NE /></span>
+                    </span>
+                    <span className="mt-2 text-[14px] leading-[1.55] text-mute">{b.role}</span>
+                  </a>
+                </Reveal>
+              ))}
+            </ul>
+            <Reveal delay={120} className="mt-6">
+              <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
+                {resources.map((r) => {
+                  const inner = (
+                    <>
+                      <span className="flex items-center gap-2.5 text-[15px] font-medium text-bone">
+                        {r.label === "Source code" && <GitHubMark size={16} />}
+                        {r.label}
+                      </span>
+                      <span className="flex items-center gap-3 text-[13.5px] text-dim">
+                        <span className="hidden sm:inline">{r.note}</span>
+                        <span className="text-cent"><NE /></span>
+                      </span>
+                    </>
+                  );
+                  const cls = "flex min-h-14 items-center justify-between gap-4 px-5 py-3 transition hover:bg-[#fffaf0] sm:px-6";
+                  return (
+                    <li key={r.label}>
+                      {r.external ? (
+                        <a href={r.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                      ) : r.href.startsWith("/api") ? (
+                        <a href={r.href} className={cls}>{inner}</a>
+                      ) : (
+                        <Link href={r.href} className={cls}>{inner}</Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </Reveal>
+          </div>
         </section>
       </main>
 
       <footer className="border-t border-[rgba(201,146,46,0.3)]">
-        <div className="mx-auto flex max-w-[1140px] flex-col gap-5 px-5 py-10 md:px-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-4">
-              <CentivWordmark size={18} />
-              <a
-                href={GITHUB_REPO}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg text-[13.5px] text-mute transition hover:text-bone"
-              >
-                <GitHubMark size={14} />
-                Source on GitHub
-              </a>
-            </div>
-            <a
-              href="https://gokite.ai/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 rounded-lg text-[13.5px] text-mute transition hover:text-bone"
-            >
-              <span>Built on</span>
-              {/* Official Kite wordmark from https://gokite.ai/images/Kite_Logo.svg — attribution only */}
-              <img src="/kite-logo.svg" alt="Kite" width={72} height={28} className="h-5 w-auto" />
-              <span className="text-dim">— Passport sessions and x402 payments</span>
-            </a>
+        <div className="mx-auto flex max-w-[1080px] flex-col gap-4 px-5 py-10 md:flex-row md:items-center md:justify-between md:px-8">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <CentivWordmark size={18} />
+            <span className="text-[13px] text-dim">SERV Hackathon 02 · Kite track</span>
           </div>
-          <p className="num text-[11px] uppercase tracking-[0.08em] text-dim">
-            SERV Hackathon 02 · Kite track · Visitors’ questions use live SERV reasoning with Simulated payments · Verified run is a Replay of real Base USDC payments.
-          </p>
+          <a
+            href="https://gokite.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2.5 rounded-lg text-[13.5px] text-mute transition hover:text-bone"
+          >
+            <span>Built on</span>
+            {/* Official Kite wordmark, used as an attribution credit only */}
+            <img src="/kite-logo.svg" alt="Kite" width={72} height={28} className="h-5 w-auto" />
+            <span className="text-dim">Passport</span>
+          </a>
         </div>
       </footer>
     </div>

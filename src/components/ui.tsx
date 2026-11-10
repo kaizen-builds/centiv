@@ -123,9 +123,9 @@ const provText: Record<Provenance, string> = {
 const provShort: Record<Provenance, string> = { live: "Live", simulated: "Simulated", replay: "Replay" };
 
 /** The three provenance badges. Every receipt and run in Centiv carries exactly one. */
-export function ProvenanceBadge({ p, short = false, className = "" }: { p: Provenance; short?: boolean; className?: string }) {
+export function ProvenanceBadge({ p, short = false, className = "", title }: { p: Provenance; short?: boolean; className?: string; title?: string }) {
   return (
-    <span className={`${provClass[p]} ${className}`} title={provText[p]}>
+    <span className={`${provClass[p]} ${className}`} title={title ?? provText[p]}>
       {p === "simulated" ? (
         <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.6" stroke="currentColor" strokeWidth="1.25" fill="none" strokeDasharray="2 1.6" /></svg>
       ) : p === "replay" ? (

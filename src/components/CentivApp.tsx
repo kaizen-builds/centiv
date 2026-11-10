@@ -406,13 +406,13 @@ export default function CentivApp() {
         />
         <Hero session={session} spent={spent} audit={audit} onRunDemo={runDemo} />
 
-        <section className="mt-6 grid gap-5 lg:grid-cols-12" aria-label="Agent console">
-          <div className="lg:col-span-5">
+        <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-12" aria-label="Agent console">
+          <div className="min-w-0 lg:col-span-5">
             <div className="lg:sticky lg:top-20">
               <SessionPanel session={session} spent={spent} onChange={configure} onApprove={guard(approve)} onRevoke={revoke} busy={busy} />
             </div>
           </div>
-          <div className="flex flex-col gap-5 lg:col-span-7">
+          <div className="flex min-w-0 flex-col gap-5 lg:col-span-7">
             <AskPanel
               value={question}
               onChange={setQuestion}

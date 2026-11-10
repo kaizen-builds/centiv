@@ -12,11 +12,42 @@ const date = (wat: string) => wat.split(", ")[0] ?? wat;
  * src/data/verified-run.json, verified against Base mainnet. Badged Replay — this
  * section never spends; visitors click through to public on-chain proof.
  */
-export default function VerifiedRun({ compact = false, id = "verified-run", children }: { compact?: boolean; id?: string; children?: ReactNode }) {
+export default function VerifiedRun({
+  compact = false,
+  collapseReplies = false,
+  id = "verified-run",
+  children,
+}: {
+  compact?: boolean;
+  /** Tuck the paid replies behind a disclosure so the proof rows stay scannable. */
+  collapseReplies?: boolean;
+  id?: string;
+  children?: ReactNode;
+}) {
   const r = VERIFIED_RUN;
   const p = r.passport;
   const caps = p.caps;
   const ttlMin = Math.round(caps.ttl_seconds / 60);
+  const replies = (
+    <div className="grid gap-4 md:grid-cols-2">
+      {paidCalls.map((c) => (
+        <figure key={c.tx_hash} className="rounded-[14px] border border-[rgba(201,146,46,0.35)] bg-[#fffdf8] p-5">
+          <figcaption className="flex flex-wrap items-center justify-between gap-2">
+            <span className="num text-[10.5px] uppercase tracking-[0.12em] text-gold-deep">Paid reply · “{c.topic}”</span>
+            <span className="num text-[10.5px] text-dim">{c.reply.source_count} sources</span>
+          </figcaption>
+          <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.6] text-mute">
+            {(compact ? c.reply.excerpt.slice(0, 1) : c.reply.excerpt).map((para) => (
+              <p key={para.slice(0, 40)}>{para.length > 520 ? `${para.slice(0, 520).replace(/\s+\S*$/, "")}…` : para}</p>
+            ))}
+          </blockquote>
+          <p className="mt-3 border-t border-[rgba(201,146,46,0.25)] pt-2 text-[11.5px] text-dim">
+            Source: Otto AI ({c.reply.attribution.replace(/[[\]]/g, "")}). Excerpt trimmed by Centiv. The claims are Otto AI’s and Centiv has not verified them.
+          </p>
+        </figure>
+      ))}
+    </div>
+  );
   return (
     <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24">
       <div className="card-gold relative overflow-hidden p-6 sm:p-9">
@@ -27,25 +58,25 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
           </span>
         </div>
 
-        <h2 id={`${id}-title`} className={`mt-5 font-normal leading-[1.08] tracking-[-0.035em] text-bone ${compact ? "text-[32px] md:text-[40px]" : "text-[36px] md:text-[50px]"}`}>
+        <h2 id={`${id}-title`} className={`mt-5 font-normal leading-[1.08] tracking-[-0.035em] text-bone ${compact ? "text-[32px] md:text-[40px]" : "text-[32px] md:text-[44px]"}`}>
           Verified live run: two calls paid, <span className="serif-em">the third declined</span>
         </h2>
         <p className="mt-4 max-w-[680px] text-[15.5px] leading-[1.6] text-mute">
-          This is a replay of a real run. The owner approved a tiny Kite Passport session with a passkey. Centiv bought two
-          Otto AI news reports for $0.001 each, paid in real USDC, and Passport refused the third call at the cap. Click
-          either receipt to check it on Basescan. Nothing on this page spends money.
+          A real run, replayed. The owner approved a small Kite Passport session with a passkey: ${caps.max_amount_per_tx} a
+          call, ${caps.max_total_amount} in total. Centiv paid Otto AI twice in USDC on Base. On the third call, Passport
+          refused and no money moved. Both payments are on Basescan. This page never spends.
         </p>
         {children}
 
         {/* Session strip */}
-        <dl className="mt-7 grid gap-px overflow-hidden rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-[rgba(201,146,46,0.3)] sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-7 grid gap-px overflow-hidden rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-[rgba(201,146,46,0.3)] sm:grid-cols-3">
           {[
             ["Passport session", <span key="s" className="num break-all text-[12.5px]">{p.session_id}</span>],
-            ["Caps the owner approved", <span key="c" className="fig text-[15px]">${caps.max_amount_per_tx} per call · ${caps.max_total_amount} total · {ttlMin} min</span>],
+            ["Caps, set with a passkey", <span key="c" className="fig text-[15px]">${caps.max_amount_per_tx} per call · ${caps.max_total_amount} total · {ttlMin} min</span>],
             ["Scope", <span key="sc" className="num text-[12.5px]">{p.scope.method} {p.scope.host}{p.scope.path_prefix}</span>],
-            ["Approved", <span key="a" className="fig text-[15px]">{time(p.approved_at_wat)} · passkey</span>],
+            ["Approved", <span key="a" className="fig text-[15px]">{time(p.approved_at_wat)}</span>],
           ].map(([k, v]) => (
-            <div key={k as string} className="bg-white px-4 py-3.5">
+            <div key={k as string} className={`bg-white px-4 py-3.5 ${k === "Passport session" ? "sm:col-span-3" : ""}`}>
               <dt className="text-[11.5px] text-dim">{k}</dt>
               <dd className="mt-1.5 text-bone">{v}</dd>
             </div>
@@ -55,7 +86,7 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
         {/* The three calls */}
         <ol className="mt-6 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
           {paidCalls.map((c) => (
-            <li key={c.tx_hash} className="grid gap-3 px-4 py-4 sm:grid-cols-[34px_1fr_auto] sm:items-start sm:px-5">
+            <li key={c.tx_hash} className="grid grid-cols-[30px_minmax(0,1fr)] items-start gap-x-3 gap-y-3 px-4 py-4 sm:grid-cols-[34px_minmax(0,1fr)_auto] sm:px-5">
               <Stamp size={30} className="stamp-in text-gold" notch="var(--color-cent)" label="Bought" />
               <div className="min-w-0">
                 <p className="num text-[10.5px] uppercase tracking-[0.12em] text-dim">Call {c.n} · topic “{c.topic}”</p>
@@ -67,7 +98,7 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
                   <a className="underline decoration-dotted underline-offset-2 hover:text-bone" href={basescanAddress(c.onchain.usdc_transfer.to)} target="_blank" rel="noopener noreferrer">{short(c.onchain.usdc_transfer.to)}</a> (Otto AI) · session spent ${c.session_spent_after_usdc} of ${caps.max_total_amount}
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-2 sm:items-end">
+              <div className="col-start-2 flex flex-wrap items-center gap-2 sm:col-start-auto sm:flex-col sm:items-end">
                 <DecisionTag d="spend" />
                 <a
                   href={c.basescan_url}
@@ -82,7 +113,7 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
             </li>
           ))}
           {declinedCall && (
-            <li className="row-stop grid gap-3 bg-stop/[0.05] px-4 py-4 sm:grid-cols-[34px_1fr_auto] sm:items-start sm:px-5">
+            <li className="row-stop grid grid-cols-[30px_minmax(0,1fr)] items-start gap-x-3 gap-y-3 bg-stop/[0.05] px-4 py-4 sm:grid-cols-[34px_minmax(0,1fr)_auto] sm:px-5">
               <Stamp size={30} className="stamp-in text-stop" label="Declined" />
               <div className="min-w-0">
                 <p className="num text-[10.5px] uppercase tracking-[0.12em] text-dim">Call {declinedCall.n} · topic “{declinedCall.topic}”</p>
@@ -91,7 +122,7 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
                   <span className="rounded bg-stop/10 px-1.5 py-0.5 text-stop">{declinedCall.error_code}</span> · “{declinedCall.error}”
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-2 sm:items-end">
+              <div className="col-start-2 flex flex-wrap items-center gap-2 sm:col-start-auto sm:flex-col sm:items-end">
                 <DecisionTag d="decline" />
                 <span className="num text-[12px] text-dim">no transaction</span>
               </div>
@@ -100,24 +131,17 @@ export default function VerifiedRun({ compact = false, id = "verified-run", chil
         </ol>
 
         {/* What Centiv bought */}
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {paidCalls.map((c) => (
-            <figure key={c.tx_hash} className="rounded-[14px] border border-[rgba(201,146,46,0.35)] bg-[#fffdf8] p-5">
-              <figcaption className="flex flex-wrap items-center justify-between gap-2">
-                <span className="num text-[10.5px] uppercase tracking-[0.12em] text-gold-deep">Paid reply · “{c.topic}”</span>
-                <span className="num text-[10.5px] text-dim">{c.reply.source_count} sources</span>
-              </figcaption>
-              <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.6] text-mute">
-                {(compact ? c.reply.excerpt.slice(0, 1) : c.reply.excerpt).map((para) => (
-                  <p key={para.slice(0, 40)}>{para.length > 520 ? `${para.slice(0, 520).replace(/\s+\S*$/, "")}…` : para}</p>
-                ))}
-              </blockquote>
-              <p className="mt-3 border-t border-[rgba(201,146,46,0.25)] pt-2 text-[11.5px] text-dim">
-                Source: Otto AI ({c.reply.attribution.replace(/[[\]]/g, "")}). Excerpt trimmed by Centiv. The claims are Otto AI’s and Centiv has not verified them.
-              </p>
-            </figure>
-          ))}
-        </div>
+        {collapseReplies ? (
+          <details className="group mt-6 rounded-[14px] border border-[rgba(201,146,46,0.35)] bg-[#fffdf8]">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-[14px] font-medium text-bone [&::-webkit-details-marker]:hidden">
+              What the two paid calls returned
+              <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">+</span>
+            </summary>
+            <div className="px-4 pb-4 sm:px-5 sm:pb-5">{replies}</div>
+          </details>
+        ) : (
+          <div className="mt-6">{replies}</div>
+        )}
 
         <p className="mt-6 text-[12px] leading-[1.6] text-dim">
           Payments settled in USDC on Base mainnet ({r.settlement.caip2}). Kite Passport enforced the session caps. Each
