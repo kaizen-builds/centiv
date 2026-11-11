@@ -7,6 +7,15 @@ import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls } from "@/lib/ve
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const time = (wat: string) => wat.split(", ")[1] ?? wat; // "13:48:06 WAT"
 const date = (wat: string) => wat.split(", ")[0] ?? wat;
+const utcClock = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const hh = String(d.getUTCHours()).padStart(2, "0");
+  const mm = String(d.getUTCMinutes()).padStart(2, "0");
+  const ss = String(d.getUTCSeconds()).padStart(2, "0");
+  return `${hh}:${mm}:${ss} UTC`;
+};
+const clocks = (wat: string, utc: string) => `${time(wat)} · ${utcClock(utc)}`;
 
 /**
  * Replay of Centiv's real, Passport-capped x402 run. Everything here is read from
@@ -93,7 +102,7 @@ export default function VerifiedRun({
               <dt className="text-dim">Passport session</dt>
               <dd className="num mb-2 break-all text-bone sm:mb-0">{p.session_id}</dd>
               <dt className="text-dim">Approved</dt>
-              <dd className="fig mb-2 text-bone sm:mb-0">{time(p.approved_at_wat)}</dd>
+              <dd className="fig mb-2 text-bone sm:mb-0">{clocks(p.approved_at_wat, p.approved_at_utc)}</dd>
               <dt className="text-dim">Scope</dt>
               <dd className="num mb-2 break-all text-bone sm:mb-0">
                 {p.scope.method} {p.scope.host}{p.scope.path_prefix}
@@ -123,7 +132,7 @@ export default function VerifiedRun({
             ["Passport session", <span key="s" className="num break-all text-[12.5px]">{p.session_id}</span>],
             ["Caps, set with a passkey", <span key="c" className="fig text-[15px]">${caps.max_amount_per_tx} per call · ${caps.max_total_amount} total · {ttlMin} min</span>],
             ["Scope", <span key="sc" className="num text-[12px]"><span className="whitespace-nowrap">{p.scope.method} {p.scope.host}</span><wbr /><span className="whitespace-nowrap">{p.scope.path_prefix}</span></span>],
-            ["Approved", <span key="a" className="fig text-[15px]">{time(p.approved_at_wat)}</span>],
+            ["Approved", <span key="a" className="fig text-[15px]">{clocks(p.approved_at_wat, p.approved_at_utc)}</span>],
           ].map(([k, v]) => (
             <div key={k as string} className={`bg-white px-4 py-3.5 ${k === "Passport session" ? "sm:col-span-3" : ""}`}>
               <dt className="text-[11.5px] text-dim">{k}</dt>
@@ -142,7 +151,7 @@ export default function VerifiedRun({
               <div className="min-w-0">
                 <p className="num text-[10.5px] uppercase tracking-[0.12em] text-dim">Call {c.n} · topic “{c.topic}”</p>
                 <p className="mt-1 text-[15px] font-medium tracking-[-0.015em] text-bone">
-                  Paid {c.onchain.usdc_transfer.amount_usdc.toFixed(3)} USDC to Otto AI · block {c.onchain.block.toLocaleString("en-GB")} · {time(c.onchain.timestamp_wat)}
+                  Paid {c.onchain.usdc_transfer.amount_usdc.toFixed(3)} USDC to Otto AI · block {c.onchain.block.toLocaleString("en-GB")} · {clocks(c.onchain.timestamp_wat, c.onchain.timestamp_utc)}
                 </p>
                 {receipts ? (
                   <p className="num mt-1 text-[11.5px] leading-[1.6] text-dim">
@@ -220,7 +229,7 @@ export default function VerifiedRun({
               </span>
             </p>
             <p className="mt-2 text-[12.5px] leading-[1.55] text-dim">
-              Recorded on {date(RECORDED_REPPO.evaluated_at_wat)}. Not a live score of questions visitors ask here.
+              Recorded on {date(RECORDED_REPPO.evaluated_at_wat)}, {clocks(RECORDED_REPPO.evaluated_at_wat, RECORDED_REPPO.evaluated_at_utc)}. Not a live score of questions visitors ask here.
             </p>
           </div>
           <details className="group mt-3 border-t border-[rgba(91,42,78,0.18)]">
@@ -248,7 +257,7 @@ export default function VerifiedRun({
                 <p className="text-[12px] text-dim">{RECORDED_REPPO.brief.sources}</p>
               </div>
               <p className="mt-4 text-[12px] leading-[1.6] text-dim">
-                Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat}. This is a recorded
+                Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat} · {utcClock(RECORDED_REPPO.evaluated_at_utc)}. This is a recorded
                 check of the verified-run brief, not a live score of questions visitors ask on this site.{" "}
                 <a href={RECORDED_REPPO.evidence_path} className="underline underline-offset-2 hover:text-bone">
                   Result JSON
@@ -298,7 +307,7 @@ export default function VerifiedRun({
             </div>
           </details>
           <p className="mt-4 text-[12px] leading-[1.6] text-dim">
-            Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat}. This is a recorded
+            Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat} · {utcClock(RECORDED_REPPO.evaluated_at_utc)}. This is a recorded
             check of the verified-run brief, not a live score of questions visitors ask on this site.{" "}
             <a href={RECORDED_REPPO.evidence_path} className="underline underline-offset-2 hover:text-bone">
               Result JSON

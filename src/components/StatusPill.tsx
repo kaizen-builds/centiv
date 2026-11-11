@@ -10,15 +10,31 @@ export default function StatusPill({ className = "inline-flex" }: { className?: 
 
   useEffect(() => {
     const ctrl = new AbortController();
+    let settled = false;
+    const timer = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      ctrl.abort();
+      setS({ kind: "error" });
+    }, 4000);
     fetch("/api/status", { signal: ctrl.signal, cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((j) =>
-        setS({ kind: "ok", serv: j?.integrations?.serv === "live", replay: Boolean(j?.replay?.available) }),
-      )
+      .then((j) => {
+        if (settled) return;
+        settled = true;
+        setS({ kind: "ok", serv: j?.integrations?.serv === "live", replay: Boolean(j?.replay?.available) });
+      })
       .catch((e) => {
-        if (e?.name !== "AbortError") setS({ kind: "error" });
-      });
-    return () => ctrl.abort();
+        if (settled || e?.name === "AbortError") return;
+        settled = true;
+        setS({ kind: "error" });
+      })
+      .finally(() => window.clearTimeout(timer));
+    return () => {
+      settled = true;
+      window.clearTimeout(timer);
+      ctrl.abort();
+    };
   }, []);
 
   let dot = "bg-[#b9b0a6]";
