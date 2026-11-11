@@ -8,9 +8,8 @@ import Reveal from "./Reveal";
 import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
 import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
 import Faq from "./Faq";
-import HeroProof from "./HeroProof";
 import StatusPill from "./StatusPill";
-import { DecisionTag, ProvenanceBadge, VerdictTag } from "./ui";
+import { DecisionTag, ProvenanceBadge } from "./ui";
 import VerifiedRun from "./VerifiedRun";
 
 const NE = () => (
@@ -82,50 +81,45 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string; tag: string }[]
   },
 ];
 
-const exampleRows: { d: "spend" | "skip" | "decline"; call: string; amount: string; note: string }[] = [
-  { d: "spend", call: "Perp funding history · 7 days", amount: "$0.18", note: "Core evidence. Worth it." },
-  { d: "skip", call: "Social sentiment · 24 h", amount: "$0.12", note: "Would repeat the funding data." },
-  { d: "decline", call: "Order-book depth · 1-min", amount: "$0.35", note: "Over the $0.20 per-call cap." },
+const exampleRows: { d: "spend" | "skip" | "decline"; call: string; amount: string }[] = [
+  { d: "spend", call: "Perp funding · 7 days", amount: "$0.18" },
+  { d: "skip", call: "Social sentiment · 24 h", amount: "$0.12" },
+  { d: "decline", call: "Order-book depth · 1-min", amount: "$0.35" },
 ];
 
-function ExampleRun() {
+/** Hero card: a simulated example of how Centiv decides. The real run lives in the proof section. */
+function HowItDecides({ className = "" }: { className?: string }) {
   return (
-    <div className="card-gold p-5 text-left sm:p-7" aria-label="Example run, simulated">
+    <div className={`card-gold w-full p-3.5 text-left sm:p-6 ${className}`} aria-label="How it decides: a simulated example">
       <div className="flex items-center justify-between gap-3">
-        <p className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">Example run</p>
-        <ProvenanceBadge p="simulated" />
+        <p className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">How it decides</p>
+        <span className="sm:hidden">
+          <ProvenanceBadge p="simulated" short />
+        </span>
+        <span className="hidden sm:inline-flex">
+          <ProvenanceBadge p="simulated" />
+        </span>
       </div>
-      <p className="mt-4 text-[18px] leading-[1.4] tracking-[-0.02em] text-bone">
-        “Are ETH perp funding rates turning negative this week? I need a data-backed brief.”
-      </p>
-      <p className="mt-2 text-[12.5px] text-dim">Example cap: $0.50 total, $0.20 per call.</p>
-      <ul className="mt-4 divide-y divide-[rgba(218,161,57,0.25)] border-y border-[rgba(218,161,57,0.3)]">
+      <ul className="mt-3 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white sm:mt-4">
         {exampleRows.map((r) => (
-          <li key={r.call} className="flex items-start gap-3 py-3.5">
+          <li key={r.call} className="flex items-center gap-2.5 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
             <Stamp
-              size={26}
-              className={`mt-0.5 shrink-0 ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`}
+              size={22}
+              className={`shrink-0 ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`}
               notch={r.d === "spend" ? "var(--color-cent)" : undefined}
             />
-            <div className="min-w-0 flex-1">
-              <p className="text-[14.5px] font-medium tracking-[-0.015em] text-bone">{r.call}</p>
-              <p className="text-[12.5px] text-dim">{r.note}</p>
-            </div>
-            <div className="flex flex-col items-end gap-1.5">
-              <span className={`fig text-[15px] ${r.d === "spend" ? "text-bone" : r.d === "decline" ? "text-stop line-through" : "text-dim line-through"}`}>{r.amount}</span>
-              <DecisionTag d={r.d} />
-            </div>
+            <p className="min-w-0 flex-1 text-[14px] font-medium leading-[1.3] tracking-[-0.015em] text-bone sm:truncate sm:text-[14.5px]">{r.call}</p>
+            <span className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
+              <span className={`fig text-[14.5px] leading-none sm:text-[15px] ${r.d === "spend" ? "text-bone" : r.d === "decline" ? "text-stop line-through" : "text-dim line-through"}`}>
+                {r.amount}
+              </span>
+              <span className="sm:flex sm:w-[86px] sm:justify-end">
+                <DecisionTag d={r.d} />
+              </span>
+            </span>
           </li>
         ))}
       </ul>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[12.5px] text-dim">
-        <span className="inline-flex items-center gap-2">
-          Quality gate (built-in check) <VerdictTag v="accept" score={0.86} />
-        </span>
-        <span>
-          Spent <span className="fig text-[15px] text-bone">$0.18</span> of $0.50
-        </span>
-      </div>
     </div>
   );
 }
@@ -134,7 +128,7 @@ const builtWith: { name: string; role: string; href: string }[] = [
   { name: "Kite Passport", role: "Agent identity and spending caps, approved with a passkey. Enforced the real refusal.", href: "https://docs.gokite.ai/passport" },
   { name: "x402", role: "Pay-per-request payments over HTTP. Each data call carries its own price.", href: "https://docs.gokite.ai/passport/payments" },
   { name: "SERV Reasoning", role: "Decides, call by call, whether paid data is worth what’s left of the budget.", href: "https://docs.openserv.ai/serv-reasoning/api" },
-  { name: "Reppo", role: "Independent check of the verified-run brief: score 86, accept, routed to review. Visitor questions still use a built-in check, labelled Simulated.", href: "https://eval.reppo.xyz/agents.md" },
+  { name: "Reppo", role: "Independent scoring of the verified-run brief. The result sits in the proof, beside the receipts.", href: "https://eval.reppo.xyz/agents.md" },
 ];
 
 const resources: { label: string; href: string; external?: boolean; note: string }[] = [
@@ -191,46 +185,48 @@ export default function Landing() {
       </header>
 
       <main id="main">
-        {/* 1. Hero: what it is, plus the proof hook */}
-        <section className="relative overflow-hidden pb-14 pt-[120px] md:pb-20 md:pt-[160px]" aria-labelledby="landing-title">
+        {/* 1. Hero: what it is, then where to go */}
+        <section className="relative overflow-hidden pb-12 pt-[96px] md:pb-20 md:pt-[160px]" aria-labelledby="landing-title">
           <LedgerField />
-          <div className="relative mx-auto grid max-w-[1180px] items-center gap-12 px-5 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14">
-            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="relative mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] items-center gap-12 px-5 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14">
+            <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
               <p className="badge-live rise">SERV Hackathon 02 · Kite track</p>
               <h1
                 id="landing-title"
-                className="rise mt-6 text-[42px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:text-[60px] lg:text-[64px] xl:text-[68px]"
+                className="rise mt-5 text-balance text-[40px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:mt-6 sm:text-[60px] lg:text-[64px] xl:text-[68px]"
                 style={{ animationDelay: "90ms" }}
               >
-                Two real payments. The third, <span className="serif-em">declined</span> by Kite Passport.
+                Research that pays in cents, and <span className="serif-em whitespace-nowrap">can stop</span>.
               </h1>
-              <p className="rise mt-6 max-w-[560px] text-[17px] leading-[1.6] text-mute md:text-[18px]" style={{ animationDelay: "180ms" }}>
-                Centiv is a research agent that buys data one call at a time, inside a spending cap you approve. When the cap is
-                reached, it stops.
+              <p className="rise mt-4 max-w-[540px] text-pretty text-[16.5px] leading-[1.55] text-mute sm:mt-6 md:text-[18px]" style={{ animationDelay: "180ms" }}>
+                You approve a spending cap. Centiv buys data one call at a time, only when it’s worth what’s left.
               </p>
-              <div className="rise mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:justify-start" style={{ animationDelay: "270ms" }}>
-                <a href="#verified-run" className={primary}>
-                  See the proof
-                </a>
-                <Link href="/app?demo=ab" className={textLink}>
+              <div className="rise mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 sm:mt-9 lg:justify-start" style={{ animationDelay: "270ms" }}>
+                <Link href="/app?demo=ab" className={primary}>
                   Try the demo
                 </Link>
+                <a href="#verified-run" className={textLink}>
+                  See the proof
+                </a>
               </div>
-              <a href="#real" className="rise mt-6 rounded-lg px-2 py-1 transition hover:opacity-80 lg:-ml-2" style={{ animationDelay: "330ms" }}>
+              <div className="rise mt-5 w-full max-w-[460px] sm:mt-8 lg:hidden" style={{ animationDelay: "330ms" }}>
+                <HowItDecides />
+              </div>
+              <a href="#real" className="rise mt-5 rounded-lg px-2 py-1 transition hover:opacity-80 sm:mt-6 lg:-ml-2" style={{ animationDelay: "360ms" }}>
                 <Suspense fallback={<StatusStripFallback variant="line" />}>
                   <StatusStripServer variant="line" className="lg:text-left" />
                 </Suspense>
               </a>
             </div>
             <div className="rise hidden lg:block" style={{ animationDelay: "360ms" }}>
-              <HeroProof />
+              <HowItDecides />
             </div>
           </div>
         </section>
 
         {/* 2. Proof: the verified live run */}
         <div className="mx-auto max-w-[1080px] px-4 pb-20 sm:px-5 md:px-8 md:pb-28">
-          <VerifiedRun collapseReplies />
+          <VerifiedRun collapseReplies receipts />
         </div>
 
         {/* 3. How it works */}
@@ -255,27 +251,22 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 4. Try it: simulated example, clearly labelled */}
+        {/* 4. Try it: CTAs only; the hero card already shows how it decides */}
         <section id="try" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="try-title">
-          <div className="mx-auto grid max-w-[1080px] items-center gap-10 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-            <div>
-              <SectionHead label="Try it" id="try-title" title={<>Ask your own question. <span className="serif-em">No money moves.</span></>}>
-                <p>
-                  In the app, you set a cap, ask a research question and watch Centiv buy, skip or decline each data call. SERV
-                  Reasoning makes the decisions. Payments are simulated, so visitors never spend anything.
-                </p>
-              </SectionHead>
-              <Reveal delay={120} className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <Link href="/app?demo=ab" className={primary}>
-                  Run the 30-second demo <NE />
-                </Link>
-                <Link href="/app" className={textLink}>
-                  Ask your own question
-                </Link>
-              </Reveal>
-            </div>
-            <Reveal delay={120}>
-              <ExampleRun />
+          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+            <SectionHead center label="Try it" id="try-title" title={<>Ask your own question. <span className="serif-em whitespace-nowrap">No money moves.</span></>}>
+              <p>
+                In the app, you set a cap, ask a research question and watch Centiv buy, skip or decline each data call. SERV
+                Reasoning makes the decisions. Payments are simulated, so visitors never spend anything.
+              </p>
+            </SectionHead>
+            <Reveal delay={120} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+              <Link href="/app?demo=ab" className={primary}>
+                Run the 30-second demo <NE />
+              </Link>
+              <Link href="/app" className={textLink}>
+                Ask your own question
+              </Link>
             </Reveal>
           </div>
         </section>
@@ -377,7 +368,8 @@ export default function Landing() {
             className="inline-flex min-h-11 items-center gap-2.5 rounded-lg text-[13.5px] text-mute transition hover:text-bone"
           >
             <span>Built on</span>
-            {/* Official Kite wordmark, used as an attribution credit only */}
+            {/* Official Kite wordmark, used as an attribution credit only. A small static SVG, so next/image adds nothing. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/kite-logo.svg" alt="Kite" width={72} height={28} className="h-5 w-auto" />
             <span className="text-dim">Passport</span>
           </a>

@@ -24,7 +24,7 @@ const serif = Newsreader({
 export const metadata: Metadata = {
   title: "Centiv — research that pays in cents, and can stop",
   description:
-    "Centiv is a pay-per-call research agent. It buys data only when it is worth the budget you approved, declines cleanly at your cap, and logs every spend.",
+    "Research that pays in cents, and can stop. You approve a spending cap; Centiv buys data one call at a time, only when it’s worth what’s left, and logs every spend.",
 };
 
 export const viewport: Viewport = {

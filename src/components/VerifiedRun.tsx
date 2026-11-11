@@ -16,12 +16,15 @@ const date = (wat: string) => wat.split(", ")[0] ?? wat;
 export default function VerifiedRun({
   compact = false,
   collapseReplies = false,
+  receipts = false,
   id = "verified-run",
   children,
 }: {
   compact?: boolean;
   /** Tuck the paid replies behind a disclosure so the proof rows stay scannable. */
   collapseReplies?: boolean;
+  /** Landing layout: session details and the full Reppo result sit behind disclosures, so it reads as receipts. */
+  receipts?: boolean;
   id?: string;
   children?: ReactNode;
 }) {
@@ -29,6 +32,8 @@ export default function VerifiedRun({
   const p = r.passport;
   const caps = p.caps;
   const ttlMin = Math.round(caps.ttl_seconds / 60);
+  const firstTransfer = paidCalls[0]?.onchain.usdc_transfer;
+  const wallets = firstTransfer ? { from: firstTransfer.from, to: firstTransfer.to } : null;
   const replies = (
     <div className="grid gap-4 md:grid-cols-2">
       {paidCalls.map((c) => (
@@ -69,6 +74,49 @@ export default function VerifiedRun({
         </p>
         {children}
 
+        {receipts ? (
+          <>
+        {/* Session: caps up front, the rest on tap */}
+        <div className="mt-7 rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
+          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
+            <span className="text-[12px] text-dim">Caps, set with a passkey</span>
+            <span className="fig text-[15px] text-bone">
+              ${caps.max_amount_per_tx} per call · ${caps.max_total_amount} total · {ttlMin} min
+            </span>
+          </p>
+          <details className="group border-t border-[rgba(201,146,46,0.3)]">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5 text-[13.5px] font-medium text-bone sm:px-5 [&::-webkit-details-marker]:hidden">
+              Session details
+              <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">+</span>
+            </summary>
+            <dl className="grid gap-x-6 gap-y-1 px-4 pb-4 text-[12.5px] sm:gap-y-2.5 sm:grid-cols-[auto_minmax(0,1fr)] sm:px-5">
+              <dt className="text-dim">Passport session</dt>
+              <dd className="num mb-2 break-all text-bone sm:mb-0">{p.session_id}</dd>
+              <dt className="text-dim">Approved</dt>
+              <dd className="fig mb-2 text-bone sm:mb-0">{time(p.approved_at_wat)}</dd>
+              <dt className="text-dim">Scope</dt>
+              <dd className="num mb-2 break-all text-bone sm:mb-0">
+                {p.scope.method} {p.scope.host}{p.scope.path_prefix}
+              </dd>
+              {wallets && (
+                <>
+                  <dt className="text-dim">Paid from</dt>
+                  <dd className="num mb-2 text-bone sm:mb-0">
+                    <a className="underline decoration-dotted underline-offset-2 hover:text-cent" href={basescanAddress(wallets.from)} target="_blank" rel="noopener noreferrer" title={wallets.from}>{short(wallets.from)}</a> (Passport wallet)
+                  </dd>
+                  <dt className="text-dim">Paid to</dt>
+                  <dd className="num mb-2 text-bone sm:mb-0">
+                    <a className="underline decoration-dotted underline-offset-2 hover:text-cent" href={basescanAddress(wallets.to)} target="_blank" rel="noopener noreferrer" title={wallets.to}>{short(wallets.to)}</a> (Otto AI)
+                  </dd>
+                </>
+              )}
+            </dl>
+          </details>
+        </div>
+
+          </>
+        ) : (
+          <>
         {/* Session strip */}
         <dl className="mt-7 grid gap-px overflow-hidden rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-[rgba(201,146,46,0.3)] sm:grid-cols-3">
           {[
@@ -83,6 +131,8 @@ export default function VerifiedRun({
             </div>
           ))}
         </dl>
+          </>
+        )}
 
         {/* The three calls */}
         <ol className="mt-6 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
@@ -94,10 +144,16 @@ export default function VerifiedRun({
                 <p className="mt-1 text-[15px] font-medium tracking-[-0.015em] text-bone">
                   Paid {c.onchain.usdc_transfer.amount_usdc.toFixed(3)} USDC to Otto AI · block {c.onchain.block.toLocaleString("en-GB")} · {time(c.onchain.timestamp_wat)}
                 </p>
-                <p className="num mt-1 text-[11.5px] leading-[1.6] text-dim">
-                  From <a className="underline decoration-dotted underline-offset-2 hover:text-bone" href={basescanAddress(c.onchain.usdc_transfer.from)} target="_blank" rel="noopener noreferrer">{short(c.onchain.usdc_transfer.from)}</a> (Passport wallet) → {" "}
-                  <a className="underline decoration-dotted underline-offset-2 hover:text-bone" href={basescanAddress(c.onchain.usdc_transfer.to)} target="_blank" rel="noopener noreferrer">{short(c.onchain.usdc_transfer.to)}</a> (Otto AI) · session spent ${c.session_spent_after_usdc} of ${caps.max_total_amount}
-                </p>
+                {receipts ? (
+                  <p className="num mt-1 text-[11.5px] leading-[1.6] text-dim">
+                    Passport wallet → Otto AI · session spent ${c.session_spent_after_usdc} of ${caps.max_total_amount}
+                  </p>
+                ) : (
+                  <p className="num mt-1 text-[11.5px] leading-[1.6] text-dim">
+                    From <a className="underline decoration-dotted underline-offset-2 hover:text-bone" href={basescanAddress(c.onchain.usdc_transfer.from)} target="_blank" rel="noopener noreferrer">{short(c.onchain.usdc_transfer.from)}</a> (Passport wallet) → {" "}
+                    <a className="underline decoration-dotted underline-offset-2 hover:text-bone" href={basescanAddress(c.onchain.usdc_transfer.to)} target="_blank" rel="noopener noreferrer">{short(c.onchain.usdc_transfer.to)}</a> (Otto AI) · session spent ${c.session_spent_after_usdc} of ${caps.max_total_amount}
+                  </p>
+                )}
               </div>
               <div className="col-start-2 flex flex-wrap items-center gap-2 sm:col-start-auto sm:flex-col sm:items-end">
                 <DecisionTag d="spend" />
@@ -144,6 +200,70 @@ export default function VerifiedRun({
           <div className="mt-6">{replies}</div>
         )}
 
+        {receipts ? (
+          <>
+        {/* Recorded real Reppo check of the brief drawn from this run: score first, the rest on tap */}
+        <div className="mt-6 rounded-[14px] border border-[rgba(91,42,78,0.28)] bg-[#faf6f8]">
+          <div className="px-4 pt-4 sm:px-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="num text-[10.5px] uppercase tracking-[0.12em] text-[#5B2A4E]">Reppo independent check of this run’s brief</p>
+              <ProvenanceBadge p="replay" short title="Replay · a real past check, recorded" />
+            </div>
+            <p className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-[15px] font-medium tracking-[-0.015em] text-bone">
+              <span className="fig text-[22px] leading-none">
+                {RECORDED_REPPO.verdict.score}
+                <span className="text-[14px] text-mute">/100</span>
+              </span>
+              <span>
+                {RECORDED_REPPO.verdict.decision}, routed to {RECORDED_REPPO.verdict.route}
+                <span className="font-normal text-mute"> · {RECORDED_REPPO.verdict.confidence} confidence</span>
+              </span>
+            </p>
+            <p className="mt-2 text-[12.5px] leading-[1.55] text-dim">
+              Recorded on {date(RECORDED_REPPO.evaluated_at_wat)}. Not a live score of questions visitors ask here.
+            </p>
+          </div>
+          <details className="group mt-3 border-t border-[rgba(91,42,78,0.18)]">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5 text-[13.5px] font-medium text-bone sm:px-5 [&::-webkit-details-marker]:hidden">
+              Sub-scores, explanation and the brief
+              <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">+</span>
+            </summary>
+            <div className="px-4 pb-5 sm:px-5">
+              <p className="text-[13.5px] leading-[1.6] text-mute">{RECORDED_REPPO.verdict.reason}</p>
+              <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {Object.entries(RECORDED_REPPO.verdict.rubric_scores).map(([k, val]) => (
+                  <div key={k} className="rounded-[10px] bg-white px-3 py-2">
+                    <dt className="num text-[10px] uppercase tracking-[0.1em] text-dim">{k.replace(/_/g, " ")}</dt>
+                    <dd className="fig mt-1 text-[15px] text-bone">{val}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="mt-4 space-y-2 rounded-[10px] bg-white p-4 text-[13.5px] leading-[1.6] text-mute">
+                <p className="num text-[10.5px] uppercase tracking-[0.12em] text-dim">The brief Reppo scored</p>
+                <p className="italic">“{RECORDED_REPPO.brief.question}”</p>
+                <p className="font-medium text-bone">{RECORDED_REPPO.brief.headline}</p>
+                {RECORDED_REPPO.brief.points.map((para) => (
+                  <p key={para.slice(0, 48)}>{para}</p>
+                ))}
+                <p className="text-[12px] text-dim">{RECORDED_REPPO.brief.sources}</p>
+              </div>
+              <p className="mt-4 text-[12px] leading-[1.6] text-dim">
+                Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat}. This is a recorded
+                check of the verified-run brief, not a live score of questions visitors ask on this site.{" "}
+                <a href={RECORDED_REPPO.evidence_path} className="underline underline-offset-2 hover:text-bone">
+                  Result JSON
+                </a>
+                {" · "}
+                <span className="num break-all">eval {RECORDED_REPPO.verdict.eval_id}</span>
+                . Reppo did not return a public share URL, so the raw result is published here.
+              </p>
+            </div>
+          </details>
+        </div>
+
+          </>
+        ) : (
+          <>
         {/* Recorded real Reppo check of the brief drawn from this run */}
         <div className="mt-6 rounded-[14px] border border-[rgba(91,42,78,0.28)] bg-[#faf6f8] p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -188,6 +308,8 @@ export default function VerifiedRun({
             . Reppo did not return a public share URL, so the raw result is published here.
           </p>
         </div>
+          </>
+        )}
 
         <p className="mt-6 text-[12px] leading-[1.6] text-dim">
           Payments settled in USDC on Base mainnet ({r.settlement.caip2}). Kite Passport enforced the session caps. Each

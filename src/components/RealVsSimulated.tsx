@@ -34,7 +34,7 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
       part: "Reppo check of the verified-run brief",
       p: "replay",
       detail:
-        "A real independent evaluation on 11 Nov 2026. Score 86 / 100, accept, routed to review (medium confidence). Recorded in the evidence file; not a live score of questions visitors ask.",
+        "A real independent evaluation on 11 Nov 2026, recorded and shown in the proof. Not a live score of questions visitors ask.",
     },
     {
       part: "Quality gate in the public demo",
