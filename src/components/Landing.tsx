@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { CentivWordmark, Stamp } from "./Logo";
+import { CentivWordmark } from "./Logo";
 import LedgerField from "./LedgerField";
 import { RealVsSimulated, RealVsSimulatedFallback } from "./RealVsSimulated";
 import Reveal from "./Reveal";
@@ -18,9 +18,17 @@ const NE = () => (
   </svg>
 );
 
-const primary = "pill pill-cent h-12 px-7 text-[15px]";
+const HeroArrow = () => (
+  <span aria-hidden="true" className="text-[18px] font-normal leading-none">
+    →
+  </span>
+);
+
+/** Hero/primary CTA: rectangular, label then arrow — reference layout, Centiv plum. */
+const heroCta =
+  "inline-flex min-h-[49px] w-full items-center justify-between gap-10 rounded-[6px] bg-cent px-[18px] text-[13.5px] font-semibold tracking-[-0.01em] text-white transition-colors hover:bg-cent-hover sm:w-auto sm:min-w-[220px]";
 const textLink =
-  "inline-flex min-h-11 items-center text-[15px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent";
+  "inline-flex min-h-11 items-center text-[13px] font-semibold text-cent underline decoration-cent/35 underline-offset-[5px] transition hover:decoration-cent";
 
 function StepIcon({ kind }: { kind: "cap" | "weigh" | "pay" }) {
   const c = { stroke: "currentColor", strokeWidth: 1.25, fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -87,11 +95,11 @@ const exampleRows: { d: "spend" | "skip" | "decline"; call: string; amount: stri
   { d: "decline", call: "Order-book depth · 1-min", amount: "$0.35" },
 ];
 
-/** Hero card: a simulated example of how Centiv decides. The real run lives in the proof section. */
+/** Hero card: a typographic, simulated example of how Centiv decides. The real run lives in the proof. */
 function HowItDecides({ className = "" }: { className?: string }) {
   return (
-    <div className={`card-gold w-full p-3.5 text-left sm:p-6 ${className}`} aria-label="How it decides: a simulated example">
-      <div className="flex items-center justify-between gap-3">
+    <div className={`w-full text-left ${className}`} aria-label="How it decides: a simulated example">
+      <div className="flex items-center justify-between gap-3 border-t border-[rgba(201,146,46,0.45)] pt-4">
         <p className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">How it decides</p>
         <span className="sm:hidden">
           <ProvenanceBadge p="simulated" short />
@@ -100,26 +108,34 @@ function HowItDecides({ className = "" }: { className?: string }) {
           <ProvenanceBadge p="simulated" />
         </span>
       </div>
-      <ul className="mt-3 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white sm:mt-4">
-        {exampleRows.map((r) => (
-          <li key={r.call} className="flex items-center gap-2.5 px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
-            <Stamp
-              size={22}
-              className={`shrink-0 ${r.d === "spend" ? "text-gold" : r.d === "decline" ? "text-stop" : "text-dim"}`}
-              notch={r.d === "spend" ? "var(--color-cent)" : undefined}
-            />
-            <p className="min-w-0 flex-1 text-[14px] font-medium leading-[1.3] tracking-[-0.015em] text-bone sm:truncate sm:text-[14.5px]">{r.call}</p>
-            <span className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
-              <span className={`fig text-[14.5px] leading-none sm:text-[15px] ${r.d === "spend" ? "text-bone" : r.d === "decline" ? "text-stop line-through" : "text-dim line-through"}`}>
-                {r.amount}
-              </span>
-              <span className="sm:flex sm:w-[86px] sm:justify-end">
-                <DecisionTag d={r.d} />
-              </span>
-            </span>
+      <ul>
+        {exampleRows.map((r, i) => (
+          <li key={r.call} className="grid grid-cols-[34px_minmax(0,1fr)] items-center gap-3 border-b border-[rgba(201,146,46,0.35)] py-[15px] sm:gap-4 sm:py-[17px]">
+            <span className="font-serif text-[22px] font-normal leading-none text-gold-deep sm:text-[24px]">0{i + 1}</span>
+            <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[15px] font-semibold leading-[1.25] tracking-[-0.02em] text-bone sm:text-[16px]">{r.call}</p>
+                <p className={`fig mt-0.5 text-[12.5px] leading-none sm:text-[13px] ${r.d === "spend" ? "text-mute" : r.d === "decline" ? "text-stop line-through" : "text-dim line-through"}`}>
+                  {r.amount}
+                </p>
+              </div>
+              <DecisionTag d={r.d} />
+            </div>
           </li>
         ))}
       </ul>
+      <a
+        href="#verified-run"
+        className="group mt-1 flex items-center justify-between gap-3 rounded-md py-3 transition hover:opacity-80"
+      >
+        <span className="min-w-0">
+          <span className="block text-[12.5px] font-semibold tracking-[-0.015em] text-bone">Reppo</span>
+          <span className="mt-0.5 block text-[11.5px] leading-snug text-dim">Independent check of this run’s brief</span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-[16px] text-dim transition group-hover:text-cent">
+          ↗
+        </span>
+      </a>
     </div>
   );
 }
@@ -185,38 +201,44 @@ export default function Landing() {
       </header>
 
       <main id="main">
-        {/* 1. Hero: what it is, then where to go */}
-        <section className="relative overflow-hidden pb-12 pt-[96px] md:pb-20 md:pt-[160px]" aria-labelledby="landing-title">
+        {/* 1. Hero: reference structure (copy left, typographic card right), Centiv brand and copy */}
+        <section className="relative overflow-hidden pb-14 pt-[96px] md:pb-[88px] md:pt-[120px]" aria-labelledby="landing-title">
           <LedgerField />
-          <div className="relative mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] items-center gap-12 px-5 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14">
-            <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
-              <p className="badge-live rise">SERV Hackathon 02 · Kite track</p>
+          <div className="relative mx-auto grid max-w-[1180px] grid-cols-1 items-start gap-8 px-5 md:px-8 lg:grid-cols-[minmax(0,1.06fr)_minmax(300px,0.74fr)] lg:gap-[7.5%]">
+            <div className="flex min-w-0 flex-col items-start text-left">
+              <p className="eyebrow rise">SERV Hackathon 02 / Kite track</p>
               <h1
                 id="landing-title"
-                className="rise mt-5 text-balance text-[40px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:mt-6 sm:text-[60px] lg:text-[64px] xl:text-[68px]"
+                className="rise mt-5 text-[42px] font-normal leading-[1.04] tracking-[-0.05em] text-bone sm:mt-6 sm:text-[52px] lg:text-[60px] xl:text-[68px]"
                 style={{ animationDelay: "90ms" }}
               >
-                Research that pays in cents, and <span className="serif-em whitespace-nowrap">can stop</span>.
+                Research that stops
+                <br />
+                at your <span className="serif-em whitespace-nowrap">cap.</span>
               </h1>
-              <p className="rise mt-4 max-w-[540px] text-pretty text-[16.5px] leading-[1.55] text-mute sm:mt-6 md:text-[18px]" style={{ animationDelay: "180ms" }}>
-                You approve a spending cap. Centiv buys data one call at a time, only when it’s worth what’s left.
+              <p className="rise mt-4 max-w-[495px] text-pretty text-[16px] leading-[1.65] text-mute sm:mt-6 md:text-[17px]" style={{ animationDelay: "180ms" }}>
+                You approve a spending cap, and it buys data one call at a time, in cents, only when that call is worth what’s left.
               </p>
-              <div className="rise mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 sm:mt-9 lg:justify-start" style={{ animationDelay: "270ms" }}>
-                <Link href="/app?demo=ab" className={primary}>
+              <div className="rise mt-6 flex w-full flex-col items-stretch gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:items-center sm:gap-x-[22px] sm:gap-y-3" style={{ animationDelay: "270ms" }}>
+                <Link href="/app?demo=ab" className={heroCta}>
                   Try the demo
+                  <HeroArrow />
                 </Link>
                 <a href="#verified-run" className={textLink}>
                   See the proof
                 </a>
               </div>
-              <div className="rise mt-5 w-full max-w-[460px] sm:mt-8 lg:hidden" style={{ animationDelay: "330ms" }}>
-                <HowItDecides />
-              </div>
-              <a href="#real" className="rise mt-5 rounded-lg px-2 py-1 transition hover:opacity-80 sm:mt-6 lg:-ml-2" style={{ animationDelay: "360ms" }}>
+              <p className="rise mt-6 max-w-[420px] text-[12.5px] leading-[1.65] text-dim" style={{ animationDelay: "330ms" }}>
+                It skips a call that isn’t worth it. Kite Passport stops it at your cap.
+              </p>
+              <a href="#real" className="rise mt-3 rounded-lg transition hover:opacity-80" style={{ animationDelay: "360ms" }}>
                 <Suspense fallback={<StatusStripFallback variant="line" />}>
-                  <StatusStripServer variant="line" className="lg:text-left" />
+                  <StatusStripServer variant="line" className="text-left" />
                 </Suspense>
               </a>
+              <div className="rise mt-8 w-full lg:hidden" style={{ animationDelay: "390ms" }}>
+                <HowItDecides />
+              </div>
             </div>
             <div className="rise hidden lg:block" style={{ animationDelay: "360ms" }}>
               <HowItDecides />
@@ -261,8 +283,9 @@ export default function Landing() {
               </p>
             </SectionHead>
             <Reveal delay={120} className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-              <Link href="/app?demo=ab" className={primary}>
-                Run the 30-second demo <NE />
+              <Link href="/app?demo=ab" className={heroCta}>
+                Run the 30-second demo
+                <HeroArrow />
               </Link>
               <Link href="/app" className={textLink}>
                 Ask your own question

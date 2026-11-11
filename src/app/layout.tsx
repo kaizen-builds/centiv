@@ -22,9 +22,9 @@ const serif = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "Centiv — research that pays in cents, and can stop",
+  title: "Centiv — research that stops at your cap",
   description:
-    "Research that pays in cents, and can stop. You approve a spending cap; Centiv buys data one call at a time, only when it’s worth what’s left, and logs every spend.",
+    "Research that stops at your cap. You approve a spending cap, and it buys data one call at a time, in cents, only when that call is worth what’s left.",
 };
 
 export const viewport: Viewport = {
