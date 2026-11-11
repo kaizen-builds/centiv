@@ -41,6 +41,8 @@ export function useTween(value: number, duration = 750) {
 export function useNow(intervalMs = 1000) {
   const [now, setNow] = useState(0);
   useEffect(() => {
+    // Start at 0 on the server and first client render, then read the clock once mounted (avoids a hydration mismatch).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), intervalMs);
     return () => clearInterval(id);

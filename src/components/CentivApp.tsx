@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AuditRow,
@@ -308,6 +309,8 @@ export default function CentivApp() {
     }
   };
 
+  // guard() only wraps the handler; refs are read when it runs, not during render.
+  // eslint-disable-next-line react-hooks/refs
   const runDemo = guard(async () => {
     hardReset();
     await sleep(200);
@@ -331,12 +334,16 @@ export default function CentivApp() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // guard() only wraps the handler; refs are read when it runs, not during render.
+  // eslint-disable-next-line react-hooks/refs
   const runA = guard(async () => {
     if (busy) return;
     await ensureSession();
     await scene("funding");
     setPhase("done");
   });
+  // guard() only wraps the handler; refs are read when it runs, not during render.
+  // eslint-disable-next-line react-hooks/refs
   const runB = guard(async () => {
     if (busy) return;
     await ensureSession();
@@ -344,6 +351,10 @@ export default function CentivApp() {
     scrollTo("audit");
     setPhase("done");
   });
+
+  // guard() only wraps the handler; refs are read when it runs, not during render.
+  // eslint-disable-next-line react-hooks/refs
+  const approveGuarded = guard(approve);
 
   const current = runs.find((r) => r.id === selectedRun) ?? runs[runs.length - 1];
   const modeLabel =
@@ -357,9 +368,9 @@ export default function CentivApp() {
     <div className="min-h-screen bg-ink pb-36">
       <header className="sticky top-0 z-30 bg-ink/80 backdrop-blur-md">
         <div className="relative mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
-          <a href="/" className="shrink-0 rounded-md" aria-label="Centiv — back to the landing page">
+          <Link href="/" className="shrink-0 rounded-md" aria-label="Centiv — back to the landing page">
             <CentivWordmark size={21} />
-          </a>
+          </Link>
           <nav aria-label="Sections" className="pill-sage absolute left-1/2 hidden -translate-x-1/2 items-center gap-0.5 rounded-full px-1.5 py-1 text-[13px] font-medium lg:flex">
             {[
               ["session", "Session"],
@@ -409,7 +420,7 @@ export default function CentivApp() {
         <section className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-12" aria-label="Agent console">
           <div className="min-w-0 lg:col-span-5">
             <div className="lg:sticky lg:top-20">
-              <SessionPanel session={session} spent={spent} onChange={configure} onApprove={guard(approve)} onRevoke={revoke} busy={busy} />
+              <SessionPanel session={session} spent={spent} onChange={configure} onApprove={approveGuarded} onRevoke={revoke} busy={busy} />
             </div>
           </div>
           <div className="flex min-w-0 flex-col gap-5 lg:col-span-7">
