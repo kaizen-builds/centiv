@@ -304,7 +304,7 @@ export default function Landing() {
           <div className="mx-auto max-w-[1080px] px-5 py-16 md:px-8 md:py-20">
             <Reveal className="mx-auto max-w-[820px] text-center">
               <h2 id="thesis" className="text-[30px] font-normal leading-[1.15] tracking-[-0.035em] text-bone md:text-[42px]">
-                Passport decides whether the agent <span className="serif-em">can</span> spend. SERV decides whether it{" "}
+                Kite Passport decides whether the agent <span className="serif-em">can</span> spend. SERV decides whether it{" "}
                 <span className="serif-em">should.</span>
               </h2>
             </Reveal>
@@ -326,7 +326,7 @@ export default function Landing() {
                 ))}
               </ul>
               <p className="mt-3 text-[12.5px] leading-[1.55] text-dim">
-                In this demo, Centiv applies the limits itself. The real Passport refusal is in the verified run below.
+                In this demo, Centiv applies the limits itself. The real Kite Passport refusal is in the verified run below.
               </p>
             </Reveal>
           </div>

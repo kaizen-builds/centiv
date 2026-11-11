@@ -10,7 +10,7 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Is the decline really from Kite Passport?",
     a: (
       <>
-        Yes. On the third call, Passport returned <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code>{" "}
+        Yes. On the third call, Kite Passport returned <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code>{" "}
         because the $0.002 session total was already spent, so Centiv never signed a payment. The record is in the{" "}
         <a className={a} href="/api/evidence">evidence JSON</a>.
       </>
@@ -33,7 +33,7 @@ const items: { q: string; a: ReactNode }[] = [
     q: "What happens if the cap runs out mid-question?",
     a: (
       <>
-        Passport refuses the next call and Centiv works with what it already bought. Nothing is signed beyond the cap.
+        Kite Passport refuses the next call and Centiv works with what it already bought. Nothing is signed beyond the cap.
       </>
     ),
   },

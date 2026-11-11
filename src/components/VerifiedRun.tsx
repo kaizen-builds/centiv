@@ -89,7 +89,7 @@ export default function VerifiedRun({
         ) : (
           <p className="mt-4 max-w-[680px] text-[15.5px] leading-[1.6] text-mute">
             A real run, replayed. The owner approved a small Kite Passport session with a passkey: ${caps.max_amount_per_tx} a
-            call, ${caps.max_total_amount} in total. Centiv paid Otto AI twice in USDC on Base. On the third call, Passport
+            call, ${caps.max_total_amount} in total. Centiv paid Otto AI twice in USDC on Base. On the third call, Kite Passport
             refused and no money moved. Both payments are on Basescan. This page never spends.
           </p>
         )}
@@ -117,7 +117,7 @@ export default function VerifiedRun({
                   <span className="rounded bg-stop/10 px-1.5 py-0.5 text-stop">{declinedCall.error_code}</span> · “{declinedCall.error}”
                 </p>
                 <p className="mt-3 text-[15px] font-medium text-bone">
-                  Centiv didn’t decide to stop. <span className="serif-em text-[17px]">Passport stopped it.</span>
+                  Centiv didn’t decide to stop. <span className="serif-em text-[17px]">Kite Passport stopped it.</span>
                 </p>
               </div>
             </div>

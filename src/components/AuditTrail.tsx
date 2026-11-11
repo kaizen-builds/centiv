@@ -115,7 +115,7 @@ export function AuditTrail({
           {lastDecline ? (
             <span className="text-stop">
               {replay
-                ? `Passport declined call 3 — the ${usdc(budget)} session total was used up`
+                ? `Kite Passport declined call 3 — the ${usdc(budget)} session total was used up`
                 : `Declined ${usdc(lastDecline.amount)} — over the ${usdc(perTx)} per-call cap and the ${usdc(remaining)} left`}
             </span>
           ) : (

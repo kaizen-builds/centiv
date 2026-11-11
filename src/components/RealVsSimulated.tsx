@@ -7,7 +7,7 @@ type Row = { part: string; p: Provenance; detail: string };
 function rows(serv: Provenance, gate: Provenance): Row[] {
   return [
     {
-      part: "Passport caps and payments in the verified run",
+      part: "Kite Passport caps and payments in the verified run",
       p: "replay",
       detail:
         "A real Kite Passport session and two real USDC payments on Base. Passport refused the third call. The page replays it from the evidence file and never spends.",
@@ -28,7 +28,7 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
     {
       part: "Cap checks in the public demo",
       p: "simulated",
-      detail: "Centiv applies the same per-call, total and time limits itself. The real Passport refusal is in the verified run.",
+      detail: "Centiv applies the same per-call, total and time limits itself. The real Kite Passport refusal is in the verified run.",
     },
     {
       part: "Reppo check of the verified-run brief",

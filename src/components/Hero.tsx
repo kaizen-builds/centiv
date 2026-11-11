@@ -30,7 +30,7 @@ export function Hero({
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-8">
           <p className="badge-live rise" style={d(0)}>
-            Workspace · Passport session <span className="h-2 w-2 rounded-full bg-[var(--color-live)]" />
+            Workspace · Kite Passport session <span className="h-2 w-2 rounded-full bg-[var(--color-live)]" />
           </p>
           <h1
             id="hero-title"

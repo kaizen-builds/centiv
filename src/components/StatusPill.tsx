@@ -13,12 +13,12 @@ export default async function StatusPill({ className = "inline-flex" }: { classN
   } catch {
     serv = null;
   }
-  const text = serv === null ? "Status unavailable" : serv ? "SERV live · Passport replay" : "SERV simulated · Passport replay";
+  const text = serv === null ? "Status unavailable" : serv ? "SERV live · Kite Passport replay" : "SERV simulated · Kite Passport replay";
   const title =
     serv === null
       ? "Could not read the server status"
       : serv
-        ? "SERV Reasoning is configured on the server. The Passport run is a replay of a real on-chain run; visitor payments are simulated."
+        ? "SERV Reasoning is configured on the server. The Kite Passport run is a replay of a real on-chain run; visitor payments are simulated."
         : "SERV Reasoning is not configured, so reasoning is simulated. Visitor payments are simulated.";
   return (
     <a href="#real" title={title} className={`${base} ${className}`}>
