@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { AuditRow, Session } from "@/lib/centiv";
 import { clock, usdc } from "@/lib/centiv";
 import { Count, DecisionTag, GateSourceLabel, Money, ProvenanceBadge, Receipt, VerdictTag } from "./ui";
@@ -8,28 +8,17 @@ import { VERIFIED_RUN, replayAuditRows } from "@/lib/verified-run";
 
 const REPLAY_ROWS = replayAuditRows();
 const REPLAY_CAPS = VERIFIED_RUN.passport.caps;
-import { Nib, Stamp } from "./Logo";
+import { Stamp } from "./Logo";
 
 export function AuditTrail({
   rows,
   session,
   spent,
-  presenting,
-  onPresent,
 }: {
   rows: AuditRow[];
   session: Session;
   spent: number;
-  presenting: boolean;
-  onPresent: (v: boolean) => void;
 }) {
-  useEffect(() => {
-    if (!presenting) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onPresent(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [presenting, onPresent]);
-
   // Two ledgers, never mixed: the visitor's session (Simulated payments) and the real run (Replay).
   const [view, setView] = useState<"session" | "replay">(rows.length ? "session" : "replay");
   const [seen, setSeen] = useState(rows.length);
@@ -53,7 +42,7 @@ export function AuditTrail({
   const lastDecline = declined[declined.length - 1];
 
   const body = (
-    <div className={presenting ? "mx-auto max-w-[1320px]" : ""}>
+    <div>
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="eyebrow">Audit trail</p>
@@ -77,19 +66,6 @@ export function AuditTrail({
             </p>
           )}
         </div>
-        <button
-          onClick={() => onPresent(!presenting)}
-          className="inline-flex h-9 shrink-0 items-center gap-2 self-start rounded-full border hairline-strong px-4 text-[12.5px] text-mute transition hover:border-bone/40 hover:text-bone md:self-auto"
-        >
-          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-            {presenting ? (
-              <path d="M4.5 1v3.5H1M7.5 1v3.5H11M4.5 11V7.5H1M7.5 11V7.5H11" stroke="currentColor" strokeWidth="1.25" fill="none" />
-            ) : (
-              <path d="M1 4.5V1h3.5M11 4.5V1H7.5M1 7.5V11h3.5M11 7.5V11H7.5" stroke="currentColor" strokeWidth="1.25" fill="none" />
-            )}
-          </svg>
-          {presenting ? "Exit present mode (Esc)" : "Present"}
-        </button>
       </div>
 
       {/* Stat strip */}
@@ -169,10 +145,9 @@ export function AuditTrail({
           <tbody>
             {viewRows.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-14 text-center">
-                  <div className="flex justify-center"><Nib size={64} /></div>
-                  <p className="mt-3 font-display text-[24px] text-bone">No spend yet.</p>
-                  <p className="mt-1 text-[13.5px] text-dim">Ask something that might be worth a call — or press Run demo. Every buy, skip and decline is stamped here.</p>
+                <td colSpan={9} className="px-4 py-10 text-center">
+                  <p className="font-display text-[20px] text-bone">No calls in this session yet.</p>
+                  <p className="mt-1 text-[13.5px] text-dim">Run the A → B demo to stamp a paid call and a decline here, or ask your own question.</p>
                 </td>
               </tr>
             )}
@@ -234,13 +209,6 @@ export function AuditTrail({
       </div>
     </div>
   );
-
-  if (presenting)
-    return (
-      <div role="dialog" aria-modal="true" aria-labelledby="audit-title" className="ledger-bg fixed inset-0 z-50 overflow-y-auto bg-ink p-6 md:p-12">
-        {body}
-      </div>
-    );
 
   return (
     <section id="audit" aria-labelledby="audit-title" className="mt-20 scroll-mt-24 border-t hairline pt-14">

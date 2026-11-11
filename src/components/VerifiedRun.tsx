@@ -216,7 +216,6 @@ export default function VerifiedRun({
           <div className="px-4 pt-4 sm:px-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="num text-[10.5px] uppercase tracking-[0.12em] text-[#5B2A4E]">Reppo independent check of this run’s brief</p>
-              <ProvenanceBadge p="replay" short title="Replay · a real past check, recorded" />
             </div>
             <p className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-[15px] font-medium tracking-[-0.015em] text-bone">
               <span className="fig text-[22px] leading-none">

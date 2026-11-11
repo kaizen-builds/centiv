@@ -85,7 +85,7 @@ function StepRow({ s, last }: { s: Step; last: boolean }) {
   );
 }
 
-export function RunPanel({ runs, current, onSelect }: { runs: Run[]; current?: Run; onSelect: (id: string) => void }) {
+export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; current?: Run; onSelect: (id: string) => void; onRunDemo?: () => void }) {
   return (
     <section id="run" aria-labelledby="run-title" className="card scroll-mt-24 p-6" aria-live="polite">
       <div className="flex items-center justify-between gap-4">
@@ -112,11 +112,15 @@ export function RunPanel({ runs, current, onSelect }: { runs: Run[]; current?: R
 
       {!current ? (
         <div className="mt-6 grid place-items-center rounded-md border border-dashed hairline-strong px-6 py-10 text-center">
-          <Nib size={64} />
-          <p className="mt-3 font-display text-[24px] text-bone">No spend yet.</p>
-          <p className="mt-1 max-w-sm text-[13.5px] text-dim">
-            Ask something that might be worth a call. Each decision lands here — the reasoning, the quote, the Passport check, the payment or decline, then the quality gate’s verdict.
+          <p className="font-display text-[24px] text-bone">A paid call, then a decline.</p>
+          <p className="mt-2 max-w-sm text-[13.5px] leading-[1.55] text-dim">
+            The short A → B demo approves a cap, buys one call, then hard-stops at the limit. Both decisions land here.
           </p>
+          {onRunDemo && (
+            <button type="button" onClick={onRunDemo} className="pill pill-cent mt-5 h-10 px-5 text-[13.5px]">
+              Run demo A → B
+            </button>
+          )}
         </div>
       ) : (
         <div key={current.id} className="mt-5">

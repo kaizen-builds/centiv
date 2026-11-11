@@ -24,7 +24,7 @@ const serif = Newsreader({
 const site = "https://centiv-gilt.vercel.app";
 const title = "Centiv — research that stops at your cap";
 const description =
-  "Research that stops at your cap. You approve a spending cap, and it buys data one call at a time, in cents, only when that call is worth what’s left.";
+  "A research agent that buys data one call at a time and hard-stops at your cap.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),

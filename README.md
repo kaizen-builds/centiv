@@ -78,8 +78,9 @@ Keep the Passport balance small. Live mode only spends from the session you appr
 ## Routes
 
 - `/` — landing
-- `/app` — workspace (session, ask, live run, audit, demo bar, Present)
-- `/app?demo=ab` — autoplay A → B
+- `/app` — workspace; autoplays the short A → B demo (a paid call, then a decline)
+- `/app?demo=ab` — same autoplay (used by “Try the demo”)
+- `/app?ask=1` — workspace without autoplay, so you can ask your own question
 - `GET /api/status` — engine mode, integrations, payments (public = simulated), replay evidence, live_demo gate
 - `GET /api/evidence` — sanitised evidence of the verified run (Replay)
 - `GET|POST /api/live` — owner-only live payment (disabled on Vercel; see above)

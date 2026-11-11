@@ -198,7 +198,7 @@ export default function Landing() {
           </Link>
           <nav aria-label="Main" className="hidden items-center gap-1 text-[14px] font-medium lg:flex">
             {[
-              ["#verified-run", "Proof"],
+              ["#verified-run", "Verified run"],
               ["#how", "How it works"],
               ["#try", "Try it"],
               ["#real", "What’s real"],
@@ -212,7 +212,7 @@ export default function Landing() {
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <StatusPill className="mr-1 hidden md:inline-flex" />
             <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-sage lg:hidden">
-              Proof
+              Verified run
             </a>
             <a
               href={GITHUB_REPO}
@@ -248,20 +248,17 @@ export default function Landing() {
                 at your <span className="serif-em whitespace-nowrap">cap.</span>
               </h1>
               <p className="rise mt-4 max-w-[540px] text-pretty text-[16.5px] leading-[1.55] text-mute sm:mt-6 md:text-[18px]" style={{ animationDelay: "180ms" }}>
-                You approve a spending cap, and it buys data one call at a time, in cents, only when that call is worth what’s left.
+                A research agent that buys data one call at a time and hard-stops at your cap.
               </p>
               <div className="rise mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mt-9 lg:justify-start" style={{ animationDelay: "270ms" }}>
                 <Link href="/app?demo=ab" className={primary}>
                   Try the demo
                 </Link>
                 <a href="#verified-run" className={textLink}>
-                  See the proof
+                  View the verified run
                 </a>
               </div>
-              <p className="rise mt-5 max-w-[420px] text-[13.5px] leading-[1.6] text-dim sm:mt-6" style={{ animationDelay: "330ms" }}>
-                It skips a call that isn’t worth it. Kite Passport stops it at your cap.
-              </p>
-              <a href="#real" className="rise mt-3 rounded-lg px-2 py-1 transition hover:opacity-80 lg:-ml-2" style={{ animationDelay: "360ms" }}>
+              <a href="#real" className="rise mt-5 rounded-lg px-2 py-1 transition hover:opacity-80 sm:mt-6 lg:-ml-2" style={{ animationDelay: "330ms" }}>
                 <Suspense fallback={<StatusStripFallback variant="line" />}>
                   <StatusStripServer variant="line" className="lg:text-left" />
                 </Suspense>
@@ -342,7 +339,7 @@ export default function Landing() {
               <Link href="/app?demo=ab" className={primary}>
                 Try the demo
               </Link>
-              <Link href="/app" className={textLink}>
+              <Link href="/app?ask=1" className={textLink}>
                 Ask your own question
               </Link>
             </Reveal>

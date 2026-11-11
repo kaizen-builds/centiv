@@ -14,18 +14,12 @@ export function DemoBar({
   phase,
   busy,
   onRunDemo,
-  onA,
-  onB,
   onReset,
-  onPresent,
 }: {
   phase: DemoPhase;
   busy: boolean;
   onRunDemo: () => void;
-  onA: () => void;
-  onB: () => void;
   onReset: () => void;
-  onPresent: () => void;
 }) {
   const btn = "h-8 shrink-0 whitespace-nowrap rounded-full px-3 text-[12px] transition disabled:opacity-35 disabled:cursor-not-allowed";
   return (
@@ -38,15 +32,6 @@ export function DemoBar({
         </span>
         <button onClick={onRunDemo} className={`${btn} bg-cent font-semibold text-white hover:bg-[var(--color-cent-hover)]`}>
           Run demo · A → B
-        </button>
-        <button onClick={onA} disabled={busy} className={`${btn} text-mute hover:bg-ink-4 hover:text-bone`}>
-          A · Paid call
-        </button>
-        <button onClick={onB} disabled={busy} className={`${btn} text-mute hover:bg-ink-4 hover:text-bone`}>
-          B · Cap hit
-        </button>
-        <button onClick={onPresent} className={`${btn} hidden text-mute hover:bg-ink-4 hover:text-bone sm:inline-block`}>
-          Present audit
         </button>
         <button onClick={onReset} className={`${btn} text-dim hover:bg-ink-4 hover:text-bone`}>
           Reset

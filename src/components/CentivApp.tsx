@@ -45,7 +45,6 @@ export default function CentivApp() {
   const [typing, setTyping] = useState(false);
   const [busy, setBusy] = useState(false);
   const [phase, setPhase] = useState<DemoPhase>("idle");
-  const [presenting, setPresenting] = useState(false);
   const [selectedRun, setSelectedRun] = useState<string | null>(null);
   const [engineMode, setEngineMode] = useState<PublicMode | null>(null);
 
@@ -325,32 +324,16 @@ export default function CentivApp() {
   useEffect(() => {
     if (autoStarted.current) return;
     const params = new URLSearchParams(window.location.search);
+    // ?ask=1 is the “ask your own question” path; everything else, including bare /app, starts A→B.
+    if (params.get("ask") === "1") return;
+    autoStarted.current = true;
     if (params.get("demo") === "ab") {
-      autoStarted.current = true;
       window.history.replaceState(null, "", window.location.pathname);
-      const t = setTimeout(() => runDemo(), 600);
-      return () => clearTimeout(t);
     }
+    const t = setTimeout(() => runDemo(), 600);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // guard() only wraps the handler; refs are read when it runs, not during render.
-  // eslint-disable-next-line react-hooks/refs
-  const runA = guard(async () => {
-    if (busy) return;
-    await ensureSession();
-    await scene("funding");
-    setPhase("done");
-  });
-  // guard() only wraps the handler; refs are read when it runs, not during render.
-  // eslint-disable-next-line react-hooks/refs
-  const runB = guard(async () => {
-    if (busy) return;
-    await ensureSession();
-    await scene("depth");
-    scrollTo("audit");
-    setPhase("done");
-  });
 
   // guard() only wraps the handler; refs are read when it runs, not during render.
   // eslint-disable-next-line react-hooks/refs
@@ -398,12 +381,6 @@ export default function CentivApp() {
             >
               <GitHubMark size={16} />
             </a>
-            <button onClick={runDemo} className="pill pill-cent group h-10 shrink-0 whitespace-nowrap px-4 text-[13.5px] sm:px-5">
-              <svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                <path d="M1 1l8 5-8 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
-              </svg>
-              Run demo
-            </button>
           </div>
         </div>
       </header>
@@ -433,7 +410,7 @@ export default function CentivApp() {
               typing={typing}
               suggestions={[SCENARIOS.funding.question, SCENARIOS.depth.question]}
             />
-            <RunPanel runs={runs} current={current} onSelect={setSelectedRun} />
+            <RunPanel runs={runs} current={current} onSelect={setSelectedRun} onRunDemo={runDemo} />
           </div>
         </section>
 
@@ -443,7 +420,7 @@ export default function CentivApp() {
           <VerifiedRun compact />
         </div>
 
-        <AuditTrail rows={audit} session={session} spent={spent} presenting={presenting} onPresent={setPresenting} />
+        <AuditTrail rows={audit} session={session} spent={spent} />
 
         <footer className="mt-20 flex flex-col gap-3 border-t hairline pt-8 text-[12px] text-dim md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-4">
@@ -467,7 +444,7 @@ export default function CentivApp() {
         </footer>
       </main>
 
-      <DemoBar phase={phase} busy={busy} onRunDemo={runDemo} onA={runA} onB={runB} onReset={hardReset} onPresent={() => setPresenting(true)} />
+      <DemoBar phase={phase} busy={busy} onRunDemo={runDemo} onReset={hardReset} />
     </div>
   );
 }
