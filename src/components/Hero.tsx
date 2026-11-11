@@ -37,7 +37,7 @@ export function Hero({
             className="rise mt-5 font-display text-[36px] font-normal leading-[1.08] tracking-[-0.035em] text-bone sm:text-[48px]"
             style={d(1)}
           >
-            Ask a research question. <span className="text-mute">Centiv <span className="serif-em text-mute">pays per call</span> for the data it needs — and stops at your cap.</span>
+            Ask a research question. <span className="text-mute">Centiv <span className="serif-em text-mute">pays per call</span> for the data it needs, and can stop at your cap.</span>
           </h1>
           <ol className="rise mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-mute" style={d(2)} aria-label="Steps">
             {["Approve a session", "Ask a question", "Watch it buy, skip or decline", "Check the audit trail"].map((t, i) => (

@@ -17,6 +17,10 @@ const utcClock = (iso: string) => {
 };
 const clocks = (wat: string, utc: string) => `${time(wat)} · ${utcClock(utc)}`;
 
+/** Display-only trim of Otto AI's wording: drop the hack-report sentence and keep the caution that follows it.
+ *  The full, untrimmed reply stays in /api/evidence. */
+const trimForDisplay = (para: string) => para.replace(/The Binance .*?ecosystem\.\s*/, "… ");
+
 /**
  * Replay of Centiv's real, Passport-capped x402 run. Everything here is read from
  * src/data/verified-run.json, verified against Base mainnet. Badged Replay — this
@@ -52,9 +56,10 @@ export default function VerifiedRun({
             <span className="num text-[10.5px] text-dim">{c.reply.source_count} sources</span>
           </figcaption>
           <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.6] text-mute">
-            {(compact ? c.reply.excerpt.slice(0, 1) : c.reply.excerpt).map((para) => (
-              <p key={para.slice(0, 40)}>{para.length > 520 ? `${para.slice(0, 520).replace(/\s+\S*$/, "")}…` : para}</p>
-            ))}
+            {(compact ? c.reply.excerpt.slice(0, 1) : c.reply.excerpt).map((para) => {
+              const shown = trimForDisplay(para);
+              return <p key={para.slice(0, 40)}>{shown.length > 520 ? `${shown.slice(0, 520).replace(/\s+\S*$/, "")}…` : shown}</p>;
+            })}
           </blockquote>
           <p className="mt-3 border-t border-[rgba(201,146,46,0.25)] pt-2 text-[11.5px] text-dim">
             Source: Otto AI ({c.reply.attribution.replace(/[[\]]/g, "")}). Excerpt trimmed by Centiv. The claims are Otto AI’s and Centiv has not verified them.
@@ -76,15 +81,51 @@ export default function VerifiedRun({
         <h2 id={`${id}-title`} className={`mt-5 font-normal leading-[1.08] tracking-[-0.035em] text-bone ${compact ? "text-[32px] md:text-[40px]" : "text-[32px] md:text-[44px]"}`}>
           Verified live run: two calls paid, <span className="serif-em">the third declined</span>
         </h2>
-        <p className="mt-4 max-w-[680px] text-[15.5px] leading-[1.6] text-mute">
-          A real run, replayed. The owner approved a small Kite Passport session with a passkey: ${caps.max_amount_per_tx} a
-          call, ${caps.max_total_amount} in total. Centiv paid Otto AI twice in USDC on Base. On the third call, Passport
-          refused and no money moved. Both payments are on Basescan. This page never spends.
-        </p>
+        {receipts ? (
+          <p className="mt-4 max-w-[680px] text-[15.5px] leading-[1.6] text-mute">
+            A real run, replayed. The owner approved a small Kite Passport session with a passkey: ${caps.max_amount_per_tx} a
+            call, ${caps.max_total_amount} in total. This page never spends.
+          </p>
+        ) : (
+          <p className="mt-4 max-w-[680px] text-[15.5px] leading-[1.6] text-mute">
+            A real run, replayed. The owner approved a small Kite Passport session with a passkey: ${caps.max_amount_per_tx} a
+            call, ${caps.max_total_amount} in total. Centiv paid Otto AI twice in USDC on Base. On the third call, Passport
+            refused and no money moved. Both payments are on Basescan. This page never spends.
+          </p>
+        )}
         {children}
 
         {receipts ? (
           <>
+        {/* The refusal: the moment the cap held, given its own block */}
+        {declinedCall && (
+          <div className="mt-7 rounded-[16px] border border-stop/45 bg-[#fdf3e4] p-5 sm:p-7">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="num inline-flex items-center gap-1.5 text-[10.5px] uppercase tracking-[0.12em] text-stop">Replay · real run</span>
+              <DecisionTag d="decline" />
+            </div>
+            <div className="mt-4 flex items-start gap-4">
+              <Stamp size={40} className="stamp-in mt-1 hidden shrink-0 text-stop sm:block" label="Declined" />
+              <div className="min-w-0">
+                <p className="text-[24px] font-medium leading-[1.2] tracking-[-0.025em] text-bone sm:text-[28px]">
+                  Call {declinedCall.n}: <span className="capitalize">{declinedCall.topic}</span>.
+                  <br />
+                  <span className="text-stop">Declined by {declinedCall.declined_by}.</span>
+                </p>
+                <p className="mt-2 text-[16px] text-mute">Nothing was signed. No money moved.</p>
+                <p className="num mt-3 text-[12px] leading-[1.7] text-mute">
+                  <span className="rounded bg-stop/10 px-1.5 py-0.5 text-stop">{declinedCall.error_code}</span> · “{declinedCall.error}”
+                </p>
+                <p className="mt-3 text-[15px] font-medium text-bone">
+                  Centiv didn’t decide to stop. <span className="serif-em text-[17px]">Passport stopped it.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        <p className="mt-4 text-[13.5px] leading-[1.6] text-mute">
+          Calls 1 and 2 were paid at ${paidCalls[0]?.onchain.usdc_transfer.amount_usdc.toFixed(3)} each in USDC on Base. Receipts below.
+        </p>
         {/* Session: caps up front, the rest on tap */}
         <div className="mt-7 rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
@@ -178,7 +219,7 @@ export default function VerifiedRun({
               </div>
             </li>
           ))}
-          {declinedCall && (
+          {declinedCall && !receipts && (
             <li className="row-stop grid grid-cols-[30px_minmax(0,1fr)] items-start gap-x-3 gap-y-3 bg-stop/[0.05] px-4 py-4 sm:grid-cols-[34px_minmax(0,1fr)_auto] sm:px-5">
               <Stamp size={30} className="stamp-in text-stop" label="Declined" />
               <div className="min-w-0">
@@ -227,13 +268,19 @@ export default function VerifiedRun({
                 <span className="font-normal text-mute"> · {RECORDED_REPPO.verdict.confidence} confidence</span>
               </span>
             </p>
+            <p className="mt-2.5 text-[14px] leading-[1.6] text-mute">
+              Reppo scored the brief {RECORDED_REPPO.verdict.score} out of 100 and accepted it, but sent it to review
+              because its confidence was {RECORDED_REPPO.verdict.confidence}, not high. Factual accuracy scored lowest (
+              {RECORDED_REPPO.verdict.rubric_scores.factual_accuracy}/100): some figures came from Otto AI and weren’t
+              independently verified.
+            </p>
             <p className="mt-2 text-[12.5px] leading-[1.55] text-dim">
               Recorded on {date(RECORDED_REPPO.evaluated_at_wat)}, {clocks(RECORDED_REPPO.evaluated_at_wat, RECORDED_REPPO.evaluated_at_utc)}. Not a live score of questions visitors ask here.
             </p>
           </div>
           <details className="group mt-3 border-t border-[rgba(91,42,78,0.18)]">
             <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5 text-[13.5px] font-medium text-bone sm:px-5 [&::-webkit-details-marker]:hidden">
-              Sub-scores, explanation and the brief
+              Sub-scores and the brief Reppo scored
               <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">+</span>
             </summary>
             <div className="px-4 pb-5 sm:px-5">

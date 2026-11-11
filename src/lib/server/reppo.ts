@@ -33,7 +33,7 @@ function heuristic(answer: Answer, gotAllHigh: boolean): ReppoGate {
   if (gotAllHigh) {
     return {
       verdict: "accept",
-      score: 0.86,
+      score: 0.78,
       note: "Heuristic gate (no REPPO_API_KEY): every claim traces to purchased rows.",
       source: "heuristic",
     };

@@ -153,7 +153,7 @@ export const SCENARIOS: Record<Scenario["key"], Scenario> = {
       full: {
         gate: {
           verdict: "accept",
-          score: 0.86,
+          score: 0.78,
           note: "Every claim traces to purchased rows. No forecast stated as fact.",
         source: "heuristic",
         },

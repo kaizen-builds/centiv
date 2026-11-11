@@ -1,8 +1,8 @@
 # Centiv
 
-**Research that pays per call — and knows when not to.**
+**Research that pays in cents, and can stop.**
 
-Centiv is a pay-per-call research agent built for SERV Hackathon 02 (Kite track). You approve a Kite Passport spending session (budget, per-call cap, time window). The verified live run settled in USDC on Base; visitor payments on the public site are simulated. SERV Reasoning decides whether each paid data call is worth what's left; Centiv pays via x402 or declines before signing when a limit would be breached; and a quality gate accepts, revises or rejects the draft before you see it. The verified-run brief has a recorded real Reppo independent check (86 / 100, accept, routed to review, 11 Nov 2026). Visitor briefs on the public site use a built-in check, labelled Simulated. Every decision lands in the audit trail, labelled by its source.
+Centiv is a pay-per-call research agent built for SERV Hackathon 02 (Kite track). You approve a Kite Passport spending session (budget, per-call cap, time window). The verified live run settled in USDC on Base; visitor payments on the public site are simulated. SERV Reasoning decides whether each paid data call is worth what's left; Centiv pays via x402 or declines before signing when a limit would be breached; and a quality gate accepts, revises or rejects the draft before you see it. Reppo: a real check on the verified run (its brief scored 86 / 100, accept, routed to review, 11 Nov 2026), and a built-in check on public visitor questions, labelled Simulated. Every decision lands in the audit trail, labelled by its source.
 
 Live site: [centiv-gilt.vercel.app](https://centiv-gilt.vercel.app) · [Verified live run](https://centiv-gilt.vercel.app/#verified-run)
 

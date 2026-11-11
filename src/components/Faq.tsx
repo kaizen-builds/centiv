@@ -30,11 +30,28 @@ const items: { q: string; a: ReactNode }[] = [
     ),
   },
   {
+    q: "What happens if the cap runs out mid-question?",
+    a: (
+      <>
+        Passport refuses the next call and Centiv works with what it already bought. Nothing is signed beyond the cap.
+      </>
+    ),
+  },
+  {
+    q: "Why Base and not Kite’s own chain?",
+    a: (
+      <>
+        Otto AI, the data seller in the verified run, takes x402 payment in USDC on Base or Solana, not on Kite’s chain. So
+        the run settled in USDC on Base, with Kite Passport setting the caps and refusing the call that broke them.
+      </>
+    ),
+  },
+  {
     q: "Did Reppo verify the data Otto AI sold?",
     a: (
       <>
-        No. Reppo independently scored the research brief from the verified run: 86/100, accept, routed to review. It did
-        not check Otto AI’s raw figures. The result is in the{" "}
+        No. Reppo independently scored the research brief from the verified run: 86/100, accepted and sent to review
+        because its confidence was medium. It did not check Otto AI’s raw figures. The result is in the{" "}
         <a className={a} href="#verified-run">proof above</a>. Questions you ask here still use a built-in check, labelled
         Simulated.
       </>

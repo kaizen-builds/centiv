@@ -1,5 +1,7 @@
 # Centiv
 
+**Research that pays in cents, and can stop.**
+
 Centiv is a research agent that buys data one call at a time, inside a Kite Passport spending cap the owner approves with a passkey.
 In a verified run on Base, Passport paid two calls and declined the third with `session_total_exceeded`, and no money moved.
 Built for the Kite track of [SERV Hackathon 02](https://www.openserv.ai/hackathon-2), with live SERV Reasoning and x402 payments.
@@ -27,6 +29,8 @@ Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589f
 
 On 11 November 2026 the brief from that run was submitted to the Reppo Evaluation API. The panel scored it 86 / 100, accepted it, and routed it to review because confidence was medium. The raw result is at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval) (eval `cmwchexy5000208js0h731mwm`). Reppo did not return a public share URL, so Centiv publishes the owner-read result.
 
+In short, Reppo is a real check on the verified run (86 / 100, accept, routed to review) and a built-in check on public visitor questions.
+
 ## How it works
 
 1. **Kite Passport session.** Caps and scope are approved with a passkey. Live payments run `kpass session execute` and never pass `--use-allowance`, so they cannot fall back to the account allowance.
@@ -50,6 +54,10 @@ Live payments are owner-only and cannot run on the public Vercel site.
 ## What's next
 
 - Optionally call Reppo live on owner-gated runs, with a spending cap, now that the recorded check is in place. Visitor questions on the public site should stay on the built-in check unless private data can be kept off the network.
+
+## Disclosure
+
+Disclosure: [kaizen to fill in any Kite affiliation, or 'none']
 
 ## Links
 
