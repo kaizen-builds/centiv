@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Stamp } from "./Logo";
-import { DecisionTag, ProvenanceBadge } from "./ui";
+import { DecisionTag, ProvenanceBadge, VerdictTag } from "./ui";
+import { RECORDED_REPPO } from "@/lib/reppo-eval";
 import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls } from "@/lib/verified-run";
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
@@ -143,11 +144,58 @@ export default function VerifiedRun({
           <div className="mt-6">{replies}</div>
         )}
 
+        {/* Recorded real Reppo check of the brief drawn from this run */}
+        <div className="mt-6 rounded-[14px] border border-[rgba(91,42,78,0.28)] bg-[#faf6f8] p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="num text-[10.5px] uppercase tracking-[0.12em] text-[#5B2A4E]">{RECORDED_REPPO.label}</p>
+            <VerdictTag v={RECORDED_REPPO.verdict.decision === "reject" ? "reject" : "accept"} score={RECORDED_REPPO.verdict.score / 100} />
+          </div>
+          <p className="mt-3 text-[16px] font-medium tracking-[-0.015em] text-bone">
+            Score {RECORDED_REPPO.verdict.score} / 100 · {RECORDED_REPPO.verdict.decision}, routed to {RECORDED_REPPO.verdict.route}
+            <span className="font-normal text-mute"> · {RECORDED_REPPO.verdict.confidence} confidence</span>
+          </p>
+          <p className="mt-2 text-[13.5px] leading-[1.6] text-mute">{RECORDED_REPPO.verdict.reason}</p>
+          <dl className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {Object.entries(RECORDED_REPPO.verdict.rubric_scores).map(([k, v]) => (
+              <div key={k} className="rounded-[10px] bg-white px-3 py-2">
+                <dt className="num text-[10px] uppercase tracking-[0.1em] text-dim">{k.replace(/_/g, " ")}</dt>
+                <dd className="fig mt-1 text-[15px] text-bone">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <details className="group mt-4">
+            <summary className="cursor-pointer list-none text-[13.5px] font-medium text-bone [&::-webkit-details-marker]:hidden">
+              The brief Reppo scored
+              <span aria-hidden="true" className="ml-2 text-[16px] leading-none text-dim transition group-open:hidden">+</span>
+            </summary>
+            <div className="mt-3 space-y-2 text-[13.5px] leading-[1.6] text-mute">
+              <p className="italic">“{RECORDED_REPPO.brief.question}”</p>
+              <p className="font-medium text-bone">{RECORDED_REPPO.brief.headline}</p>
+              {RECORDED_REPPO.brief.points.map((para) => (
+                <p key={para.slice(0, 48)}>{para}</p>
+              ))}
+              <p className="text-[12px] text-dim">{RECORDED_REPPO.brief.sources}</p>
+            </div>
+          </details>
+          <p className="mt-4 text-[12px] leading-[1.6] text-dim">
+            Independent panel score from the Reppo Evaluation API on {RECORDED_REPPO.evaluated_at_wat}. This is a recorded
+            check of the verified-run brief, not a live score of questions visitors ask on this site.{" "}
+            <a href={RECORDED_REPPO.evidence_path} className="underline underline-offset-2 hover:text-bone">
+              Result JSON
+            </a>
+            {" · "}
+            <span className="num">eval {RECORDED_REPPO.verdict.eval_id}</span>
+            . Reppo did not return a public share URL, so the raw result is published here.
+          </p>
+        </div>
+
         <p className="mt-6 text-[12px] leading-[1.6] text-dim">
           Payments settled in USDC on Base mainnet ({r.settlement.caip2}). Kite Passport enforced the session caps. Each
           transaction was submitted by an x402 facilitator that paid the gas. The USDC moved from the Passport wallet, as
           the Transfer log shows. Checked against {r.verification.rpc.replace("https://", "")} on {r.verification.checked_at_utc.slice(0, 10)}.{" "}
-          <a href="/api/evidence" className="underline underline-offset-2 hover:text-bone">Evidence JSON</a>.
+          <a href="/api/evidence" className="underline underline-offset-2 hover:text-bone">Evidence JSON</a>
+          {" · "}
+          <a href="/api/reppo-eval" className="underline underline-offset-2 hover:text-bone">Reppo result</a>.
         </p>
       </div>
     </section>

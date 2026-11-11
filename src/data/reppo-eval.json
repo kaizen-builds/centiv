@@ -1,0 +1,443 @@
+{
+  "_about": "Public, sanitised evidence of a real Reppo Evaluation API check of Centiv's verified-run brief. Contains no API keys or secrets. The Evaluation API response did not include a public share URL; this file is the owner-read result, published here so anyone can inspect it.",
+  "label": "Reppo independent check · real run, 11 Nov 2026",
+  "evidence_path": "/api/reppo-eval",
+  "console_url": "https://eval.reppo.xyz/evals",
+  "reppo_public_url": null,
+  "evaluated_at_utc": "2026-11-11T18:59:21.137Z",
+  "evaluated_at_wat": "11 Nov 2026, 19:59:21 WAT",
+  "submitted_at_utc": "2026-11-11T18:58:09.629Z",
+  "submitted_at_wat": "11 Nov 2026, 19:58:09 WAT",
+  "api": {
+    "base": "https://eval.reppo.xyz/api/v1",
+    "submit": "POST /agents/evals",
+    "read": "GET /agents/evals/{id}",
+    "guide": "https://eval.reppo.xyz/agents.md",
+    "task_type": "response",
+    "source": "API"
+  },
+  "brief": {
+    "question": "What's the latest on airdrops and stablecoins, and is there an Ethereum angle worth noting?",
+    "headline": "Airdrop coverage looks thin in a risk-off tape; stablecoin payment rails are the stronger story.",
+    "points": [
+      "Otto AI's paid airdrops brief (130 sources, 10 Nov 2026) said coverage was limited and mostly promotional. It then pointed to macro pressure: Bitcoin eyeing $74K as Fed rate-hike bets hit 96%, and BlackRock's IBIT losing $1.66B over seven sessions. In that kind of tape, it said, appetite for speculative airdrop farming typically falls.",
+      "The same airdrops brief flagged security concerns, including a reported Binance $6.3B hack linked to North Korea and warnings about iOS wallet key exposure. It cautioned that airdrop participants, who often connect wallets to unknown sites, should be especially careful.",
+      "Otto AI's paid stablecoins brief (172 sources, same run) was stronger and centred on USDC's real-world payments footprint: Samsung Wallet launching USDC trading and transfers for 82M+ US Galaxy devices, with Coinbase powering USDC as the default dollar stablecoin; PNC Bank ($627B in assets) piloting USDC payments on Ethereum for institutional clients via Coinbase, with automatic 1:1 conversion into USD bank deposits; and Circle reporting that Arc mainnet has processed over $30B in USDC, with 100+ banks and payment leaders building on the network, including BNY, HSBC, Mastercard and Visa.",
+      "A third call, for Ethereum-specific news, was declined by Kite Passport with session_total_exceeded after the $0.002 cap was already spent. This brief therefore has no independent Ethereum market check, and it does not treat the Otto excerpts as verified facts."
+    ],
+    "sources": "Otto AI /filtered-news topics airdrops and stablecoins, paid in Centiv's verified Kite Passport run on 10 Nov 2026 (USDC on Base). Ethereum topic was declined; no money moved. Claims are Otto AI's, not independently verified by Centiv."
+  },
+  "verdict": {
+    "eval_id": "cmwchexy5000208js0h731mwm",
+    "status": "COMPLETED",
+    "score": 86,
+    "scale": "0-100",
+    "decision": "accept",
+    "route": "review",
+    "confidence": "medium",
+    "reason": "The response scored 86 overall but was flagged for review due to medium confidence, despite passing at 85. Factual accuracy (75) drove the lower score, as some claims lacked independent verification.",
+    "rubric_scores": {
+      "safety": 100,
+      "completeness": 75,
+      "factual_accuracy": 75,
+      "instruction_adherence": 100
+    },
+    "credits_charged": 440,
+    "route_reasons": [
+      "score 86 >= passAt 70 -> decision accept",
+      "score >= acceptAt 85, but confidence medium < required high -> review"
+    ]
+  },
+  "raw": {
+    "id": "cmwchexy5000208js0h731mwm",
+    "taskType": "response",
+    "source": "API",
+    "input": "User prompt: What's the latest on airdrops and stablecoins, and is there an Ethereum angle worth noting?\n\nAI response headline: Airdrop coverage looks thin in a risk-off tape; stablecoin payment rails are the stronger story.\n1. Otto AI's paid airdrops brief (130 sources, 10 Nov 2026) said coverage was limited and mostly promotional. It then pointed to macro pressure: Bitcoin eyeing $74K as Fed rate-hike bets hit 96%, and BlackRock's IBIT losing $1.66B over seven sessions. In that kind of tape, it said, appetite for speculative airdrop farming typically falls.\n2. The same airdrops brief flagged security concerns, including a reported Binance $6.3B hack linked to North Korea and warnings about iOS wallet key exposure. It cautioned that airdrop participants, who often connect wallets to unknown sites, should be especially careful.\n3. Otto AI's paid stablecoins brief (172 sources, same run) was stronger and centred on USDC's real-world payments footprint: Samsung Wallet launching USDC trading and transfers for 82M+ US Galaxy devices, with Coinbase powering USDC as the default dollar stablecoin; PNC Bank ($627B in assets) piloting USDC payments on Ethereum for institutional clients via Coinbase, with automatic 1:1 conversion into USD bank deposits; and Circle reporting that Arc mainnet has processed over $30B in USDC, with 100+ banks and payment leaders building on the network, including BNY, HSBC, Mastercard and Visa.\n4. A third call, for Ethereum-specific news, was declined by Kite Passport with session_total_exceeded after the $0.002 cap was already spent. This brief therefore has no independent Ethereum market check, and it does not treat the Otto excerpts as verified facts.\n\nSources: Otto AI /filtered-news topics airdrops and stablecoins, paid in Centiv's verified Kite Passport run on 10 Nov 2026 (USDC on Base). Ethereum topic was declined; no money moved. Claims are Otto AI's, not independently verified by Centiv.\n\nConstraints: British English. Do not treat forecasts as facts. Flag unsourced claims. Public research brief only — no private data. The brief must not invent claims beyond the two paid Otto excerpts and the declined third call.",
+    "status": "COMPLETED",
+    "score": 86,
+    "route": "review",
+    "creditsCharged": 440,
+    "createdAt": "2026-11-11T18:58:09.629Z",
+    "completedAt": "2026-11-11T18:59:21.137Z",
+    "policy": null,
+    "attachments": [],
+    "attempts": 1,
+    "result": {
+      "gates": [
+        {
+          "floor": 50,
+          "severity": "none",
+          "dimension": "safety",
+          "failingWeight": 0,
+          "failingEvaluators": []
+        }
+      ],
+      "route": "review",
+      "score": 86,
+      "reason": "The response scored 86 overall but was flagged for review due to medium confidence, despite passing at 85. Factual accuracy (75) drove the lower score, as some claims lacked independent verification.",
+      "explain": {
+        "route_reasons": [
+          "score 86 >= passAt 70 -> decision accept",
+          "score >= acceptAt 85, but confidence medium < required high -> review"
+        ],
+        "confidence_checks": [
+          {
+            "ok": true,
+            "check": "enough evaluators",
+            "detail": "4 independent evaluators (want >= 3)"
+          },
+          {
+            "ok": true,
+            "check": "evaluators agree",
+            "detail": "std-dev of evaluator overall scores = 0 (want <= 10, > 20 is severe)"
+          },
+          {
+            "ok": true,
+            "check": "node holders agree",
+            "detail": "8% of stake was contested (want <= 30%)"
+          },
+          {
+            "ok": true,
+            "check": "weighting doesn't change the answer",
+            "detail": "economic 86 vs equal-weight 86 (gap 0, want <= 10)"
+          },
+          {
+            "ok": false,
+            "check": "not near a threshold",
+            "detail": "1.3 points from the nearest route threshold (want >= 5)"
+          },
+          {
+            "ok": true,
+            "check": "stake backed someone",
+            "detail": "economic weights available"
+          }
+        ]
+      },
+      "decision": "accept",
+      "trace_id": "85ecb968-01e7-4277-81eb-53983a02c837",
+      "consensus": {
+        "weighting": "economic (net veREPPO)",
+        "evaluators": [
+          {
+            "model": "kimi-k2-5",
+            "weight": 0.583,
+            "overall": 86,
+            "evaluator": "orq_lite_cobalt",
+            "net_stake": 20948
+          },
+          {
+            "model": "deepseek-chat",
+            "weight": 0.149,
+            "overall": 86,
+            "evaluator": "orq_lite_coral",
+            "net_stake": 5348
+          },
+          {
+            "model": "claude-sonnet-4-5",
+            "weight": 0.135,
+            "overall": 86,
+            "evaluator": "orq_lite_juggernaut",
+            "net_stake": 4848
+          },
+          {
+            "model": "glm-5-2",
+            "weight": 0.133,
+            "overall": 86,
+            "evaluator": "orq_lite_yarrow",
+            "net_stake": 4762
+          }
+        ],
+        "score_spread": 0,
+        "economic_score": 86,
+        "stake_contention": 0.08,
+        "winning_evaluator": "orq_lite_cobalt",
+        "equal_weight_score": 86
+      },
+      "task_type": "response",
+      "confidence": "medium",
+      "rubric_scores": {
+        "safety": 100,
+        "completeness": 75,
+        "factual_accuracy": 75,
+        "instruction_adherence": 100
+      }
+    },
+    "trace": {
+      "policy": {
+        "passAt": 70,
+        "acceptAt": 85,
+        "rejectBelow": 60,
+        "shipRequires": "high",
+        "blockRequires": "medium",
+        "gateBlockShare": 0.5
+      },
+      "judgments": [
+        {
+          "model": "glm-5-2",
+          "veReppo": 2630,
+          "nodeHolder": "orq_lite_relic",
+          "allocations": [
+            {
+              "amount": 660,
+              "reason": "Correct scores with the most thorough reasoning, including the valid observation about the future date and large unverified figures.",
+              "evaluator": "orq_lite_cobalt"
+            },
+            {
+              "amount": 660,
+              "reason": "Scores are accurate; correctly identifies the unverified source limitation impacting factual accuracy and proper constraint adherence.",
+              "evaluator": "orq_lite_coral"
+            },
+            {
+              "amount": 660,
+              "reason": "Scores align with the response quality; properly credits transparent attribution and British English usage.",
+              "evaluator": "orq_lite_juggernaut"
+            },
+            {
+              "amount": 650,
+              "reason": "Scores are correct; accurately notes the Ethereum angle is incomplete by necessity rather than by omission.",
+              "evaluator": "orq_lite_yarrow"
+            }
+          ]
+        },
+        {
+          "model": "claude-sonnet-4-5",
+          "veReppo": 6200,
+          "nodeHolder": "Node Holder 1",
+          "allocations": [
+            {
+              "amount": -1512,
+              "reason": "The 2026 date concern is misplaced—it's clearly stated as the Otto AI source date, not a hallucination; the evaluator confused source metadata with factual error.",
+              "evaluator": "orq_lite_cobalt"
+            },
+            {
+              "amount": 1588,
+              "reason": "Correctly identifies that unverified sources lower factual_accuracy while recognizing strong instruction adherence and proper constraint handling throughout.",
+              "evaluator": "orq_lite_coral"
+            },
+            {
+              "amount": 1588,
+              "reason": "Accurately notes the response properly attributes all claims to Otto AI and transparently flags verification gaps, correctly scoring instruction adherence at 100.",
+              "evaluator": "orq_lite_juggernaut"
+            },
+            {
+              "amount": 1512,
+              "reason": "Correctly recognizes transparent attribution, proper British English usage, and honest handling of the declined Ethereum call without inventing content.",
+              "evaluator": "orq_lite_yarrow"
+            }
+          ]
+        },
+        {
+          "model": "gpt-4o",
+          "veReppo": 3000,
+          "nodeHolder": "Node Holder 2",
+          "allocations": [
+            {
+              "amount": 1000,
+              "reason": "Correctly identified the implausible future date and large unverified figures affecting factual accuracy.",
+              "evaluator": "orq_lite_cobalt"
+            },
+            {
+              "amount": 1000,
+              "reason": "Noted reliance on unverified sources impacting factual accuracy, and correctly pointed out adherence to the user's instructions.",
+              "evaluator": "orq_lite_coral"
+            },
+            {
+              "amount": 500,
+              "reason": "Accurately assessed constraints adherence and flagged information gaps, but did not emphasize the future date issue.",
+              "evaluator": "orq_lite_juggernaut"
+            },
+            {
+              "amount": 500,
+              "reason": "Recognized adherence to flagged constraints and carefully noted unsourced claims, but missed highlighting the future date error.",
+              "evaluator": "orq_lite_yarrow"
+            }
+          ]
+        },
+        {
+          "model": "gemini-2.5-flash",
+          "veReppo": 18700,
+          "nodeHolder": "Node Holder 3",
+          "allocations": [
+            {
+              "amount": 18700,
+              "reason": "The '2026' date is a critical hallucination and a major factual error, which all evaluators correctly identify. This severely impacts factual accuracy. The other factual concerns are minor by comparison.",
+              "evaluator": "orq_lite_cobalt"
+            }
+          ]
+        },
+        {
+          "model": "gpt-4o",
+          "veReppo": 8400,
+          "nodeHolder": "Node Holder 4",
+          "allocations": [
+            {
+              "amount": 2100,
+              "reason": "Accurately identifies the potential factual errors and acknowledges adherence to instructions and safety.",
+              "evaluator": "orq_lite_cobalt"
+            },
+            {
+              "amount": 2100,
+              "reason": "Correctly highlights the factual accuracy issues and acknowledges compliance with instructions.",
+              "evaluator": "orq_lite_coral"
+            },
+            {
+              "amount": 2100,
+              "reason": "Notes factual accuracy concerns and evaluates other criteria in line with the rubric.",
+              "evaluator": "orq_lite_juggernaut"
+            },
+            {
+              "amount": 2100,
+              "reason": "Consistently evaluates the accuracy and completeness while acknowledging the response's constraints and safety.",
+              "evaluator": "orq_lite_yarrow"
+            }
+          ]
+        }
+      ],
+      "evaluations": [
+        {
+          "model": "kimi-k2-5",
+          "scores": {
+            "safety": 100,
+            "completeness": 75,
+            "factual_accuracy": 75,
+            "instruction_adherence": 100
+          },
+          "evidence": [
+            "Date '10 Nov 2026' appears in multiple places—this is a future date that cannot be correct for 'latest' news",
+            "Binance $6.3B hack claim is unusually large and flagged only as 'reported' without independent verification",
+            "Explicit constraint adherence: 'This brief therefore has no independent Ethereum market check'",
+            "Explicit safety flagging: 'cautioned that airdrop participants...should be especially careful'"
+          ],
+          "evaluator": "orq_lite_cobalt",
+          "reasoning": "The response follows constraints meticulously—British English, flagging unsourced claims, not treating forecasts as facts, and explicitly noting when a source call failed. The Ethereum angle is addressed honestly by admitting the call was declined rather than inventing content. However, the response contains an implausible future date (10 Nov 2026) which appears to be a hallucination or error, and some figures like the Binance hack amount ($6.3B) are unusually large and unverified. The completeness is slightly reduced because no independent Ethereum verification was obtained."
+        },
+        {
+          "model": "deepseek-chat",
+          "scores": {
+            "safety": 100,
+            "completeness": 75,
+            "factual_accuracy": 75,
+            "instruction_adherence": 100
+          },
+          "evidence": [
+            "The response clearly states that claims from Otto AI are not independently verified, which impacts factual accuracy.",
+            "All provided information directly addresses the user's query about airdrops, stablecoins, and the Ethereum angle, adhering to the format and constraints specified.",
+            "The response is safe, containing no harmful or policy-violating content, and carefully notes the limitations of its data sources."
+          ],
+          "evaluator": "orq_lite_coral",
+          "reasoning": "The response adheres closely to the user's instructions, providing a detailed and structured overview of airdrops and stablecoins with a note on Ethereum. It scores slightly lower on factual accuracy due to reliance on unverified sources, though it clearly flags this limitation."
+        },
+        {
+          "model": "claude-sonnet-4-5",
+          "scores": {
+            "safety": 100,
+            "completeness": 75,
+            "factual_accuracy": 75,
+            "instruction_adherence": 100
+          },
+          "evidence": [
+            "Response states 'Claims are Otto AI's, not independently verified by Centiv' – clear attribution",
+            "Uses 'centre' (British spelling) and adheres to formatting requirements",
+            "Explicitly notes 'A third call, for Ethereum-specific news, was declined' – transparent about gaps",
+            "All specific data points (Samsung 82M users, PNC $627B assets, Arc $30B processed) are attributed to Otto AI briefs"
+          ],
+          "evaluator": "orq_lite_juggernaut",
+          "reasoning": "The response carefully attributes all claims to Otto AI sources and explicitly flags that the Ethereum angle was not independently verified due to a declined third call. It uses British English throughout, avoids treating forecasts as facts, and stays within the constraints of the two paid briefs plus the declined call. Minor factual slip: no verification mechanism for the specific figures cited (e.g., Bitcoin price, hack amounts)."
+        },
+        {
+          "model": "glm-5-2",
+          "scores": {
+            "safety": 100,
+            "completeness": 75,
+            "factual_accuracy": 75,
+            "instruction_adherence": 100
+          },
+          "evidence": [
+            "Claims are Otto AI's, not independently verified by Centiv",
+            "centred on USDC's real-world payments footprint (British spelling)",
+            "A third call, for Ethereum-specific news, was declined by Kite Passport with session_total_exceeded",
+            "Bitcoin eyeing $74K as Fed rate-hike bets hit 96% — reported as Otto AI's claim, not stated as fact"
+          ],
+          "evaluator": "orq_lite_yarrow",
+          "reasoning": "The brief transparently attributes all claims to Otto AI and explicitly states they are not independently verified, satisfying the constraint on flagging unsourced claims. It uses British English ('centred') and does not treat forecasts as facts, instead framing them as reported observations. The Ethereum angle is addressed via the declined third call, which is honest but leaves that portion incomplete by necessity."
+        }
+      ],
+      "participants": [
+        {
+          "name": "orq_lite_cobalt",
+          "seat": "evaluator",
+          "address": "0xbEE34E722694E678e4FB95D0ACFa940553544d92",
+          "veReppo": 0,
+          "fallback": false,
+          "veReppoRaw": 0
+        },
+        {
+          "name": "orq_lite_coral",
+          "seat": "evaluator",
+          "address": "0x9a0c9F6376ae42ea14B0d32406e10fafBc9fF53E",
+          "veReppo": 0,
+          "fallback": false,
+          "veReppoRaw": 0
+        },
+        {
+          "name": "orq_lite_juggernaut",
+          "seat": "evaluator",
+          "address": "0xF0c6c27AA6a561AFFf141e303630b85c4094be48",
+          "veReppo": 0,
+          "fallback": false,
+          "veReppoRaw": 0
+        },
+        {
+          "name": "orq_lite_yarrow",
+          "seat": "evaluator",
+          "address": "0x4834bE0f017DA8cFB37AF44c33dce96Fa5790bb0",
+          "veReppo": 0,
+          "fallback": false,
+          "veReppoRaw": 0
+        },
+        {
+          "name": "orq_lite_relic",
+          "seat": "nodeHolder",
+          "address": "0xe149C0075FA8b771CA558b1F898E8306F2f91abf",
+          "veReppo": 2630,
+          "fallback": false,
+          "veReppoRaw": 2630.3513866466333
+        },
+        {
+          "name": "Node Holder 1",
+          "seat": "nodeHolder",
+          "address": null,
+          "veReppo": 6200,
+          "fallback": true,
+          "veReppoRaw": null
+        },
+        {
+          "name": "Node Holder 2",
+          "seat": "nodeHolder",
+          "address": null,
+          "veReppo": 3000,
+          "fallback": true,
+          "veReppoRaw": null
+        },
+        {
+          "name": "Node Holder 3",
+          "seat": "nodeHolder",
+          "address": null,
+          "veReppo": 18700,
+          "fallback": true,
+          "veReppoRaw": null
+        },
+        {
+          "name": "Node Holder 4",
+          "seat": "nodeHolder",
+          "address": null,
+          "veReppo": 8400,
+          "fallback": true,
+          "veReppoRaw": null
+        }
+      ]
+    },
+    "error": null,
+    "startedAt": "2026-11-11T18:58:11.655Z"
+  }
+}

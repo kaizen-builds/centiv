@@ -31,12 +31,18 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
       detail: "Centiv applies the same per-call, total and time limits itself. The real Passport refusal is in the verified run.",
     },
     {
-      part: "Quality gate",
+      part: "Reppo check of the verified-run brief",
+      p: "replay",
+      detail:
+        "A real independent evaluation on 11 Nov 2026. Score 86 / 100, accept, routed to review (medium confidence). Recorded in the evidence file; not a live score of questions visitors ask.",
+    },
+    {
+      part: "Quality gate in the public demo",
       p: gate,
       detail:
         gate === "live"
-          ? "Each brief is scored by Reppo before it reaches you."
-          : "Reppo-ready. Until a Reppo key is connected, a built-in check scores each brief.",
+          ? "Each visitor brief is scored by a live Reppo call before it reaches you. Evaluations should not include private data."
+          : "A built-in check scores each visitor brief, labelled Simulated. This deployment does not call Reppo on every question.",
     },
     {
       part: "Data, prices and briefs in the public demo",

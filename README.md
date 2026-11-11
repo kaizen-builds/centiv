@@ -2,7 +2,7 @@
 
 **Research that pays per call — and knows when not to.**
 
-Centiv is a pay-per-call research agent built for SERV Hackathon 02 (Kite track). You approve a Kite Passport spending session (budget, per-call cap, time window). The verified live run settled in USDC on Base; visitor payments on the public site are simulated. SERV Reasoning decides whether each paid data call is worth what's left; Centiv pays via x402 or declines before signing when a limit would be breached; and a quality gate (Reppo-ready; built-in check until a Reppo key is connected) accepts, revises or rejects the draft before you see it. Every decision lands in the audit trail, labelled by its source (Reppo or built-in check).
+Centiv is a pay-per-call research agent built for SERV Hackathon 02 (Kite track). You approve a Kite Passport spending session (budget, per-call cap, time window). The verified live run settled in USDC on Base; visitor payments on the public site are simulated. SERV Reasoning decides whether each paid data call is worth what's left; Centiv pays via x402 or declines before signing when a limit would be breached; and a quality gate accepts, revises or rejects the draft before you see it. The verified-run brief has a recorded real Reppo independent check (86 / 100, accept, routed to review, 11 Nov 2026). Visitor briefs on the public site use a built-in check, labelled Simulated. Every decision lands in the audit trail, labelled by its source.
 
 Live site: [centiv-gilt.vercel.app](https://centiv-gilt.vercel.app) · [Verified live run](https://centiv-gilt.vercel.app/#verified-run)
 
@@ -20,12 +20,13 @@ Every run, receipt and audit row carries exactly one of three badges:
 
 ## Verified live run (Replay)
 
-See it on the site: [centiv-gilt.vercel.app/#verified-run](https://centiv-gilt.vercel.app/#verified-run). Evidence: [`evidence/verified-run.json`](evidence/verified-run.json) and [`evidence/README.md`](evidence/README.md). The same data is served at `GET /api/evidence`.
+See it on the site: [centiv-gilt.vercel.app/#verified-run](https://centiv-gilt.vercel.app/#verified-run). Payment evidence: [`evidence/verified-run.json`](evidence/verified-run.json) (`GET /api/evidence`). Recorded Reppo check: [`evidence/reppo-eval.json`](evidence/reppo-eval.json) (`GET /api/reppo-eval`). Notes: [`evidence/README.md`](evidence/README.md).
 
 - Passport session `agent_session_01a1c57f-7107-7b6e-92dc-a6313394ee07` was approved with the owner's passkey. Caps: $0.001 per call, $0.002 in total, 1 hour. Scope: `GET x402.ottoai.services/filtered-news` only.
 - Call 1 (`airdrops`) paid 0.001 USDC on Base: [0x8692…5353](https://basescan.org/tx/0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353)
 - Call 2 (`stablecoins`) paid 0.001 USDC on Base: [0x2a38…2b2d](https://basescan.org/tx/0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d)
 - Call 3 (`ethereum`) was declined by Passport with `session_total_exceeded`. No money moved.
+- On 11 Nov 2026 the brief from those two paid excerpts (and the declined third call) was scored by the Reppo Evaluation API: 86 / 100, accept, routed to review (medium confidence). Eval `cmwchexy5000208js0h731mwm`.
 
 ## Run it
 
@@ -88,8 +89,8 @@ Keep the Passport balance small. Live mode only spends from the session you appr
 
 ## The demo
 
-- **Scene A · paid call** — ETH funding brief. SERV buys 7-day funding history (0.18 USDC), skips a low-value sentiment scrape, and the built-in quality check accepts (labelled Simulated until a Reppo key is connected).
-- **Scene B · cap hit** — 1-minute order-book depth (0.35 USDC). Passport fails the per-call cap / remaining budget; Centiv declines before signing; the built-in quality check returns *revise* (labelled Simulated until a Reppo key is connected).
+- **Scene A · paid call** — ETH funding brief. SERV buys 7-day funding history (0.18 USDC), skips a low-value sentiment scrape, and the built-in quality check accepts (labelled Simulated on the public site).
+- **Scene B · cap hit** — 1-minute order-book depth (0.35 USDC). Passport fails the per-call cap / remaining budget; Centiv declines before signing; the built-in quality check returns *revise* (labelled Simulated on the public site).
 
 Centiv checks these limits itself against your session settings — raise the per-call cap to 0.35 and Scene B will buy instead of declining.
 
@@ -117,7 +118,7 @@ See [`.env.example`](.env.example). Summary:
 1. **OpenServ** — account + API key + credits ([hackathon](https://www.openserv.ai/hackathon-2)).
 2. **Kite Passport** — install `kpass`, passkey, fund the Passport wallet with USDC on Base (the verified run used 2.16 USDC sent on Base), approve a capped spending session ([Passport](https://docs.gokite.ai/passport), [CLI](https://docs.gokite.ai/reference/kpass-cli), [payments](https://docs.gokite.ai/passport/payments)). There is no public HTTP Passport API yet, so live payments go through `kpass session execute`, and only via the owner-gated `/api/live` route.
 3. **x402 data source** — one research feed. Centiv ships a funding catalogue at `/api/data/funding`. For a real seller, wrap an upstream with [`kite-x402-hono`](https://www.npmjs.com/package/kite-x402-hono) / explorer / axum (hackathon priority repos). Optional test URL: `https://x402.dev.gokite.ai/api/weather?location=San%20Francisco`.
-4. **Reppo** — optional. API key from [eval.reppo.xyz](https://eval.reppo.xyz). Without `REPPO_API_KEY`, Centiv uses the built-in check and labels it **Built-in check · Simulated**. With a key, results are labelled **Reppo**. Do not submit private data (evaluations are public on the network feed). The demo polls briefly (~45s) then falls back with the `evalId` if still settling.
+4. **Reppo** — optional for live per-run scoring. API key from [eval.reppo.xyz](https://eval.reppo.xyz); live shape is in [agents.md](https://eval.reppo.xyz/agents.md). Without `REPPO_API_KEY`, visitor briefs use the built-in check, labelled **Built-in check · Simulated**. With a key, live results are labelled **Reppo**. Do not submit private data. The public production site does not set this key, so visitor questions are not sent to Reppo. A recorded real check of the verified-run brief (11 Nov 2026, score 86, accept, routed to review) is published at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). The Evaluation API did not return a public share URL. If a live key is present, the demo polls briefly (~45s) then falls back with the `evalId` if still settling.
 
 ## Structure
 
@@ -129,7 +130,8 @@ src/lib/server/live.ts         owner-gated live payments via kpass (local only)
 src/lib/verified-run.ts        typed replay evidence (src/data/verified-run.json)
 src/lib/server/serv.ts         SERV Reasoning spend/skip/decline
 src/lib/server/x402.ts         quote + pay
-src/lib/server/reppo.ts        Evaluation API gate
+src/lib/server/reppo.ts        Evaluation API gate (live, only if REPPO_API_KEY is set)
+src/lib/reppo-eval.ts         Recorded real Reppo check of the verified-run brief
 src/lib/server/engine.ts       orchestrates one run
 src/app/api/*/route.ts         status, session, run, funding catalogue
 src/components/CentivApp.tsx   workspace UI (calls the API)

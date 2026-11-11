@@ -159,5 +159,17 @@
     "checked_at_utc": "2026-11-10T13:35:25Z",
     "chain_head_at_check": 55636749,
     "method": "eth_getTransactionByHash, eth_getTransactionReceipt and eth_getBlockByNumber; USDC Transfer and AuthorizationUsed logs decoded."
+  },
+  "quality_gate": {
+    "source": "reppo",
+    "label": "Reppo independent check · real run, 11 Nov 2026",
+    "eval_id": "cmwchexy5000208js0h731mwm",
+    "score": 86,
+    "decision": "accept",
+    "route": "review",
+    "confidence": "medium",
+    "evaluated_at_utc": "2026-11-11T18:59:21.137Z",
+    "evidence": "/api/reppo-eval",
+    "note": "Recorded real Reppo evaluation of the verified-run brief on 11 Nov 2026. Not a live per-question score in the public demo."
   }
 }

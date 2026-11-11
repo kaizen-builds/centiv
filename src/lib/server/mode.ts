@@ -3,6 +3,7 @@
  * Keys stay server-side; the browser only sees booleans via /api/status.
  */
 
+import { RECORDED_REPPO } from "@/lib/reppo-eval";
 import { VERIFIED_RUN, declinedCall, paidCalls } from "@/lib/verified-run";
 import { liveGate } from "./live";
 
@@ -58,6 +59,17 @@ export function publicStatus() {
       tx: paidCalls.map((c) => ({ hash: c.tx_hash, basescan: c.basescan_url })),
       evidence: "/api/evidence",
       section: "/#verified-run",
+      reppo: {
+        source: "recorded",
+        label: RECORDED_REPPO.label,
+        eval_id: RECORDED_REPPO.verdict.eval_id,
+        score: RECORDED_REPPO.verdict.score,
+        decision: RECORDED_REPPO.verdict.decision,
+        route: RECORDED_REPPO.verdict.route,
+        confidence: RECORDED_REPPO.verdict.confidence,
+        evaluated_at_utc: RECORDED_REPPO.evaluated_at_utc,
+        evidence: RECORDED_REPPO.evidence_path,
+      },
     },
     live_demo: {
       enabled: live.enabled,
@@ -67,6 +79,6 @@ export function publicStatus() {
     note:
       mode === "simulated"
         ? "No API keys configured — reasoning, gate and payments are simulated. Figures are not live market data."
-        : "SERV reasoning is live where configured; payments on this site are Simulated. A real Passport-capped run is available as a Replay.",
+        : "SERV reasoning is live where configured; payments on this site are Simulated. A real Passport-capped run and a recorded Reppo check of its brief are available as a Replay.",
   };
 }

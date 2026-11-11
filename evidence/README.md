@@ -1,6 +1,6 @@
 # Centiv verified live run: evidence
 
-This folder is a public-only backup. It holds no keys, tokens or session secrets. The machine-readable copy is [`verified-run.json`](verified-run.json), which matches `src/data/verified-run.json` and `GET /api/evidence`.
+This folder is a public-only backup. It holds no keys, tokens or session secrets. The machine-readable copy of the Passport run is [`verified-run.json`](verified-run.json), which matches `src/data/verified-run.json` and `GET /api/evidence`. The recorded Reppo check of the brief from that run is [`reppo-eval.json`](reppo-eval.json), also at `GET /api/reppo-eval`.
 
 ## Passport session (Kite Passport, production)
 
@@ -36,3 +36,18 @@ I checked both transactions on 10 Nov 2026 against `https://mainnet.base.org`, u
 
 - Kite Passport enforced the caps. Settlement was USDC on **Base mainnet** (`eip155:8453`), not on Kite chain. It is worth confirming with the Kite and OpenServ teams that Base settlement counts for the track.
 - The news replies are excerpts of Otto AI's paid responses ("[Powered by $OTTO AI | @useOttoAI]"), trimmed by Centiv. The claims in them are Otto AI's and Centiv has not verified them.
+
+## Reppo independent check (11 Nov 2026)
+
+A real evaluation was submitted to the [Reppo Evaluation API](https://eval.reppo.xyz/agents.md) (`POST /api/v1/agents/evals`, then polled until `COMPLETED`). It scored the research brief drawn from the two paid Otto excerpts and the declined Ethereum call. Claims in the brief are attributed to Otto AI and are not independently verified by Centiv.
+
+- **Eval id:** `cmwchexy5000208js0h731mwm`
+- **Completed:** 11 Nov 2026, 19:59:21 WAT
+- **Score:** 86 / 100
+- **Decision:** accept
+- **Route:** review (medium confidence; ship requires high)
+- **Rubric:** safety 100, instruction adherence 100, completeness 75, factual accuracy 75
+- **Credits charged:** 440
+- **Public share URL:** none was returned by the API. The raw owner-read result, with no key, is published in [`reppo-eval.json`](reppo-eval.json) and at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval).
+
+This is a recorded check of that brief. The public demo does not call Reppo on every visitor question; those briefs still use the built-in check, labelled Simulated.

@@ -25,6 +25,8 @@ On 10 November 2026 the owner approved session `agent_session_01a1c57f-7107-7b6e
 
 Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`), checked against Base mainnet. Evidence: [`evidence/`](evidence/) and [`/api/evidence`](https://centiv-gilt.vercel.app/api/evidence).
 
+On 11 November 2026 the brief from that run was submitted to the Reppo Evaluation API. The panel scored it 86 / 100, accepted it, and routed it to review because confidence was medium. The raw result is at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval) (eval `cmwchexy5000208js0h731mwm`). Reppo did not return a public share URL, so Centiv publishes the owner-read result.
+
 ## How it works
 
 1. **Kite Passport session.** Caps and scope are approved with a passkey. Live payments run `kpass session execute` and never pass `--use-allowance`, so they cannot fall back to the account allowance.
@@ -39,18 +41,20 @@ Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589f
 | SERV Reasoning | Live | Real model calls. SERV decides whether each paid call is worth it for every question asked in the app. |
 | Payments in the public demo | Simulated | Visitors never spend money. Receipts start with `sim_` so they cannot pass for on-chain hashes. |
 | Cap checks in the public demo | Simulated | Centiv applies the same per-call, total and time limits itself. The real Passport refusal is in the verified run. |
-| Quality gate | Simulated | Reppo is not wired in. Until a Reppo key is connected, a built-in check scores each brief, labelled Simulated. |
+| Reppo check of the verified-run brief | Recorded | A real Reppo Evaluation API check on 11 Nov 2026. Score 86 / 100, accept, routed to review (medium confidence). Raw result: [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). The API did not return a public share URL. |
+| Quality gate in the public demo | Simulated | A built-in check scores each visitor brief, labelled Simulated. Production does not call Reppo on every question. |
 | Data, prices and briefs in the public demo | Simulated | Example datasets, prices and briefs for illustration. The landing demo is simulated and its briefs are pre-written. The real data and real price ($0.001 a call) are in the verified run. |
 
 Live payments are owner-only and cannot run on the public Vercel site.
 
 ## What's next
 
-- Connect Reppo so the quality gate is a live score rather than the built-in check.
+- Optionally call Reppo live on owner-gated runs, with a spending cap, now that the recorded check is in place. Visitor questions on the public site should stay on the built-in check unless private data can be kept off the network.
 
 ## Links
 
 - Live site: https://centiv-gilt.vercel.app
 - App: https://centiv-gilt.vercel.app/app
 - Evidence: https://centiv-gilt.vercel.app/api/evidence
+- Reppo result: https://centiv-gilt.vercel.app/api/reppo-eval
 - Source: https://github.com/kaizen-builds/centiv (setup steps are in the [README](https://github.com/kaizen-builds/centiv#readme))

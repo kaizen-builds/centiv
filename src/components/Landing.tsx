@@ -134,7 +134,7 @@ const builtWith: { name: string; role: string; href: string }[] = [
   { name: "Kite Passport", role: "Agent identity and spending caps, approved with a passkey. Enforced the real refusal.", href: "https://docs.gokite.ai/passport" },
   { name: "x402", role: "Pay-per-request payments over HTTP. Each data call carries its own price.", href: "https://docs.gokite.ai/passport/payments" },
   { name: "SERV Reasoning", role: "Decides, call by call, whether paid data is worth what’s left of the budget.", href: "https://docs.openserv.ai/serv-reasoning/api" },
-  { name: "Reppo-ready gate", role: "Scores each brief. A built-in check stands in until a Reppo key is connected.", href: "https://docs.reppo.ai/concepts/evaluation-api" },
+  { name: "Reppo", role: "Independent check of the verified-run brief: score 86, accept, routed to review. Visitor questions still use a built-in check, labelled Simulated.", href: "https://eval.reppo.xyz/agents.md" },
 ];
 
 const resources: { label: string; href: string; external?: boolean; note: string }[] = [

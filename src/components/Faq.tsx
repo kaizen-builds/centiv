@@ -38,11 +38,21 @@ const items: { q: string; a: ReactNode }[] = [
     ),
   },
   {
+    q: "What does Reppo do?",
+    a: (
+      <>
+        Reppo is an independent evaluation service. It scores the research brief against a rubric for safety, instruction adherence, completeness and factual accuracy, and returns a score and a decision: accept, review or reject, so the agent isn’t marking its own homework. It checked the brief from the real verified run on 11 Nov 2026 and scored it 86/100: accept, routed to review (medium confidence). Factual accuracy was 75 because the figures come from Otto and weren’t independently verified. Questions you ask here still use a built-in check, labelled Simulated. See the{" "}
+        <a className={a} href="/api/reppo-eval">raw result</a>.
+      </>
+    ),
+  },
+  {
     q: "What’s simulated?",
     a: (
       <>
-        In the public demo, the payments, cap checks, data and pre-written briefs are simulated, and so is the quality gate, because Reppo
-        isn’t wired in. See <a className={a} href="#real">What’s real</a>.
+        In the public demo, the payments, cap checks, data and pre-written briefs are simulated, and so is the quality gate for
+        questions you ask here. The verified-run brief has a real Reppo independent check from 11 Nov 2026. See{" "}
+        <a className={a} href="#real">What’s real</a>.
       </>
     ),
   },
