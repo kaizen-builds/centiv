@@ -63,17 +63,18 @@ const items: { q: string; a: ReactNode }[] = [
 
 export default function Faq() {
   return (
-    <div className="border-t border-[rgba(201,146,46,0.35)]">
+    <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
       {items.map((it, i) => (
-        <details key={it.q} className="group border-b border-[rgba(201,146,46,0.35)]" open={i === 0}>
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-4 text-[15px] font-semibold tracking-[-0.015em] text-bone [&::-webkit-details-marker]:hidden">
-            {it.q}
-            <span aria-hidden="true" className="text-[22px] font-normal leading-none text-gold-deep group-open:hidden">+</span>
-            <span aria-hidden="true" className="hidden text-[22px] font-normal leading-none text-gold-deep group-open:inline">−</span>
-          </summary>
-          <div className="pb-5 pr-8 text-[14px] leading-[1.75] text-mute">{it.a}</div>
-        </details>
+        <li key={it.q}>
+          <details className="group" open={i === 0}>
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-medium tracking-[-0.015em] text-bone transition hover:bg-[#fffaf0] sm:px-6 [&::-webkit-details-marker]:hidden">
+              {it.q}
+              <span aria-hidden="true" className="text-[20px] leading-none text-dim transition group-open:rotate-45">+</span>
+            </summary>
+            <div className="px-5 pb-5 text-[15px] leading-[1.6] text-mute sm:px-6">{it.a}</div>
+          </details>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
