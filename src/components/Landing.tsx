@@ -97,23 +97,23 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
   {
     k: "weigh",
     t: "It weighs each call",
-    s: "On the live path, SERV Reasoning weighs each call before payment: is the data worth what’s left? Then it buys, skips or declines.",
+    s: "SERV Reasoning weighs each call before payment: is the data worth what’s left? Then it buys, skips or declines.",
   },
   {
     k: "pay",
     t: "It pays, or it stops",
-    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves.",
+    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves. After a payment, Reppo can score what was bought — it does not block or undo it.",
   },
 ];
 
-/** Hero card: the recorded 12 Nov run, not a made-up example. */
+/** Hero card: the recorded 12 Nov 18:27 WAT run, not a made-up example. */
 function RealRunGlance({ className = "" }: { className?: string }) {
   const caps = VERIFIED_RUN.passport.caps;
   const rows = [
     ...paidCalls.map((c) => ({
       key: c.tx_hash,
       d: "spend" as const,
-      call: `Call ${c.n} · Otto AI · Ethereum news`,
+      call: `Call ${c.n} · SERV ${c.serv?.decision ?? "spend"}`,
       amount: `$${Number(c.price_usdc).toFixed(3)}`,
     })),
     ...(declinedCall
@@ -121,7 +121,7 @@ function RealRunGlance({ className = "" }: { className?: string }) {
           {
             key: "decline",
             d: "decline" as const,
-            call: `Call ${declinedCall.n} · Otto AI · Ethereum news`,
+            call: `Call ${declinedCall.n} · refused`,
             amount: `$${caps.max_amount_per_tx}`,
           },
         ]
@@ -135,6 +135,9 @@ function RealRunGlance({ className = "" }: { className?: string }) {
         </p>
         <ProvenanceBadge p="replay" short />
       </div>
+      {VERIFIED_RUN.question && (
+        <p className="mt-2 text-[13px] leading-[1.45] text-mute">“{VERIFIED_RUN.question}”</p>
+      )}
       <ul className="mt-3 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white sm:mt-4">
         {rows.map((r) => (
           <li key={r.key} className="flex items-center gap-2.5 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3.5">
@@ -177,13 +180,13 @@ const partners: { name: string; role: string; href: string; external?: boolean }
   },
   {
     name: "SERV Reasoning",
-    role: "Weighs each call before payment on the live path, and decides whether to buy, skip or decline.",
+    role: "Weighs each call before payment, and decides whether to buy, skip or decline.",
     href: "https://docs.openserv.ai/serv-reasoning/api",
     external: true,
   },
   {
     name: "Reppo",
-    role: "Independently scores research that was bought, when a key is set. It does not score the recorded run below.",
+    role: "Scores research after it is bought. It does not block or undo a payment. In the recorded run, both paid calls scored below 70.",
     href: "https://eval.reppo.xyz/agents.md",
     external: true,
   },
@@ -331,7 +334,7 @@ export default function Landing() {
           <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
             <SectionHead split label="How it works" id="how-title" title={<>Set a cap. Buy only what’s <span className="serif-em">worth it.</span></>}>
               <p>
-                You approve a spending cap with a passkey. On the live path, SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. Reppo can independently score research that was bought.
+                You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo can score what was bought — that score does not block or undo the payment.
               </p>
             </SectionHead>
             <ol className="mt-14 grid gap-8 md:grid-cols-3 md:gap-8">
@@ -381,7 +384,7 @@ export default function Landing() {
                   })}
                 </ul>
                 <p className="mt-4 text-[12.5px] leading-[1.6] text-dim">
-                  SERV Reasoning and Reppo describe the live path now. They were not part of the recorded run above.
+                  In the recorded run, SERV weighed every call, and Reppo scored the two paid excerpts after they settled.
                 </p>
               </Reveal>
             </div>
@@ -476,8 +479,8 @@ export default function Landing() {
           <CentivWordmark size={18} />
           <div className="space-y-2 text-[13px] leading-[1.65] text-dim">
             <p>
-              The recorded run is a replay of real Base payments. Demo payments are simulated. SERV Reasoning and Reppo
-              are on the live path now; they were not part of that run.
+              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores
+              after the two that paid. Demo payments are simulated. Reppo does not block or undo a payment.
             </p>
             <p className="text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
           </div>

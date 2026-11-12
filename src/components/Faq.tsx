@@ -38,12 +38,13 @@ const items: { q: string; a: ReactNode }[] = [
     ),
   },
   {
-    q: "Did SERV or Reppo score this run?",
+    q: "Did SERV or Reppo stop a payment?",
     a: (
       <>
-        No. The recorded run happened before SERV gating and per-call Reppo scoring were added, so neither is claimed
-        for those receipts. On the live path now, SERV Reasoning can weigh each call before payment, and Reppo can
-        independently score research that was bought.
+        No. SERV Reasoning weighed each call before payment (spend, skip, spend). Call 2 was paid despite SERV’s skip,
+        so the cap could be shown being enforced — Kite Passport is the hard limit. Reppo scored the two paid excerpts
+        after they settled, 66 and 60, both below its pass mark of 70. Reppo does not interrupt, block or undo a
+        payment.
       </>
     ),
   },
@@ -60,8 +61,10 @@ const items: { q: string; a: ReactNode }[] = [
     q: "What’s simulated?",
     a: (
       <>
-        In the public demo, payments and cap checks are simulated. The demo uses the same Otto Ethereum news example and
-        the same $0.001 / $0.002 caps as the recorded run; receipts start with sim_ so they can’t pass for on-chain
+        In the public demo, payments and cap checks are simulated. You can type a full question; SERV (or a built-in
+        extractor if there’s no key) picks a one- or two-word Otto topic. The suggested demo uses the same Ethereum ETF
+        question and the same $0.001 / $0.002 caps as the recorded run. In that recorded run the topic “ethereum etf”
+        was set directly, not chosen by SERV. Receipts start with sim_ so they can’t pass for on-chain
         hashes. See{" "}
         <a className={a} href="#real">
           What’s real

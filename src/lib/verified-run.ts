@@ -1,11 +1,12 @@
 // Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run.
 // Source of truth: src/data/verified-run.json (mirrored in /evidence).
 // Contains no keys, tokens or session secrets — only public on-chain facts.
-// The 12 Nov 2026 run was recorded before SERV gating and per-call Reppo
-// scoring were added; those steps are not claimed for this evidence.
+// Featured run: 12 Nov 2026, 18:27 WAT, Ethereum ETFs. SERV weighed each call
+// before payment; Reppo scored paid excerpts after the fact and did not block
+// or undo a payment. The earlier 01:11 WAT run is archived in evidence/.
 
 import data from "@/data/verified-run.json";
-import type { AuditRow } from "@/lib/centiv";
+import type { AuditRow, Decision } from "@/lib/centiv";
 
 export type Provenance = "live" | "simulated" | "replay";
 
@@ -23,6 +24,24 @@ type OnChain = {
   authorization_used_log: boolean;
 };
 
+export type ServVerdict = {
+  decision: Decision;
+  source: "serv" | "heuristic";
+  rationale: string;
+};
+
+export type ReppoAfterTheFact = {
+  source: "reppo";
+  score100: number;
+  decision?: string;
+  route?: string;
+  confidence?: string;
+  evalId?: string;
+  pass_mark: number;
+  settled: "during_call" | "after_the_call";
+  note: string;
+};
+
 export type PaidCall = {
   n: number;
   topic: string;
@@ -34,7 +53,11 @@ export type PaidCall = {
   payer: string;
   tx_hash: string;
   basescan_url: string;
+  blockscout_url?: string;
   session_spent_after_usdc: string;
+  paid_despite_serv_skip?: boolean;
+  serv?: ServVerdict;
+  reppo?: ReppoAfterTheFact;
   onchain: OnChain;
   reply: { provider: string; attribution: string; source_count: number; excerpt: string[]; note: string };
 };
@@ -54,16 +77,19 @@ export type DeclinedCall = {
   note: string;
   attempted_at_utc?: string;
   attempted_at_wat?: string;
+  serv?: ServVerdict;
 };
 
 export type VerifiedRun = {
   label: string;
   generated_at_utc: string;
+  question?: string;
   honesty?: string;
   passport: {
     environment: string;
     session_id: string;
     session_type?: string;
+    request_id?: string;
     expires_at_utc: string;
     expires_at_wat: string;
     caps: { currency: string; max_amount_per_tx: string; max_total_amount: string; ttl_seconds?: number };
@@ -89,23 +115,36 @@ export const basescanAddress = (a: string) => `https://basescan.org/address/${a}
 /** Audit-trail rows for the real run, tagged Replay. Amounts are the real on-chain figures. */
 export function replayAuditRows(): AuditRow[] {
   const cap = Number(VERIFIED_RUN.passport.caps.max_total_amount);
-  const rows: AuditRow[] = paidCalls.map((c) => ({
-    id: `replay_${c.n}`,
-    runId: "replay",
-    runLabel: "V",
-    at: Date.parse(c.onchain.timestamp_utc),
-    atLabel: c.onchain.timestamp_wat.split(", ")[1],
-    service: `Otto AI · filtered news “${c.topic}”`,
-    decision: "spend" as const,
-    amount: c.onchain.usdc_transfer.amount_usdc,
-    charged: c.onchain.usdc_transfer.amount_usdc,
-    remaining: +(cap - Number(c.session_spent_after_usdc)).toFixed(6),
-    reason: `Paid via Kite Passport session · confirmed in Base block ${c.onchain.block.toLocaleString("en-GB")}.`,
-    receipt: c.tx_hash,
-    receiptUrl: c.basescan_url,
-    provenance: "replay",
-  }));
+  const rows: AuditRow[] = paidCalls.map((c) => {
+    const servLine = c.serv ? `SERV ${c.serv.decision}: ${c.serv.rationale}` : "";
+    const reppoLine =
+      c.reppo
+        ? `Reppo ${c.reppo.score100}/100 after the fact` +
+          (c.reppo.settled === "after_the_call" ? " (settled after the call)" : "") +
+          `. Does not undo the payment.`
+        : "";
+    const skipNote = c.paid_despite_serv_skip
+      ? " SERV flagged it, the agent paid anyway — Kite Passport is the hard limit."
+      : "";
+    return {
+      id: `replay_${c.n}`,
+      runId: "replay",
+      runLabel: "V",
+      at: Date.parse(c.onchain.timestamp_utc),
+      atLabel: c.onchain.timestamp_wat.split(", ")[1],
+      service: `Otto AI · filtered news “${c.topic}”`,
+      decision: "spend" as const,
+      amount: c.onchain.usdc_transfer.amount_usdc,
+      charged: c.onchain.usdc_transfer.amount_usdc,
+      remaining: +(cap - Number(c.session_spent_after_usdc)).toFixed(6),
+      reason: `${servLine}${skipNote} Paid via Kite Passport session · confirmed in Base block ${c.onchain.block.toLocaleString("en-GB")}.${reppoLine ? " " + reppoLine : ""}`,
+      receipt: c.tx_hash,
+      receiptUrl: c.basescan_url,
+      provenance: "replay",
+    };
+  });
   if (declinedCall) {
+    const servLine = declinedCall.serv ? `SERV ${declinedCall.serv.decision}: ${declinedCall.serv.rationale} ` : "";
     rows.push({
       id: `replay_${declinedCall.n}`,
       runId: "replay",
@@ -117,7 +156,7 @@ export function replayAuditRows(): AuditRow[] {
       amount: Number(VERIFIED_RUN.passport.caps.max_amount_per_tx),
       charged: 0,
       remaining: 0,
-      reason: `${declinedCall.declined_by} declined: ${declinedCall.error_code} — ${declinedCall.error}. No money moved.`,
+      reason: `${servLine}${declinedCall.declined_by} declined: ${declinedCall.error_code} — ${declinedCall.error}. Nothing was signed and no money moved.`,
       provenance: "replay",
     });
   }

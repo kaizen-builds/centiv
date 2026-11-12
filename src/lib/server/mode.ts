@@ -58,7 +58,7 @@ export function publicStatus() {
       tx: paidCalls.map((c) => ({ hash: c.tx_hash, basescan: c.basescan_url })),
       evidence: "/api/evidence",
       section: "/#verified-run",
-      note: "SERV Reasoning and Reppo were not part of this recorded run.",
+      note: "SERV Reasoning weighed each call before payment. Reppo scored paid excerpts after the fact and did not block or undo a payment.",
     },
     live_demo: {
       enabled: live.enabled,
@@ -68,6 +68,6 @@ export function publicStatus() {
     note:
       mode === "simulated"
         ? "No API keys configured — reasoning, gate and payments are simulated. Figures are not live market data."
-        : "SERV reasoning is live where configured; payments on this site are Simulated. A real Kite Passport-capped run is available as a Replay. SERV and Reppo were not part of that recorded run.",
+        : "SERV reasoning is live where configured; payments on this site are Simulated. A real Kite Passport-capped run is available as a Replay, with SERV before each call and Reppo scores after the two that paid.",
   };
 }

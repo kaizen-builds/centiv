@@ -5,8 +5,8 @@ export type DemoPhase = "idle" | "setup" | "A" | "B" | "done";
 const label: Record<DemoPhase, string> = {
   idle: "Ready",
   setup: "Approving session",
-  A: "Ethereum news · two paid, one refused",
-  B: "Ethereum news · two paid, one refused",
+  A: "Ethereum ETFs · two paid, one refused",
+  B: "Ethereum ETFs · two paid, one refused",
   done: "Demo complete",
 };
 
@@ -31,7 +31,7 @@ export function DemoBar({
           <span className="hidden sm:inline">{label[phase]}</span>
         </span>
         <button onClick={onRunDemo} className={`${btn} bg-cent font-semibold text-white hover:bg-[var(--color-cent-hover)]`}>
-          Run demo · A → B
+          Run the demo
         </button>
         <button onClick={onReset} className={`${btn} text-dim hover:bg-ink-4 hover:text-bone`}>
           Reset

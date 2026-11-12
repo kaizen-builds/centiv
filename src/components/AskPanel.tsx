@@ -21,7 +21,7 @@ export function AskPanel({
     <section id="ask" aria-labelledby="ask-title" className="card scroll-mt-24 p-6">
       <div className="flex items-baseline justify-between gap-4">
         <h2 id="ask-title" className="eyebrow">Ask Centiv</h2>
-        <span className="text-[11.5px] text-dim">Market research · one question per run</span>
+        <span className="text-[11.5px] text-dim">One question · SERV picks a short Otto topic</span>
       </div>
       <form
         className="mt-4"

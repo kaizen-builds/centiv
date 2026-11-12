@@ -7,7 +7,7 @@
  * - Priority repos: kite-x402-hono, kite-x402-explorer, kite-x402-axum, kite_counter_dapp
  * - Official test endpoint: https://x402.dev.gokite.ai/api/weather?location=San%20Francisco
  *
- * The public-demo catalogue mirrors the recorded Otto Ethereum news run.
+ * The public-demo catalogue mirrors the recorded Otto Ethereum ETF run (12 Nov 2026, 18:27 WAT).
  * Real payments happen only through the owner-gated local route /api/live,
  * never from a visitor's request. Public runs always settle as Simulated.
  *
@@ -110,14 +110,24 @@ export async function quoteCandidate(c: Candidate): Promise<X402Quote> {
   };
 }
 
-function mockOttoPayload() {
+function mockOttoPayload(topic: string) {
+  const recorded = topic.trim().toLowerCase() === "ethereum etf";
+  if (recorded) {
+    return {
+      provider: "Otto AI",
+      topic,
+      source_count: 180,
+      note: "Simulated payment — no funds moved. Wording is from Otto AI’s paid reply in the recorded run of 12 Nov 2026, 18:27 WAT, published in the evidence file.",
+      excerpt:
+        "Ethereum ETF coverage is plentiful, so this is a direct analysis of the most important current developments. The dominant theme right now is persistent institutional outflow from spot ETH ETFs. Lookonchain shows ETH ETFs bleeding $132.41M in a single day (Nov 12) and $422.51M over seven days, with Cointelegraph confirming continued net outflows across BTC, ETH, and XRP products.",
+    };
+  }
   return {
     provider: "Otto AI",
-    topic: "ethereum",
-    source_count: 146,
-    note: "Simulated payment — no funds moved. Wording is from Otto AI’s paid reply in the recorded run of 12 Nov 2026, published in the evidence file.",
-    excerpt:
-      "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients.",
+    topic,
+    source_count: 0,
+    note: "Simulated payment — no funds moved. This is not a real Otto AI briefing for this topic.",
+    excerpt: `In the public demo, payments are simulated, so Centiv does not buy a live briefing for “${topic}”. A live run would pay Otto AI for filtered news on that topic, inside the Kite Passport cap.`,
   };
 }
 
@@ -125,15 +135,17 @@ export async function payForData(opts: {
   candidate: Candidate;
   quote: X402Quote;
   scenarioKey: Scenario["key"];
+  topic?: string;
 }): Promise<X402PayResult> {
   void opts.scenarioKey;
+  const topic = (opts.topic || "ethereum etf").trim();
   // Public path: simulated settlement. Payload and receipt are labelled.
   const receipt = `sim_${randomBytes(8).toString("hex")}`;
   return {
     ok: true,
     source: "simulated",
     receipt,
-    payload: mockOttoPayload(),
-    yields: opts.candidate.yields || "Otto AI ETH briefing (wording from the recorded run). Demo payment is simulated.",
+    payload: mockOttoPayload(topic),
+    yields: opts.candidate.yields || `Otto AI filtered news for “${topic}”. Demo payment is simulated.`,
   };
 }

@@ -61,7 +61,7 @@ export function AuditTrail({
           </div>
           {replay && (
             <p className="mt-3 max-w-xl text-[12.5px] leading-[1.55] text-dim">
-              Real receipts from Kite Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on 12 Nov 2026. Times in WAT. SERV Reasoning and Reppo were not part of this run.
+              Real receipts from Kite Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on 12 Nov 2026, 18:27 WAT. Times in WAT. SERV weighed each call; Reppo scored the paid excerpts after the fact.
             </p>
           )}
         </div>
@@ -75,7 +75,7 @@ export function AuditTrail({
           ["Remaining", <Money key="r" value={active ? remaining : 0} className="text-bone" />],
           ["Calls bought", <Count key="b" value={bought.length} className="text-bone" />],
           ["Skipped · declined", <span key="d" className="num"><Count value={skipped.length} className="text-skip" /><span className="text-dim"> · </span><Count value={declined.length} className={declined.length ? "text-stop" : "text-bone"} /></span>],
-          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-dim">— <span className="text-[11px] font-normal">not scored</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
+          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-bone">66 · 60<span className="ml-1 text-[11px] font-normal text-dim">after the fact</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
         ].map(([k, v]) => (
           <div key={k as string} className="bg-ink-2 px-4 py-4">
             <dt className="text-[11.5px] text-dim">{k}</dt>

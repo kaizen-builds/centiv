@@ -1,0 +1,158 @@
+{
+  "_about": "Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run on 12 Nov 2026. Contains no keys, tokens or session secrets. SERV Reasoning and Reppo were not part of this run.",
+  "label": "Replay \u00b7 real on-chain run",
+  "generated_at_utc": "2026-11-12T17:01:46Z",
+  "honesty": "This run was recorded before SERV gating and per-call Reppo scoring were added. Do not claim that SERV or Reppo scored these calls. Those steps describe how the live path works now.",
+  "passport": {
+    "environment": "Kite Passport (production)",
+    "session_id": "agent_session_01a1cd15-741f-7581-b3ed-b8c646720a79",
+    "session_type": "dedicated",
+    "expires_at_utc": "2026-11-12T01:08:17.688247Z",
+    "expires_at_wat": "12 Nov 2026, 02:08:17 WAT",
+    "caps": {
+      "currency": "USD",
+      "max_amount_per_tx": "0.001",
+      "max_total_amount": "0.002"
+    },
+    "scope": {
+      "mode": "scoped",
+      "method": "GET",
+      "host": "x402.ottoai.services",
+      "path_prefix": "/filtered-news"
+    },
+    "task_summary": "Centiv ETH demo: pay Otto AI for two Ethereum news calls at 0.001 USD each; the third call should be refused by the cap.",
+    "wallet": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+    "wallet_type": "agent_wallet",
+    "usage_after": {
+      "spent_total_usdc": "0.002",
+      "spent_total_raw": "2000"
+    }
+  },
+  "merchant": {
+    "name": "Otto AI",
+    "endpoint": "https://x402.ottoai.services/filtered-news",
+    "pay_to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808"
+  },
+  "settlement": {
+    "chain": "Base mainnet",
+    "caip2": "eip155:8453",
+    "asset": "USDC",
+    "asset_contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "decimals": 6,
+    "note": "Kite Passport enforced the session caps; payments settled in USDC on Base."
+  },
+  "calls": [
+    {
+      "n": 1,
+      "topic": "ethereum",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0x9fdfd4a762bc037ff61543fc8ba07306e57d125e3c0a3b310c97b9a2ab7590d2",
+      "basescan_url": "https://basescan.org/tx/0x9fdfd4a762bc037ff61543fc8ba07306e57d125e3c0a3b310c97b9a2ab7590d2",
+      "session_spent_after_usdc": "0.001",
+      "onchain": {
+        "status": "success",
+        "block": 56259687,
+        "confirmations_at_check": 302969,
+        "timestamp_utc": "2026-11-12T00:11:53Z",
+        "timestamp_wat": "12 Nov 2026, 01:11:53 WAT",
+        "tx_sender": "0x8f5cb67b49555e614892b7233cfddebfb746e531",
+        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
+        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "usdc_transfer": {
+          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
+          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
+        "source_count": 146,
+        "excerpt": [
+          "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients, a milestone that could pull peer banks into crypto custody and structurally expand ETH's institutional holder base. The SEC also cleared Nasdaq ISE to list options on qualifying digital commodity ETPs, with ETH among the named commodities, improving derivatives depth and hedging tooling around ETH products. Grayscale simultaneously reinforced the bull thesis, noting ETH leads all smart-contract platforms in stablecoins, tokenized assets, developers, and investment products, while Amundi (Europe's largest asset manager) tokenized an equity index fund on Ethereum -- concrete RWA momentum for the chain. On the supply side, staking has reportedly hit an all-time high above 36% of supply, tightening float and supporting a supply-shock narrative. Vitalik Buterin's reframing of ETH as a store of value rather than a fee-burning token, alongside the withdrawn validator burn proposal, marks a notable shift in the ETH investment thesis that traders should weigh against the classic \"ultrasound money\" model.",
+          "The near-term picture is less rosy: ETH sits around $2,400--2,726 with a confirmed downtrend, breaking key levels, and exchange sell-off pressure noted by traders; ETH dominance is 10.36% versus BTC dominance ~60.3%, which is suppressing altcoin strength. Macro headwinds include a hotter-than-expected CPI print, Bitcoin ETF outflows, stablecoin drains, and over $1 billion in crypto liquidations -- Bitcoin erased post-election gains and ETH fell roughly 7% in the same rout. The Aave risk-manager proposal to freeze StakeWise, Lombard, and Rocket Pool tokens covering $500M+ in collateral is a direct DeFi-liquidity risk for Ethereum staking/restaking ecosystems, and the $6.3B Binance hack fallout has raised severe exchange-security and contagion concerns. Net: ETH's fundamentals (institutional custody, ETF options, RWA tokenization, record staking) are strengthening while its price action remains hostage to Bitcoin dominance and macro risk-off. Watch BTC dominance: a rejection below 58% would be a trigger for ETH to regain relative strength, whereas a break above 61.5% likely keeps ETH rangebound or weak."
+        ],
+        "note": "Excerpt of Otto AI's paid response, kept in two parts for reading. Claims are Otto AI's, not verified by Centiv. The second paid call returned the same briefing."
+      }
+    },
+    {
+      "n": 2,
+      "topic": "ethereum",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0xc1dd4f9327882493d1372c23e353eb3fc679cc8e7ead6a9c15803f4530e5524d",
+      "basescan_url": "https://basescan.org/tx/0xc1dd4f9327882493d1372c23e353eb3fc679cc8e7ead6a9c15803f4530e5524d",
+      "session_spent_after_usdc": "0.002",
+      "onchain": {
+        "status": "success",
+        "block": 56260520,
+        "confirmations_at_check": 302136,
+        "timestamp_utc": "2026-11-12T00:14:39Z",
+        "timestamp_wat": "12 Nov 2026, 01:14:39 WAT",
+        "tx_sender": "0x97acce27d5069544480bde0f04d9f47d7422a016",
+        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
+        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "usdc_transfer": {
+          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
+          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
+        "source_count": 146,
+        "excerpt": [
+          "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients, a milestone that could pull peer banks into crypto custody and structurally expand ETH's institutional holder base. The SEC also cleared Nasdaq ISE to list options on qualifying digital commodity ETPs, with ETH among the named commodities, improving derivatives depth and hedging tooling around ETH products. Grayscale simultaneously reinforced the bull thesis, noting ETH leads all smart-contract platforms in stablecoins, tokenized assets, developers, and investment products, while Amundi (Europe's largest asset manager) tokenized an equity index fund on Ethereum -- concrete RWA momentum for the chain. On the supply side, staking has reportedly hit an all-time high above 36% of supply, tightening float and supporting a supply-shock narrative. Vitalik Buterin's reframing of ETH as a store of value rather than a fee-burning token, alongside the withdrawn validator burn proposal, marks a notable shift in the ETH investment thesis that traders should weigh against the classic \"ultrasound money\" model.",
+          "The near-term picture is less rosy: ETH sits around $2,400--2,726 with a confirmed downtrend, breaking key levels, and exchange sell-off pressure noted by traders; ETH dominance is 10.36% versus BTC dominance ~60.3%, which is suppressing altcoin strength. Macro headwinds include a hotter-than-expected CPI print, Bitcoin ETF outflows, stablecoin drains, and over $1 billion in crypto liquidations -- Bitcoin erased post-election gains and ETH fell roughly 7% in the same rout. The Aave risk-manager proposal to freeze StakeWise, Lombard, and Rocket Pool tokens covering $500M+ in collateral is a direct DeFi-liquidity risk for Ethereum staking/restaking ecosystems, and the $6.3B Binance hack fallout has raised severe exchange-security and contagion concerns. Net: ETH's fundamentals (institutional custody, ETF options, RWA tokenization, record staking) are strengthening while its price action remains hostage to Bitcoin dominance and macro risk-off. Watch BTC dominance: a rejection below 58% would be a trigger for ETH to regain relative strength, whereas a break above 61.5% likely keeps ETH rangebound or weak."
+        ],
+        "note": "The same Otto AI briefing as call 1. Claims are Otto AI's, not verified by Centiv."
+      }
+    },
+    {
+      "n": 3,
+      "topic": "ethereum",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "method": "GET",
+      "outcome": "declined",
+      "declined_by": "Kite Passport",
+      "error_code": "session_total_exceeded",
+      "error": "payment amount exceeds max_total_amount",
+      "user_message": "The spending limit you approved for this task is used up. Nothing was signed and no money moved.",
+      "money_moved": false,
+      "tx_hash": null,
+      "attempted_at_utc": "2026-11-12T00:14:48.176Z",
+      "attempted_at_wat": "12 Nov 2026, 01:14:48 WAT",
+      "note": "Declined before signing: the $0.002 session total was already spent. Time taken from the local kpass execute record, not from a transaction."
+    }
+  ],
+  "verification": {
+    "rpc": "https://mainnet.base.org",
+    "checked_at_utc": "2026-11-12T17:01:46Z",
+    "chain_head_at_check": 56562656,
+    "method": "eth_getTransactionByHash, eth_getTransactionReceipt and eth_getBlockByNumber; USDC Transfer and AuthorizationUsed logs decoded."
+  }
+}

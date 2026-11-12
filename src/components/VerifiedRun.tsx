@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Stamp } from "./Logo";
 import { DecisionTag, ProvenanceBadge } from "./ui";
-import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls } from "@/lib/verified-run";
+import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls, type PaidCall } from "@/lib/verified-run";
 
 const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const time = (wat: string) => wat.split(", ")[1] ?? wat;
@@ -16,10 +16,44 @@ const utcClock = (iso: string) => {
 };
 const clocks = (wat: string, utc: string) => `${time(wat)} · ${utcClock(utc)}`;
 
+function ServLine({ decision, rationale }: { decision: string; rationale: string }) {
+  return (
+    <details className="group mt-2">
+      <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 [&::-webkit-details-marker]:hidden">
+        <span className="pill pill-sage inline-flex h-6 items-center px-2.5 text-[11px] font-semibold text-cent">
+          SERV Reasoning: <span className="serif-em ml-1 font-normal">{decision}</span>
+        </span>
+        <span className="text-[12px] text-dim underline decoration-cent/20 underline-offset-2 group-open:text-mute">Why</span>
+      </summary>
+      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-mute">{rationale}</p>
+    </details>
+  );
+}
+
+function ReppoLine({ call }: { call: PaidCall }) {
+  const r = call.reppo;
+  if (!r) return null;
+  const below = r.score100 < r.pass_mark;
+  return (
+    <details className="group mt-1.5">
+      <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 [&::-webkit-details-marker]:hidden">
+        <span className="pill pill-sage inline-flex h-6 items-center px-2.5 text-[11px] font-semibold text-cent">
+          Reppo: <span className="serif-em ml-1 font-normal">{r.score100} / 100</span>
+        </span>
+        <span className="text-[12.5px] text-dim">
+          after the fact{below ? `, below ${r.pass_mark}` : ""}
+          {r.settled === "after_the_call" ? " · settled later" : ""}. Does not undo the payment.
+        </span>
+      </summary>
+      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-mute">{r.note}</p>
+    </details>
+  );
+}
+
 /**
- * Replay of Centiv's real, Kite Passport-capped x402 run on 12 Nov 2026.
+ * Replay of Centiv's real, Kite Passport-capped x402 run on 12 Nov 2026, 18:27 WAT.
  * Everything here is read from src/data/verified-run.json, checked against Base.
- * SERV Reasoning and Reppo were not part of this run, so they are not shown as scores on it.
+ * SERV weighed each call before payment. Reppo scored paid excerpts after the fact.
  */
 export default function VerifiedRun({
   compact = false,
@@ -80,9 +114,12 @@ export default function VerifiedRun({
           Two paid. Call 3 <span className="serif-em">refused.</span>
         </h2>
         <p className="mt-4 max-w-[640px] text-[15.5px] leading-[1.65] text-mute">
-          A real run, replayed. The owner approved a Kite Passport session: ${caps.max_amount_per_tx} a call, $
-          {caps.max_total_amount} in total, scoped to Otto AI’s Ethereum news endpoint. Centiv paid twice in USDC on
-          Base. On the third call, Kite Passport refused and no money moved. This page never spends.
+          A real run, replayed. The question: “{r.question ?? "Ethereum news"}”. The owner approved a Kite Passport
+          session: ${caps.max_amount_per_tx} a call, ${caps.max_total_amount} in total, scoped to Otto AI. SERV Reasoning
+          weighed each call before payment. Two payments settled in USDC on Base. On the third call, Kite Passport
+          refused — nothing was signed. Reppo scored the paid excerpts after the fact (66 and 60, both below 70). It
+          does not block or undo a payment. The question sat in the Kite Passport task; the topic “ethereum etf” was
+          set directly for the three calls, not chosen by SERV.
         </p>
         {children}
 
@@ -160,6 +197,13 @@ export default function VerifiedRun({
                   Paid {c.onchain.usdc_transfer.amount_usdc.toFixed(3)} USDC to Otto AI · block{" "}
                   {c.onchain.block.toLocaleString("en-GB")} · {clocks(c.onchain.timestamp_wat, c.onchain.timestamp_utc)}
                 </p>
+                {c.serv && <ServLine decision={c.serv.decision} rationale={c.serv.rationale} />}
+                {c.paid_despite_serv_skip && (
+                  <p className="mt-1.5 text-[13.5px] leading-[1.55] text-mute">
+                    SERV flagged it, the agent paid anyway — Kite Passport is the hard limit.
+                  </p>
+                )}
+                <ReppoLine call={c} />
                 <p className="num mt-1 text-[11.5px] leading-[1.6] text-dim">
                   Session spent ${c.session_spent_after_usdc} of ${caps.max_total_amount}
                 </p>
@@ -188,7 +232,8 @@ export default function VerifiedRun({
                 <p className="mt-1 text-[15px] font-medium tracking-[-0.015em] text-stop">
                   Declined by Kite Passport. Nothing was signed and no money moved.
                 </p>
-                <p className="num mt-1 text-[12px] text-mute">
+                {declinedCall.serv && <ServLine decision={declinedCall.serv.decision} rationale={declinedCall.serv.rationale} />}
+                <p className="num mt-1.5 text-[12px] text-mute">
                   <span className="rounded bg-stop/10 px-1.5 py-0.5 text-stop">{declinedCall.error_code}</span> · “
                   {declinedCall.error}”
                 </p>
@@ -217,10 +262,11 @@ export default function VerifiedRun({
           ))}
 
         <p className="mt-6 text-[12.5px] leading-[1.65] text-dim">
-          SERV Reasoning and Reppo were not part of this run — they were added to the live path later. Payments settled
-          in USDC on Base mainnet ({r.settlement.caip2}). Each transaction was submitted by an x402 facilitator that
-          paid the gas. The USDC moved from the Kite Passport wallet, as the Transfer log shows. Checked against{" "}
-          {r.verification.rpc.replace("https://", "")} on {r.verification.checked_at_utc.slice(0, 10)}.{" "}
+          SERV Reasoning weighed each call before payment. Reppo scored the two paid excerpts after they settled — it
+          does not block or undo a payment. Payments settled in USDC on Base mainnet ({r.settlement.caip2}). Each
+          transaction was submitted by an x402 facilitator that paid the gas. The USDC moved from the Kite Passport
+          wallet, as the Transfer log shows. Checked against {r.verification.rpc.replace("https://", "")} on{" "}
+          {r.verification.checked_at_utc.slice(0, 10)}.{" "}
           <a href="/api/evidence" className="underline underline-offset-2 hover:text-bone">
             Evidence JSON
           </a>

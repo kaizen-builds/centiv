@@ -1,18 +1,21 @@
 {
-  "_about": "Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run on 12 Nov 2026. Contains no keys, tokens or session secrets. SERV Reasoning and Reppo were not part of this run.",
+  "_about": "Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run on 12 Nov 2026, 18:27 WAT. Contains no keys, tokens or session secrets. SERV Reasoning weighed each call before payment. Reppo scored each paid excerpt after the fact and did not block or undo a payment.",
   "label": "Replay \u00b7 real on-chain run",
-  "generated_at_utc": "2026-11-12T17:01:46Z",
-  "honesty": "This run was recorded before SERV gating and per-call Reppo scoring were added. Do not claim that SERV or Reppo scored these calls. Those steps describe how the live path works now.",
+  "generated_at_utc": "2026-11-12T17:42:35Z",
+  "question": "Is anything big happening with Ethereum ETFs this week?",
+  "honesty": "SERV Reasoning weighed each call before payment (spend, skip, spend). Call 2 was paid despite SERV\u2019s skip so the $0.002 Kite Passport cap could be shown being enforced. Reppo scored the two paid excerpts after they settled (66/100 and 60/100, both below the pass mark of 70). Reppo does not block or undo a payment. Call 2\u2019s Reppo score settled after the call (eval cmwdtnnz2000908lcsg8w9mtc); the 66 was returned during the live request. The research question was in the Kite Passport task; the topic \u201cethereum etf\u201d was set directly for the three calls, not chosen by SERV.",
   "passport": {
     "environment": "Kite Passport (production)",
-    "session_id": "agent_session_01a1cd15-741f-7581-b3ed-b8c646720a79",
+    "session_id": "agent_session_01a1d0c9-a0a7-788c-9e89-58aa4fbcfbf7",
     "session_type": "dedicated",
-    "expires_at_utc": "2026-11-12T01:08:17.688247Z",
-    "expires_at_wat": "12 Nov 2026, 02:08:17 WAT",
+    "request_id": "agent_session_req_01a1d0c6-07aa-78fe-831b-66525e4e62d8",
+    "expires_at_utc": "2026-11-12T19:23:57.215738Z",
+    "expires_at_wat": "12 Nov 2026, 20:23:57 WAT",
     "caps": {
       "currency": "USD",
       "max_amount_per_tx": "0.001",
-      "max_total_amount": "0.002"
+      "max_total_amount": "0.002",
+      "ttl_seconds": 7200
     },
     "scope": {
       "mode": "scoped",
@@ -20,7 +23,7 @@
       "host": "x402.ottoai.services",
       "path_prefix": "/filtered-news"
     },
-    "task_summary": "Centiv ETH demo: pay Otto AI for two Ethereum news calls at 0.001 USD each; the third call should be refused by the cap.",
+    "task_summary": "Pay Otto AI for up to two $0.001 filtered-news calls to answer: is anything big happening with Ethereum ETFs this week? The $0.002 Kite Passport cap should refuse a third call.",
     "wallet": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
     "wallet_type": "agent_wallet",
     "usage_after": {
@@ -39,13 +42,13 @@
     "asset": "USDC",
     "asset_contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "decimals": 6,
-    "note": "Kite Passport enforced the session caps; payments settled in USDC on Base."
+    "note": "Kite Passport enforced the session caps; payments settled in USDC on Base. SERV weighed each call before payment. Reppo scored paid excerpts after the fact and did not block or undo a payment."
   },
   "calls": [
     {
       "n": 1,
-      "topic": "ethereum",
-      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
       "method": "GET",
       "http_status": 200,
       "outcome": "paid",
@@ -54,23 +57,40 @@
       "network": "eip155:8453",
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
-      "tx_hash": "0x9fdfd4a762bc037ff61543fc8ba07306e57d125e3c0a3b310c97b9a2ab7590d2",
-      "basescan_url": "https://basescan.org/tx/0x9fdfd4a762bc037ff61543fc8ba07306e57d125e3c0a3b310c97b9a2ab7590d2",
+      "tx_hash": "0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
+      "basescan_url": "https://basescan.org/tx/0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
+      "blockscout_url": "https://base.blockscout.com/tx/0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
       "session_spent_after_usdc": "0.001",
+      "serv": {
+        "decision": "spend",
+        "source": "serv",
+        "rationale": "Fresh filtered news on Ethereum ETF developments is directly relevant to a research brief and likely to add current primary evidence. The call is narrowly scoped and low-cost, so it is worth buying."
+      },
+      "reppo": {
+        "source": "reppo",
+        "score100": 66,
+        "decision": "reject",
+        "route": "review",
+        "confidence": "medium",
+        "evalId": "cmwdtmm2a000808lcz3jiu8sz",
+        "pass_mark": 70,
+        "settled": "during_call",
+        "note": "The response was rejected with a score of 66, primarily due to low factual accuracy and instruction adherence. This score also triggered a 'review' routing for the submission. Reppo scored the excerpt after payment and did not undo it."
+      },
       "onchain": {
         "status": "success",
-        "block": 56259687,
-        "confirmations_at_check": 302969,
-        "timestamp_utc": "2026-11-12T00:11:53Z",
-        "timestamp_wat": "12 Nov 2026, 01:11:53 WAT",
-        "tx_sender": "0x8f5cb67b49555e614892b7233cfddebfb746e531",
-        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
-        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "block": 56570462,
+        "confirmations_at_check": 3701,
+        "timestamp_utc": "2026-11-12T17:27:48Z",
+        "timestamp_wat": "12 Nov 2026, 18:27:48 WAT",
+        "tx_sender": "0xe74817f4cdc15844314812b2271276e64e890fae",
+        "tx_sender_note": "This account submitted the transaction and paid the gas (an x402 facilitator). The USDC moved from the Kite Passport wallet, as the Transfer log shows.",
+        "tx_to": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "method": "transferWithAuthorization",
         "usdc_transfer": {
-          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
-          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "from": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+          "to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808",
           "amount_raw": 1000,
           "amount_usdc": 0.001
         },
@@ -78,19 +98,19 @@
       },
       "reply": {
         "provider": "Otto AI",
-        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
-        "source_count": 146,
+        "attribution": "Otto AI (Powered by $OTTO AI | @useOttoAI)",
+        "source_count": 180,
         "excerpt": [
-          "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients, a milestone that could pull peer banks into crypto custody and structurally expand ETH's institutional holder base. The SEC also cleared Nasdaq ISE to list options on qualifying digital commodity ETPs, with ETH among the named commodities, improving derivatives depth and hedging tooling around ETH products. Grayscale simultaneously reinforced the bull thesis, noting ETH leads all smart-contract platforms in stablecoins, tokenized assets, developers, and investment products, while Amundi (Europe's largest asset manager) tokenized an equity index fund on Ethereum -- concrete RWA momentum for the chain. On the supply side, staking has reportedly hit an all-time high above 36% of supply, tightening float and supporting a supply-shock narrative. Vitalik Buterin's reframing of ETH as a store of value rather than a fee-burning token, alongside the withdrawn validator burn proposal, marks a notable shift in the ETH investment thesis that traders should weigh against the classic \"ultrasound money\" model.",
-          "The near-term picture is less rosy: ETH sits around $2,400--2,726 with a confirmed downtrend, breaking key levels, and exchange sell-off pressure noted by traders; ETH dominance is 10.36% versus BTC dominance ~60.3%, which is suppressing altcoin strength. Macro headwinds include a hotter-than-expected CPI print, Bitcoin ETF outflows, stablecoin drains, and over $1 billion in crypto liquidations -- Bitcoin erased post-election gains and ETH fell roughly 7% in the same rout. The Aave risk-manager proposal to freeze StakeWise, Lombard, and Rocket Pool tokens covering $500M+ in collateral is a direct DeFi-liquidity risk for Ethereum staking/restaking ecosystems, and the $6.3B Binance hack fallout has raised severe exchange-security and contagion concerns. Net: ETH's fundamentals (institutional custody, ETF options, RWA tokenization, record staking) are strengthening while its price action remains hostage to Bitcoin dominance and macro risk-off. Watch BTC dominance: a rejection below 58% would be a trigger for ETH to regain relative strength, whereas a break above 61.5% likely keeps ETH rangebound or weak."
+          "Ethereum ETF coverage is plentiful, so this is a direct analysis of the most important current developments. The dominant theme right now is persistent institutional outflow from spot ETH ETFs. Lookonchain shows ETH ETFs bleeding $132.41M in a single day (Nov 12) and $422.51M over seven days, with Cointelegraph confirming continued net outflows across BTC, ETH, and XRP products.",
+          "The brief relief on Nov 10 -- where ETH outflows shrank to just $1.3M -- was erased the following session with $144.8M leaving, exactly as @alver1301 flagged. BlackRock-related selling pressure is visible too: @conorfkenny cites $90.76M of ETH sold by BlackRock ETF vehicles, and @WhaleInsider notes $75.20M in ETF client ETH sales against only $53.02M of buying a day earlier. This is a clear distribution regime, not accumulation. Price action confirms it: @DylanTeil reports ETH breaking below $2K amid $530M in liq"
         ],
-        "note": "Excerpt of Otto AI's paid response, kept in two parts for reading. Claims are Otto AI's, not verified by Centiv. The second paid call returned the same briefing."
+        "note": "Excerpt as returned by the live call, trimmed at 900 characters. Claims are Otto AI\u2019s and Centiv has not verified them. Both paid calls returned this same briefing."
       }
     },
     {
       "n": 2,
-      "topic": "ethereum",
-      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
       "method": "GET",
       "http_status": 200,
       "outcome": "paid",
@@ -99,23 +119,41 @@
       "network": "eip155:8453",
       "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
-      "tx_hash": "0xc1dd4f9327882493d1372c23e353eb3fc679cc8e7ead6a9c15803f4530e5524d",
-      "basescan_url": "https://basescan.org/tx/0xc1dd4f9327882493d1372c23e353eb3fc679cc8e7ead6a9c15803f4530e5524d",
+      "tx_hash": "0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
+      "basescan_url": "https://basescan.org/tx/0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
+      "blockscout_url": "https://base.blockscout.com/tx/0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
       "session_spent_after_usdc": "0.002",
+      "paid_despite_serv_skip": true,
+      "serv": {
+        "decision": "skip",
+        "source": "serv",
+        "rationale": "This is relevant but appears to be filtered news rather than fresh primary evidence, so it is lower value for a research brief than a direct source. I\u2019d reserve spend for more authoritative or original data."
+      },
+      "reppo": {
+        "source": "reppo",
+        "score100": 60,
+        "decision": "reject",
+        "route": "review",
+        "confidence": "low",
+        "evalId": "cmwdtnnz2000908lcsg8w9mtc",
+        "pass_mark": 70,
+        "settled": "after_the_call",
+        "note": "The response was rejected due to an overall score of 60, falling below the pass threshold of 70. This score was primarily driven by low marks across factual accuracy, instruction adherence, and completeness. The score settled after the call; Reppo did not undo the payment."
+      },
       "onchain": {
         "status": "success",
-        "block": 56260520,
-        "confirmations_at_check": 302136,
-        "timestamp_utc": "2026-11-12T00:14:39Z",
-        "timestamp_wat": "12 Nov 2026, 01:14:39 WAT",
-        "tx_sender": "0x97acce27d5069544480bde0f04d9f47d7422a016",
-        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
-        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "block": 56570707,
+        "confirmations_at_check": 3456,
+        "timestamp_utc": "2026-11-12T17:28:37Z",
+        "timestamp_wat": "12 Nov 2026, 18:28:37 WAT",
+        "tx_sender": "0x625d8a65134079f8faaac39a7947c73d93c6ac39",
+        "tx_sender_note": "This account submitted the transaction and paid the gas (an x402 facilitator). The USDC moved from the Kite Passport wallet, as the Transfer log shows.",
+        "tx_to": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "method": "transferWithAuthorization",
         "usdc_transfer": {
-          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
-          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "from": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+          "to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808",
           "amount_raw": 1000,
           "amount_usdc": 0.001
         },
@@ -123,19 +161,19 @@
       },
       "reply": {
         "provider": "Otto AI",
-        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
-        "source_count": 146,
+        "attribution": "Otto AI (Powered by $OTTO AI | @useOttoAI)",
+        "source_count": 180,
         "excerpt": [
-          "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients, a milestone that could pull peer banks into crypto custody and structurally expand ETH's institutional holder base. The SEC also cleared Nasdaq ISE to list options on qualifying digital commodity ETPs, with ETH among the named commodities, improving derivatives depth and hedging tooling around ETH products. Grayscale simultaneously reinforced the bull thesis, noting ETH leads all smart-contract platforms in stablecoins, tokenized assets, developers, and investment products, while Amundi (Europe's largest asset manager) tokenized an equity index fund on Ethereum -- concrete RWA momentum for the chain. On the supply side, staking has reportedly hit an all-time high above 36% of supply, tightening float and supporting a supply-shock narrative. Vitalik Buterin's reframing of ETH as a store of value rather than a fee-burning token, alongside the withdrawn validator burn proposal, marks a notable shift in the ETH investment thesis that traders should weigh against the classic \"ultrasound money\" model.",
-          "The near-term picture is less rosy: ETH sits around $2,400--2,726 with a confirmed downtrend, breaking key levels, and exchange sell-off pressure noted by traders; ETH dominance is 10.36% versus BTC dominance ~60.3%, which is suppressing altcoin strength. Macro headwinds include a hotter-than-expected CPI print, Bitcoin ETF outflows, stablecoin drains, and over $1 billion in crypto liquidations -- Bitcoin erased post-election gains and ETH fell roughly 7% in the same rout. The Aave risk-manager proposal to freeze StakeWise, Lombard, and Rocket Pool tokens covering $500M+ in collateral is a direct DeFi-liquidity risk for Ethereum staking/restaking ecosystems, and the $6.3B Binance hack fallout has raised severe exchange-security and contagion concerns. Net: ETH's fundamentals (institutional custody, ETF options, RWA tokenization, record staking) are strengthening while its price action remains hostage to Bitcoin dominance and macro risk-off. Watch BTC dominance: a rejection below 58% would be a trigger for ETH to regain relative strength, whereas a break above 61.5% likely keeps ETH rangebound or weak."
+          "Ethereum ETF coverage is plentiful, so this is a direct analysis of the most important current developments. The dominant theme right now is persistent institutional outflow from spot ETH ETFs. Lookonchain shows ETH ETFs bleeding $132.41M in a single day (Nov 12) and $422.51M over seven days, with Cointelegraph confirming continued net outflows across BTC, ETH, and XRP products.",
+          "The brief relief on Nov 10 -- where ETH outflows shrank to just $1.3M -- was erased the following session with $144.8M leaving, exactly as @alver1301 flagged. BlackRock-related selling pressure is visible too: @conorfkenny cites $90.76M of ETH sold by BlackRock ETF vehicles, and @WhaleInsider notes $75.20M in ETF client ETH sales against only $53.02M of buying a day earlier. This is a clear distribution regime, not accumulation. Price action confirms it: @DylanTeil reports ETH breaking below $2K amid $530M in liq"
         ],
-        "note": "The same Otto AI briefing as call 1. Claims are Otto AI's, not verified by Centiv."
+        "note": "Excerpt as returned by the live call, trimmed at 900 characters. Claims are Otto AI\u2019s and Centiv has not verified them. Both paid calls returned this same briefing."
       }
     },
     {
       "n": 3,
-      "topic": "ethereum",
-      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
       "method": "GET",
       "outcome": "declined",
       "declined_by": "Kite Passport",
@@ -144,15 +182,20 @@
       "user_message": "The spending limit you approved for this task is used up. Nothing was signed and no money moved.",
       "money_moved": false,
       "tx_hash": null,
-      "attempted_at_utc": "2026-11-12T00:14:48.176Z",
-      "attempted_at_wat": "12 Nov 2026, 01:14:48 WAT",
-      "note": "Declined before signing: the $0.002 session total was already spent. Time taken from the local kpass execute record, not from a transaction."
+      "attempted_at_utc": "2026-11-12T17:29:25Z",
+      "attempted_at_wat": "12 Nov 2026, 18:29:25 WAT",
+      "serv": {
+        "decision": "spend",
+        "source": "serv",
+        "rationale": "Fresh filtered news on Ethereum ETF developments is directly useful for a research brief and likely to add current primary evidence. The call is narrowly scoped and high-value for timeliness, so it merits purchase."
+      },
+      "note": "Kite Passport declined before signing: the $0.002 session total was already spent. SERV had said spend. The attempted time is taken from the local screen recording (still of the refusal), not from a transaction."
     }
   ],
   "verification": {
     "rpc": "https://mainnet.base.org",
-    "checked_at_utc": "2026-11-12T17:01:46Z",
-    "chain_head_at_check": 56562656,
+    "checked_at_utc": "2026-11-12T17:32:20Z",
+    "chain_head_at_check": 56574162,
     "method": "eth_getTransactionByHash, eth_getTransactionReceipt and eth_getBlockByNumber; USDC Transfer and AuthorizationUsed logs decoded."
   }
 }

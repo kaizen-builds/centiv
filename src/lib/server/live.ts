@@ -112,9 +112,7 @@ export function runningTotal() {
   return state.spent;
 }
 
-export function validTopic(t: unknown): t is string {
-  return typeof t === "string" && /^[a-z0-9][a-z0-9 -]{0,30}$/i.test(t.trim()) && t.trim().split(/\s+/).length <= 2;
-}
+export { validTopic } from "@/lib/topic";
 
 export function merchantUrl(topic: string) {
   return `https://${LIVE_MERCHANT.host}${LIVE_MERCHANT.path}?topic=${encodeURIComponent(topic.trim())}`;
@@ -245,9 +243,10 @@ export async function weighLiveCall(opts: {
   remaining: number;
   perTx: number;
   windowMinLeft: number;
+  question?: string;
 }): Promise<ServDecision> {
   return decideSpend({
-    question: `Latest ${opts.topic} news for a research brief.`,
+    question: opts.question?.trim() || `Latest ${opts.topic} news for a research brief.`,
     candidate: liveCandidate(opts.topic, opts.price),
     remaining: opts.remaining,
     perTx: opts.perTx,

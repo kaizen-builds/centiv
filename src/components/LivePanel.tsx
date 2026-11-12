@@ -16,9 +16,13 @@ type LiveReppoScore = {
   note: string;
 };
 type LiveStatus = { enabled: boolean; reason: string; merchant: string; limits?: { maxPerCallUsdc: number; maxTotalUsdc: number; spentThisProcessUsdc: number } };
+type TopicSource = "serv" | "fallback" | "direct";
 type LiveResult = {
   status: "paid" | "declined" | "skipped" | "error";
+  question?: string;
   topic: string;
+  topic_source?: TopicSource;
+  topic_rationale?: string;
   price?: number;
   tx_hash?: string;
   basescan_url?: string;
@@ -38,7 +42,10 @@ function isLocalHost(host: string) {
 const PREVIEW_RESULTS: LiveResult[] = [
   {
     status: "paid",
-    topic: "ethereum",
+    question: "Is anything big happening with Ethereum ETFs this week?",
+    topic: "ethereum etf",
+    topic_source: "direct",
+    topic_rationale: "Preview only — this topic is shown as set directly, not chosen by SERV.",
     price: 0.001,
     tx_hash: "0xpreview0000000000000000000000000000000000000000000000000000000000",
     basescan_url: "https://basescan.org/tx/0xpreview0000000000000000000000000000000000000000000000000000000000",
@@ -84,7 +91,7 @@ function ReppoLine({ reppo }: { reppo: LiveReppoScore }) {
 export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => void }) {
   const [status, setStatus] = useState<LiveStatus | null>(null);
   const [token, setToken] = useState("");
-  const [topic, setTopic] = useState("ethereum");
+  const [question, setQuestion] = useState("Is anything big happening with Ethereum ETFs this week?");
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<LiveResult[]>([]);
   const [preview, setPreview] = useState(false);
@@ -110,10 +117,10 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
       const res = await fetch("/api/live", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ topic }),
+        body: JSON.stringify({ question }),
       });
       const data = (await res.json()) as LiveResult & { error?: string };
-      const r: LiveResult = res.ok || data.status ? data : { status: "error", topic, error: data.error || res.statusText };
+      const r: LiveResult = res.ok || data.status ? data : { status: "error", topic: data.topic || "", question, error: data.error || res.statusText };
       setResults((x) => [r, ...x]);
       const servLine = r.serv ? `SERV ${r.serv.decision} (${r.serv.source}): ${r.serv.rationale}` : "";
       const reppoLine = r.reppo
@@ -125,7 +132,7 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
         runId: "live",
         runLabel: "L",
         at: Date.now(),
-        service: `Otto AI · filtered news “${topic}”`,
+        service: `Otto AI · filtered news “${r.topic || "?"}”`,
         decision: r.status === "paid" ? "spend" : r.status === "skipped" ? "skip" : "decline",
         amount: r.price ?? 0,
         charged: r.status === "paid" ? r.price ?? 0 : 0,
@@ -155,20 +162,38 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
         <p className="mt-2 text-[12.5px] text-dim">Localhost preview only — payments are not armed. The Reppo line shows the honest unconfigured state.</p>
       )}
       <p className="mt-2 text-[13px] text-mute">
-        Real USDC through your approved Kite Passport session to {merchant}. SERV Reasoning weighs each call before anything is signed. After a paid result, Reppo scores the excerpt when a key is configured. Centiv limit {limits?.maxPerCallUsdc ?? "—"} per call, {limits?.maxTotalUsdc ?? "—"} per run (spent so far {limits?.spentThisProcessUsdc ?? 0}). Kite Passport enforces its own caps on top.
+        Real USDC through your approved Kite Passport session to {merchant}. Type a full question; SERV picks a short Otto topic (or a built-in extractor if SERV is unavailable). SERV then weighs each call before anything is signed. After a paid result, Reppo scores the excerpt when a key is configured. Centiv limit {limits?.maxPerCallUsdc ?? "—"} per call, {limits?.maxTotalUsdc ?? "—"} per run (spent so far {limits?.spentThisProcessUsdc ?? 0}). Kite Passport enforces its own caps on top.
       </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <input type="password" autoComplete="off" placeholder="Owner token" value={token} onChange={(e) => setToken(e.target.value)} className="num h-10 w-56 rounded-full border hairline-strong bg-white px-4 text-[12.5px]" aria-label="Owner token" />
-        <input value={topic} onChange={(e) => setTopic(e.target.value)} className="h-10 w-44 rounded-full border hairline-strong bg-white px-4 text-[13px]" aria-label="Topic (one or two words)" />
-        <button onClick={pay} disabled={busy || !token || preview} className="pill pill-cent h-10 px-5 text-[13px] disabled:opacity-50">
-          {busy ? "Paying…" : "Pay & fetch (Live)"}
-        </button>
+      <div className="mt-4 flex flex-col gap-2">
+        <div className="flex flex-wrap gap-2">
+          <input type="password" autoComplete="off" placeholder="Owner token" value={token} onChange={(e) => setToken(e.target.value)} className="num h-10 w-56 rounded-full border hairline-strong bg-white px-4 text-[12.5px]" aria-label="Owner token" />
+          <button onClick={pay} disabled={busy || !token || preview || !question.trim()} className="pill pill-cent h-10 px-5 text-[13px] disabled:opacity-50">
+            {busy ? "Paying…" : "Pay & fetch (Live)"}
+          </button>
+        </div>
+        <textarea
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          rows={2}
+          className="min-h-[52px] w-full resize-none rounded-2xl border hairline-strong bg-white px-4 py-2.5 text-[14px] leading-[1.45]"
+          aria-label="Research question"
+          placeholder="Ask a full question — SERV will pick a short Otto topic"
+        />
       </div>
       {results.length > 0 && (
         <ul className="mt-4 space-y-2">
           {results.map((r, i) => (
             <li key={i} className={`rounded-md border px-3 py-2 text-[12.5px] ${r.status === "paid" ? "border-pass/40 bg-pass/[0.06]" : r.status === "skipped" ? "border-cent/25 bg-sage/60" : "border-stop/45 bg-stop/[0.06]"}`}>
-              <span className="font-semibold">{r.status === "paid" ? "Paid" : r.status === "declined" ? "Declined" : r.status === "skipped" ? "Skipped" : "Error"}</span> · “{r.topic}”
+              <span className="font-semibold">{r.status === "paid" ? "Paid" : r.status === "declined" ? "Declined" : r.status === "skipped" ? "Skipped" : "Error"}</span>
+              {r.question ? (
+                <span className="text-mute">
+                  {" "}
+                  · “{r.question}” → <span className="font-medium text-bone">{r.topic}</span>
+                  {r.topic_source === "serv" ? " · SERV" : r.topic_source === "fallback" ? " · built-in" : r.topic_source === "direct" ? " · set directly" : ""}
+                </span>
+              ) : (
+                <span> · “{r.topic}”</span>
+              )}
               {r.basescan_url && (
                 <>
                   {" "}· <a className="num text-cent underline" href={r.basescan_url} target="_blank" rel="noopener noreferrer">{r.tx_hash?.slice(0, 10)}… on Basescan ↗</a>

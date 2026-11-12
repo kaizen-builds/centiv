@@ -114,7 +114,7 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
         <div className="mt-6 grid place-items-center rounded-md border border-dashed hairline-strong px-6 py-10 text-center">
           <p className="font-display text-[24px] text-bone">Two paid calls, then a refusal.</p>
           <p className="mt-2 max-w-sm text-[13.5px] leading-[1.55] text-dim">
-            The short A → B demo approves a cap, buys one call, then hard-stops at the limit. Both decisions land here.
+            The short demo approves a cap, buys two Ethereum ETF calls, then hard-stops at the limit. Those decisions land here.
           </p>
           {onRunDemo && (
             <button type="button" onClick={onRunDemo} className="pill pill-cent mt-5 h-10 px-5 text-[13.5px]">
@@ -125,6 +125,12 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
       ) : (
         <div key={current.id} className="mt-5">
           <p className="font-display text-[20px] font-medium leading-[1.4] tracking-[-0.02em] text-bone">“{current.question}”</p>
+          {current.topic && (
+            <p className="mt-1.5 text-[13px] leading-[1.5] text-mute">
+              → <span className="font-medium text-bone">{current.topic}</span>
+              {current.topicSource === "serv" ? " · SERV" : current.topicSource === "direct" ? " · set directly" : " · built-in"}
+            </p>
+          )}
           <ol className="mt-5">
             {current.steps.map((s, i) => (
               <StepRow key={s.id} s={s} last={i === current.steps.length - 1 && !current.answer} />

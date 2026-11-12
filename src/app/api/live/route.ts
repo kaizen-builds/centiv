@@ -15,6 +15,7 @@ import {
   weighLiveCall,
 } from "@/lib/server/live";
 import { evaluateLiveExcerpt } from "@/lib/server/reppo";
+import { chooseOttoTopic } from "@/lib/server/topic";
 
 export const maxDuration = 180;
 
@@ -42,22 +43,36 @@ export async function POST(req: Request) {
   const rl = rateLimit();
   if (!rl.ok) return NextResponse.json({ error: rl.reason }, { status: 429 });
 
-  const body = (await req.json().catch(() => ({}))) as { topic?: unknown };
-  if (!validTopic(body.topic)) return NextResponse.json({ error: "topic must be one or two plain words." }, { status: 400 });
-  const topic = (body.topic as string).trim();
+  const body = (await req.json().catch(() => ({}))) as { question?: unknown; topic?: unknown };
+  const question = typeof body.question === "string" ? body.question.trim() : "";
+  let topic: string;
+  let topic_source: "serv" | "fallback" | "direct";
+  let topic_rationale: string | undefined;
+  if (question) {
+    const chosen = await chooseOttoTopic(question);
+    topic = chosen.topic;
+    topic_source = chosen.source;
+    topic_rationale = chosen.rationale;
+  } else if (validTopic(body.topic)) {
+    topic = (body.topic as string).trim();
+    topic_source = "direct";
+  } else {
+    return NextResponse.json({ error: "Send a research question, or a one- or two-word topic." }, { status: 400 });
+  }
   const url = merchantUrl(topic);
+  const topicMeta = { question: question || undefined, topic, topic_source, topic_rationale };
 
   const { maxPerCall, maxTotal } = liveLimits();
   const quote = await probePrice(url);
-  if (!quote.ok || quote.price === undefined) return NextResponse.json({ status: "error", topic, url, error: quote.error }, { status: 502 });
+  if (!quote.ok || quote.price === undefined) return NextResponse.json({ status: "error", url, error: quote.error, ...topicMeta }, { status: 502 });
   if (quote.price > maxPerCall)
-    return NextResponse.json({ status: "declined", topic, url, price: quote.price, error_code: "centiv_per_call_limit", error: `Quote ${quote.price} USDC is over Centiv's live per-call limit ${maxPerCall}. Nothing signed.` });
+    return NextResponse.json({ status: "declined", url, price: quote.price, error_code: "centiv_per_call_limit", error: `Quote ${quote.price} USDC is over Centiv's live per-call limit ${maxPerCall}. Nothing signed.`, ...topicMeta });
   if (runningTotal() + quote.price > maxTotal + 1e-9)
-    return NextResponse.json({ status: "declined", topic, url, price: quote.price, error_code: "centiv_run_total_limit", error: `This would take the live run past ${maxTotal} USDC. Nothing signed.` });
+    return NextResponse.json({ status: "declined", url, price: quote.price, error_code: "centiv_run_total_limit", error: `This would take the live run past ${maxTotal} USDC. Nothing signed.`, ...topicMeta });
 
   const sessionId = process.env.CENTIV_LIVE_SESSION_ID!.trim();
   const pre = await preflightSession(sessionId);
-  if (!pre.ok) return NextResponse.json({ status: "declined", topic, url, price: quote.price, error_code: "centiv_session_preflight", error: pre.reason });
+  if (!pre.ok) return NextResponse.json({ status: "declined", url, price: quote.price, error_code: "centiv_session_preflight", error: pre.reason, ...topicMeta });
 
   const session = pre.session!;
   const remaining = Math.max(0, +(session.total - session.spent).toFixed(6));
@@ -73,12 +88,16 @@ export async function POST(req: Request) {
     remaining,
     perTx: session.perTx,
     windowMinLeft,
+    question: question || undefined,
   });
   const sessionMeta = { perTx: session.perTx, total: session.total };
-  if (serv.decision !== "spend") {
+  // Explicit flag, matching the recorded 12 Nov 18:27 WAT run and the site copy:
+  // SERV's real verdict is always returned and shown. A skip still attempts payment
+  // so Kite Passport remains the hard limit ("SERV flagged it, the agent paid anyway").
+  const ATTEMPT_EVEN_IF_SERV_SKIPS = true;
+  if (serv.decision !== "spend" && !ATTEMPT_EVEN_IF_SERV_SKIPS) {
     return NextResponse.json({
       status: serv.decision === "skip" ? "skipped" : "declined",
-      topic,
       url,
       price: quote.price,
       error_code: serv.decision === "skip" ? "serv_skip" : "serv_decline",
@@ -86,6 +105,7 @@ export async function POST(req: Request) {
       serv,
       provenance: "live",
       session: sessionMeta,
+      ...topicMeta,
     });
   }
 
@@ -99,8 +119,8 @@ export async function POST(req: Request) {
       excerpt: result.reply.excerpt,
       provider: result.reply.provider,
     });
-    return NextResponse.json({ ...result, serv, reppo, provenance: "live", session: sessionMeta });
+    return NextResponse.json({ ...result, ...topicMeta, serv, reppo, provenance: "live", session: sessionMeta });
   }
 
-  return NextResponse.json({ ...result, serv, provenance: "live", session: sessionMeta });
+  return NextResponse.json({ ...result, ...topicMeta, serv, provenance: "live", session: sessionMeta });
 }

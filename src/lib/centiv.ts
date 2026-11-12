@@ -1,6 +1,6 @@
 // Centiv shared types, catalogue scenarios, and helpers.
 // Live orchestration lives in src/lib/server/* and /api/*.
-// The public-demo catalogue mirrors the recorded Otto Ethereum news run
+// The public-demo catalogue mirrors the recorded Otto Ethereum ETF run
 // ($0.001 a call, $0.002 total). Payments in that path stay simulated.
 
 export type Decision = "spend" | "skip" | "decline";
@@ -86,6 +86,10 @@ export interface Run {
   id: string;
   label: string;
   question: string;
+  /** Short Otto topic chosen from the question. Absent on older recorded shapes. */
+  topic?: string;
+  topicSource?: "serv" | "fallback" | "direct";
+  topicRationale?: string;
   steps: Step[];
   status: "running" | "done";
   gate?: GateResult;
@@ -125,9 +129,9 @@ export interface Scenario {
   };
 }
 
-const OTTO_ENDPOINT = "GET https://x402.ottoai.services/filtered-news?topic=ethereum";
-const OTTO_SERVICE = "Otto AI · Ethereum news";
-const OTTO_YIELDS = "Otto AI ETH briefing · 146 sources. Wording from the recorded run of 12 Nov 2026. Demo payment is simulated.";
+const OTTO_ENDPOINT = "GET https://x402.ottoai.services/filtered-news?topic=ethereum%20etf";
+const OTTO_SERVICE = "Otto AI · Ethereum ETF news";
+const OTTO_YIELDS = "Otto AI ETH ETF briefing · 180 sources. Wording from the recorded run of 12 Nov 2026, 18:27 WAT. Demo payment is simulated.";
 
 const ottoCall = (rationale: string): Candidate => ({
   service: OTTO_SERVICE,
@@ -139,13 +143,13 @@ const ottoCall = (rationale: string): Candidate => ({
 });
 
 const ottoAnswer: Answer = {
-  headline: "Otto AI’s briefing: ETH fundamentals look stronger than the near-term tape.",
+  headline: "Otto AI’s briefing: persistent outflows from spot Ethereum ETFs.",
   points: [
-    "Otto AI (146 sources, 12 Nov 2026) said the most consequential development was Deutsche Bank launching regulated BTC/ETH custody under MiCA, with the SEC also clearing Nasdaq ISE to list options on qualifying digital-commodity ETPs, ETH among them, and Amundi tokenising an equity index fund on Ethereum.",
-    "The same briefing said staking had hit an all-time high above 36% of supply, while the near-term picture was weaker: ETH around $2,400–$2,726 in a confirmed downtrend, with ETH dominance at 10.36% versus Bitcoin dominance near 60.3%.",
+    "Otto AI (180 sources, 12 Nov 2026) said the dominant theme was persistent institutional outflow from spot ETH ETFs, with Lookonchain showing $132.41M leaving in a single day (12 Nov) and $422.51M over seven days, and Cointelegraph confirming continued net outflows across BTC, ETH and XRP products.",
+    "The same briefing said a brief relief on 10 Nov, when ETH outflows shrank to $1.3M, was erased the next session with $144.8M leaving, and cited BlackRock-related ETF selling alongside ETH breaking below $2,000.",
     "Those figures are Otto AI’s, not independently verified by Centiv. In this public demo the payments are simulated; the wording is from the recorded run.",
   ],
-  sources: "Otto AI /filtered-news?topic=ethereum, wording from the recorded run of 12 Nov 2026. Claims are Otto AI’s. Demo payments are simulated.",
+  sources: "Otto AI /filtered-news?topic=ethereum etf, wording from the recorded run of 12 Nov 2026, 18:27 WAT. Claims are Otto AI’s. Demo payments are simulated.",
 };
 
 // The engine runs evaluateDraft for the gate; these placeholders are unused on screen.
@@ -159,7 +163,7 @@ const unusedGate = (note: string): GateResult => ({
 export const SCENARIOS: Record<Scenario["key"], Scenario> = {
   "eth-news": {
     key: "eth-news",
-    question: "What’s the latest on Ethereum?",
+    question: "Is anything big happening with Ethereum ETFs this week?",
     candidates: [
       ottoCall("The question is about Ethereum now, and this is the primary paid briefing — worth the $0.001 inside the cap."),
       ottoCall("A second call at $0.001 still fits the $0.002 total, as in the recorded run."),

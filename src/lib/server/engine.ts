@@ -15,6 +15,7 @@ import {
 } from "@/lib/centiv";
 import { checkLimits, createLocalSession, type PassportSession, recordSpend, remaining } from "./passport";
 import { decideSpend } from "./serv";
+import { chooseOttoTopic } from "./topic";
 import { catalogueCandidates, payForData, quoteCandidate } from "./x402";
 import { evaluateDraft } from "./reppo";
 import { publicStatus } from "./mode";
@@ -34,6 +35,7 @@ export type RunResponse = {
 
 export async function executeResearchRun(req: RunRequest): Promise<RunResponse> {
   const status = publicStatus();
+  const chosen = await chooseOttoTopic(req.question);
   const sc = pickScenario(req.question);
   const runId = `run_${Date.now()}`;
   const label = req.runLabel || "R";
@@ -54,6 +56,14 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
   };
 
   const left0 = remaining(session);
+  const who = chosen.source === "serv" ? "SERV" : "built-in";
+  steps.push({
+    id: nextId(),
+    kind: "reason",
+    status: "done",
+    title: `Question → ${chosen.topic}`,
+    detail: `“${req.question}” → ${chosen.topic} · ${who}. ${chosen.rationale}`,
+  });
   steps.push({
     id: nextId(),
     kind: "reason",
@@ -62,7 +72,13 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
     detail: `Weighing ${sc.candidates.length} candidate ${sc.candidates.length === 1 ? "call" : "calls"} against ${usdc(left0)} USDC remaining · engine ${status.mode}.`,
   });
 
-  const candidates = catalogueCandidates(sc.key);
+  const candidates = catalogueCandidates(sc.key).map((c) => ({
+    ...c,
+    service: `Otto AI · filtered news “${chosen.topic}”`,
+    endpoint: `GET https://x402.ottoai.services/filtered-news?topic=${encodeURIComponent(chosen.topic)}`,
+    rationale: `Fresh filtered news on “${chosen.topic}” for this question.`,
+    yields: `Otto AI filtered news for “${chosen.topic}”. Demo payment is simulated.`,
+  }));
   let gotAllHigh = true;
 
   for (const c of candidates) {
@@ -165,7 +181,7 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
       amount: quote.price,
     });
 
-    const paid = await payForData({ candidate: priced, quote, scenarioKey: sc.key });
+    const paid = await payForData({ candidate: priced, quote, scenarioKey: sc.key, topic: chosen.topic });
     if (!paid.ok) {
       gotAllHigh = false;
       steps[steps.length - 1] = {
@@ -224,8 +240,21 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
     });
   }
 
+  const recordedTopic = chosen.topic.trim().toLowerCase() === "ethereum etf";
   const outcome = gotAllHigh ? sc.outcomes.full : sc.outcomes.partial;
-  const answer: Answer = outcome.answer;
+  const answer: Answer = recordedTopic
+    ? outcome.answer
+    : {
+        headline: "Public demo — no live briefing was bought.",
+        points: [
+          `Centiv chose the Otto topic “${chosen.topic}” from your question (${who}).`,
+          "In the public demo, payments are simulated, so this is not a real Otto AI report for that topic.",
+          gotAllHigh
+            ? "A live run would buy filtered news for that topic, inside your Kite Passport cap."
+            : "A third call would still hit the $0.002 demo cap, as in the recorded run. A live run would buy filtered news for that topic, inside your Kite Passport cap.",
+        ],
+        sources: `Otto topic “${chosen.topic}”, chosen from the question. Demo payments are simulated. No live briefing was fetched.`,
+      };
 
   steps.push({
     id: nextId(),
@@ -259,6 +288,9 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
     id: runId,
     label,
     question: req.question,
+    topic: chosen.topic,
+    topicSource: chosen.source,
+    topicRationale: chosen.rationale,
     steps,
     status: "done",
     gate: { verdict: gate.verdict, score: gate.score, note: gate.note, source: gate.source },
