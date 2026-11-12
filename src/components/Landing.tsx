@@ -21,8 +21,9 @@ const NE = () => (
 );
 
 const primary = "pill pill-cent h-12 px-7 text-[15px]";
-const textLink =
-  "inline-flex min-h-11 items-center text-[15px] font-medium text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent";
+const outline = "pill pill-outline h-12 px-7 text-[15px]";
+const shell = "mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8";
+const chapter = "px-4 py-24 sm:px-6 md:px-8 md:py-36";
 
 function StepIcon({ kind }: { kind: "cap" | "weigh" | "pay" }) {
   const c = { stroke: "currentColor", strokeWidth: 1.25, fill: "none", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -65,24 +66,24 @@ function SectionHead({
 }) {
   if (split) {
     return (
-      <Reveal className="grid items-end gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:gap-20">
+      <Reveal className="grid items-start gap-6 md:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] md:gap-16 lg:gap-24">
         <div>
           <p className="eyebrow text-cent">{label}</p>
-          <h2 id={id} className="mt-4 text-[36px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[52px]">
+          <h2 id={id} className="mt-5 text-[40px] font-normal leading-[1.02] tracking-[-0.045em] text-bone md:text-[56px] lg:text-[60px]">
             {title}
           </h2>
         </div>
-        {children && <div className="max-w-[440px] text-[16px] leading-[1.65] text-mute md:pb-1">{children}</div>}
+        {children && <div className="max-w-[460px] text-[16px] leading-[1.65] text-mute md:pt-10">{children}</div>}
       </Reveal>
     );
   }
   return (
-    <Reveal className="max-w-[760px]">
+    <Reveal className="max-w-[780px]">
       <p className="eyebrow text-cent">{label}</p>
-      <h2 id={id} className="mt-4 text-[36px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[52px]">
+      <h2 id={id} className="mt-5 text-[40px] font-normal leading-[1.02] tracking-[-0.045em] text-bone md:text-[56px] lg:text-[60px]">
         {title}
       </h2>
-      {children && <div className="mt-5 max-w-[540px] text-[16px] leading-[1.65] text-mute">{children}</div>}
+      {children && <div className="mt-6 max-w-[540px] text-[16px] leading-[1.65] text-mute">{children}</div>}
     </Reveal>
   );
 }
@@ -108,22 +109,22 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
 const partners: { name: string; role: string; href: string }[] = [
   {
     name: "Kite Passport",
-    role: "The cap you approve with a passkey. It refuses any payment past it.",
+    role: "The cap you approve with a passkey.",
     href: "https://docs.gokite.ai/passport",
   },
   {
     name: "SERV Reasoning",
-    role: "Weighs each call before payment, and decides whether to buy, skip or decline.",
+    role: "Weighs each call before payment.",
     href: "https://docs.openserv.ai/serv-reasoning/api",
   },
   {
     name: "Reppo",
-    role: "Scores research after it is bought. It does not block or undo a payment.",
+    role: "Scores research after it is bought.",
     href: "https://eval.reppo.xyz/agents.md",
   },
   {
     name: "Otto AI",
-    role: "The news feed the recorded run paid, in USDC on Base.",
+    role: "The news feed the recorded run paid.",
     href: "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
   },
 ];
@@ -158,10 +159,10 @@ const resources: { label: string; href: string; external?: boolean; note: string
 ];
 
 const nav: [string, string][] = [
-  ["#how", "How it works"],
-  ["#ask", "Ask"],
+  ["#thesis", "How it works"],
+  ["#who", "Who it’s for"],
   ["#verified-run", "Proof"],
-  ["#real", "What’s real"],
+  ["#ask", "Ask"],
   ["#faq", "FAQ"],
 ];
 
@@ -200,6 +201,7 @@ export default function Landing() {
   const paid = paidCalls.length;
   const declined = declinedCall ? 1 : 0;
   const spent = VERIFIED_RUN.passport.usage_after.spent_total_usdc;
+  const code = declinedCall?.error_code ?? "session_total_exceeded";
 
   return (
     <div className="min-h-screen bg-ink">
@@ -207,7 +209,7 @@ export default function Landing() {
         Skip to content
       </a>
       <header className="fixed inset-x-0 top-0 z-40 border-b border-[rgba(201,146,46,0.18)] bg-[rgba(255,249,240,0.88)] backdrop-blur-sm">
-        <div className="mx-auto flex h-[64px] max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 md:px-8">
+        <div className={`flex h-[64px] items-center justify-between gap-3 ${shell}`}>
           <Link href="/" aria-label="Centiv home" className="shrink-0 rounded-lg">
             <CentivWordmark size={22} />
           </Link>
@@ -230,31 +232,32 @@ export default function Landing() {
       </header>
 
       <main id="main" className="pt-[64px]">
+        {/* 1. Split hero + product log, then 2. partner strip — one opening rhythm */}
         <section id="hero" className="relative" aria-labelledby="landing-title">
-          <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 pb-16 pt-12 sm:px-6 md:px-8 md:pb-20 md:pt-16 lg:grid-cols-2 lg:gap-16 lg:pt-20">
-            <div className="max-w-[560px]">
+          <div className={`grid items-center gap-10 pb-12 pt-10 sm:gap-12 md:pb-14 md:pt-14 lg:grid-cols-2 lg:gap-16 lg:pt-16 ${shell}`}>
+            <div className="max-w-[600px]">
               <p className="eyebrow rise text-cent" style={{ animationDelay: "40ms" }}>
                 A research agent with a cap
               </p>
               <h1
                 id="landing-title"
-                className="rise mt-5 text-[40px] font-normal leading-[1.05] tracking-[-0.045em] text-bone sm:text-[56px] lg:text-[64px]"
+                className="rise mt-5 text-[44px] font-normal leading-[0.98] tracking-[-0.05em] text-bone sm:text-[60px] lg:text-[72px]"
                 style={{ animationDelay: "90ms" }}
               >
                 Research that pays in cents, and <span className="serif-em whitespace-nowrap">can stop.</span>
               </h1>
-              <p className="rise mt-6 max-w-[480px] text-pretty text-[17px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
+              <p className="rise mt-6 max-w-[480px] text-pretty text-[17px] leading-[1.55] text-mute" style={{ animationDelay: "180ms" }}>
                 You approve a spending cap with Kite Passport. Centiv buys data one call at a time, only when it’s worth what’s left.
               </p>
-              <div className="rise mt-9 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ animationDelay: "270ms" }}>
+              <div className="rise mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "270ms" }}>
                 <Link href="/app?demo=1" className={primary}>
                   Try the demo
                 </Link>
-                <a href="#verified-run" className={textLink}>
+                <a href="#verified-run" className={outline}>
                   See the receipts
                 </a>
               </div>
-              <a href="#real" className="rise mt-6 hidden rounded-lg py-1 transition hover:opacity-80 sm:inline-block" style={{ animationDelay: "330ms" }}>
+              <a href="#real" className="rise mt-5 hidden rounded-lg py-1 transition hover:opacity-80 sm:inline-block" style={{ animationDelay: "330ms" }}>
                 <Suspense fallback={<StatusStripFallback variant="line" />}>
                   <StatusStripServer variant="line" className="text-pretty lg:text-left" />
                 </Suspense>
@@ -262,24 +265,23 @@ export default function Landing() {
             </div>
             <div className="rise min-w-0" style={{ animationDelay: "220ms" }}>
               <RunTerminal />
-              <p className="mt-3 text-[12.5px] leading-[1.55] text-dim">
-                {paid} paid calls · {declined} refused · ${spent} USDC spent on Base. SERV spend, skip, spend. Reppo 66 and 60 after the fact.
-              </p>
             </div>
           </div>
         </section>
 
         <section id="built" aria-label="Built with" className="border-y border-[rgba(201,146,46,0.25)]">
-          <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 md:px-8 md:py-12">
-            <p className="eyebrow text-center text-dim">Built with</p>
-            <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 sm:gap-8">
+          <div className={`${shell} py-12 md:py-16`}>
+            <p className="eyebrow text-center text-dim">
+              Built with Kite Passport, SERV Reasoning, Reppo and Otto AI
+            </p>
+            <ul className="mt-10 grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4 sm:gap-12">
               {partners.map((b) => (
-                <li key={b.name}>
+                <li key={b.name} className="text-center sm:text-left">
                   <a href={b.href} target="_blank" rel="noopener noreferrer" className="group block">
-                    <p className="text-[16px] font-medium tracking-[-0.02em] text-bone transition group-hover:text-cent">
-                      {b.name} <span className="inline-block text-dim transition group-hover:text-cent"><NE /></span>
+                    <p className="text-[18px] font-medium tracking-[-0.03em] text-bone transition group-hover:text-cent md:text-[20px]">
+                      {b.name}
                     </p>
-                    <p className="mt-1.5 text-[13.5px] leading-[1.5] text-mute">{b.role}</p>
+                    <p className="mt-1.5 text-[13px] leading-[1.45] text-mute">{b.role}</p>
                   </a>
                 </li>
               ))}
@@ -287,37 +289,76 @@ export default function Landing() {
           </div>
         </section>
 
-        <section id="how" className="scroll-mt-20" aria-labelledby="how-title">
-          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
-            <SectionHead split label="How it works" id="how-title" title={<>Set a cap. Buy only what’s <span className="serif-em">worth it.</span></>}>
-              <p>
+        {/* 3. Typographic thesis chapter — large type, leftover space, one artefact */}
+        <section id="thesis" className="scroll-mt-20" aria-labelledby="thesis-title">
+          <div className={`${shell} ${chapter}`}>
+            <Reveal>
+              <p className="eyebrow text-cent">How it works</p>
+              <h2
+                id="thesis-title"
+                className="mt-5 max-w-[14ch] text-[44px] font-normal leading-[1.02] tracking-[-0.05em] text-bone md:text-[64px] lg:text-[72px]"
+              >
+                Set a cap. Buy only what’s <span className="serif-em">worth it.</span>
+              </h2>
+              <p className="mt-7 max-w-[520px] text-[17px] leading-[1.6] text-mute">
                 You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo can score what was bought — that score does not block or undo the payment.
               </p>
-            </SectionHead>
-            <div className="mt-14 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
-              <ol className="grid gap-6 sm:grid-cols-3 sm:gap-6">
-                {steps.map((s, i) => (
-                  <Reveal as="li" key={s.t} delay={i * 90} className="card-gold flex flex-col p-6 sm:p-7">
-                    <div className="flex items-center justify-between">
-                      <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
-                        <StepIcon kind={s.k} />
-                      </span>
-                      <span className="num text-[12px] text-dim">0{i + 1}</span>
-                    </div>
-                    <h3 className="mt-6 text-[20px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
-                    <p className="mt-2 flex-1 text-[15px] leading-[1.65] text-mute">{s.s}</p>
-                  </Reveal>
-                ))}
-              </ol>
-              <Reveal delay={160} className="flex justify-center lg:justify-end">
-                <PasskeyCard />
-              </Reveal>
-            </div>
+            </Reveal>
+            <Reveal delay={160} className="mt-20 md:mt-28">
+              <PasskeyCard />
+            </Reveal>
           </div>
         </section>
 
+        {/* 4. Use-case cards */}
+        <section id="who" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="who-title">
+          <div className={`${shell} ${chapter}`}>
+            <SectionHead split label="Who it’s for" id="who-title" title={<>Built for people who give agents a <span className="serif-em">budget.</span></>}>
+              <p>A cap that sits outside the agent’s own code, so research can pay for data without spending past what you approved.</p>
+            </SectionHead>
+            <ul className="mt-14 grid gap-5 md:grid-cols-3 md:gap-6">
+              {audiences.map((a, i) => (
+                <Reveal as="li" key={a.t} delay={i * 80} className="card-gold flex flex-col p-7 md:min-h-[260px] md:p-8">
+                  <h3 className="text-[22px] font-medium tracking-[-0.03em] text-bone">{a.t}</h3>
+                  <p className="mt-4 flex-1 text-[15.5px] leading-[1.65] text-mute">{a.s}</p>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* 5. Feature bento with the session log as a code/terminal panel */}
+        <section id="how" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="how-title">
+          <div className={`${shell} ${chapter}`}>
+            <SectionHead split label="The recorded run" id="how-title" title={<>It weighs, pays, or <span className="serif-em">stops.</span></>}>
+              <p>
+                One session log from 12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused call 3. Reppo scored 66 and 60 after the fact, and did not undo a payment.
+              </p>
+            </SectionHead>
+            <Reveal delay={100} className="bento mt-14 lg:grid-cols-12">
+              <div className="bento-cell border-t-0 p-3 sm:p-4 lg:col-span-8 lg:row-span-3">
+                <p className="eyebrow mb-3 px-1 text-gold-deep">Session log</p>
+                <RunTerminal />
+              </div>
+              {steps.map((s, i) => (
+                <div key={s.t} className="bento-cell flex flex-col lg:col-span-4">
+                  <div className="flex items-center justify-between">
+                    <span className="grid h-10 w-10 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
+                      <StepIcon kind={s.k} />
+                    </span>
+                    <span className="num text-[12px] text-dim">0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-5 text-[18px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
+                  <p className="mt-2 text-[14.5px] leading-[1.6] text-mute">{s.s}</p>
+                </div>
+              ))}
+            </Reveal>
+          </div>
+        </section>
+
+        {/* 6. Ask */}
         <section id="ask" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="ask-title">
-          <div className="mx-auto max-w-[800px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
+          <div className={`mx-auto max-w-[800px] ${chapter}`}>
             <SectionHead label="Ask a question" id="ask-title" title={<>Type the full question. A short topic is <span className="serif-em">picked</span> for each call.</>}>
               <p>
                 Otto’s news feed takes one or two words, not a sentence. You write the question; SERV picks the short topic when a key is set. In the recorded run the topic “ethereum etf” was set directly, not chosen by SERV.
@@ -329,35 +370,41 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* 7. Proof + 8. stats */}
         <section id="verified-run" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="proof-title">
-          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
-            <SectionHead label="The recorded run" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
+          <div className={`${shell} ${chapter}`}>
+            <SectionHead label="The receipts" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
               <p>
-                12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with session_total_exceeded. Reppo scored 66 and 60 after the fact — below its pass mark of 70, and after the money had already moved.
+                12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. Reppo scored 66 and 60 after the fact — below its pass mark of 70, and after the money had already moved.
               </p>
             </SectionHead>
-            <Reveal delay={100} className="mt-12">
+            <Reveal delay={80} className="stat-grid mt-16 grid-cols-2 md:grid-cols-4">
+              <div className="stat-cell">
+                <p className="fig text-[40px] leading-none tracking-[-0.05em] text-bone md:text-[52px]">{paid}</p>
+                <p className="mt-3 text-[13px] text-mute">paid calls</p>
+              </div>
+              <div className="stat-cell">
+                <p className="fig text-[40px] leading-none tracking-[-0.05em] text-bone md:text-[52px]">${spent}</p>
+                <p className="mt-3 text-[13px] text-mute">USDC spent on Base</p>
+              </div>
+              <div className="stat-cell">
+                <p className="fig text-[40px] leading-none tracking-[-0.05em] text-bone md:text-[52px]">{declined}</p>
+                <p className="mt-3 text-[13px] text-mute">call refused</p>
+              </div>
+              <div className="stat-cell">
+                <p className="num text-[15px] leading-tight text-stop md:text-[18px]">{code}</p>
+                <p className="mt-3 text-[13px] text-mute">nothing signed</p>
+              </div>
+            </Reveal>
+            <Reveal delay={120} className="mt-14">
               <VerifiedRun collapseReplies receipts hideLead />
             </Reveal>
           </div>
         </section>
 
-        <section id="who" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="who-title">
-          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
-            <SectionHead label="Who it’s for" id="who-title" title={<>Built for people who give agents a <span className="serif-em">budget.</span></>} />
-            <ul className="mt-14 grid gap-10 md:grid-cols-3 md:gap-16">
-              {audiences.map((a, i) => (
-                <Reveal as="li" key={a.t} delay={i * 80}>
-                  <h3 className="text-[20px] font-medium tracking-[-0.02em] text-bone">{a.t}</h3>
-                  <p className="mt-3 text-[15.5px] leading-[1.65] text-mute">{a.s}</p>
-                </Reveal>
-              ))}
-            </ul>
-          </div>
-        </section>
-
+        {/* 9. Honest labels */}
         <section id="real" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="real-title">
-          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
+          <div className={`${shell} ${chapter}`}>
             <SectionHead label="Honest labels" id="real-title" title={<>What’s real, and what’s <span className="serif-em">simulated</span></>}>
               <p>Every result on this site carries one of three labels.</p>
             </SectionHead>
@@ -381,7 +428,7 @@ export default function Landing() {
         </section>
 
         <section id="faq" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="faq-title">
-          <div className="mx-auto grid max-w-[1200px] items-start gap-12 px-4 py-20 sm:px-6 md:px-8 md:py-28 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
+          <div className={`grid items-start gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24 ${shell} ${chapter}`}>
             <SectionHead label="FAQ" id="faq-title" title={<>Questions.</>}>
               <p>What’s real on this page, what the partners did, and how to run it yourself.</p>
             </SectionHead>
@@ -427,21 +474,22 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* 10. Closing CTA */}
         <section id="cta" className="border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="cta-title">
-          <div className="mx-auto max-w-[1200px] px-4 py-20 text-center sm:px-6 md:px-8 md:py-28">
+          <div className={`text-center ${shell} ${chapter}`}>
             <Reveal>
               <p className="eyebrow text-cent">Try it</p>
-              <h2 id="cta-title" className="mx-auto mt-4 max-w-[18ch] text-[40px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[56px]">
+              <h2 id="cta-title" className="mx-auto mt-5 max-w-[16ch] text-[44px] font-normal leading-[1.02] tracking-[-0.05em] text-bone md:text-[64px]">
                 Set a cap. See it <span className="serif-em">hold.</span>
               </h2>
-              <p className="mx-auto mt-5 max-w-[460px] text-[16px] leading-[1.65] text-mute">
+              <p className="mx-auto mt-6 max-w-[460px] text-[16px] leading-[1.65] text-mute">
                 Payments in the public app are simulated, so visitors never spend anything. The recorded run on this page is real.
               </p>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                 <Link href="/app?demo=1" className={primary}>
                   Try the demo
                 </Link>
-                <Link href="/app?ask=1" className={textLink}>
+                <Link href="/app?ask=1" className={outline}>
                   Ask your own question
                 </Link>
               </div>
@@ -451,10 +499,10 @@ export default function Landing() {
       </main>
 
       <footer className="border-t border-[rgba(201,146,46,0.3)]">
-        <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,1.2fr)_repeat(2,minmax(0,0.7fr))] md:px-8">
+        <div className={`grid gap-10 py-16 md:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))] ${shell}`}>
           <div>
             <CentivWordmark size={18} />
-            <p className="mt-4 max-w-[360px] text-[13.5px] leading-[1.65] text-dim">
+            <p className="mt-5 max-w-[360px] text-[13.5px] leading-[1.65] text-dim">
               The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores after the two that paid. Demo payments are simulated. Reppo does not block or undo a payment.
             </p>
             <p className="mt-3 text-[13px] text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
@@ -462,7 +510,7 @@ export default function Landing() {
           </div>
           <div>
             <p className="eyebrow text-dim">On this page</p>
-            <ul className="mt-4 space-y-2 text-[14px]">
+            <ul className="mt-4 space-y-2.5 text-[14px]">
               {nav.map(([h, l]) => (
                 <li key={h}>
                   <a href={h} className="text-mute transition hover:text-cent">
@@ -474,7 +522,7 @@ export default function Landing() {
           </div>
           <div>
             <p className="eyebrow text-dim">Links</p>
-            <ul className="mt-4 space-y-2 text-[14px]">
+            <ul className="mt-4 space-y-2.5 text-[14px]">
               {footerLinks.map((l) => (
                 <li key={l.label}>
                   <a

@@ -37,3 +37,20 @@ sharp-corner buttons, bracketed “[ LABEL ]” voice, pixel-noise textures,
 or Tranche’s look. Brand stays cream paper, plum #5B2A4E, DM Sans +
 Newsreader italic, rounded plum pills, gold cards, white passkey card.
 Always “Kite Passport”.
+
+
+## Centiv mapping (closer mirror, still our brand)
+
+Section order now follows the live e2b.dev rhythm:
+
+1. Short nav, primary pill on the right
+2. Split hero: eyebrow, oversized headline, short body, filled + outline CTAs, session log as the product panel
+3. Partner strip under a one-line label, full-bleed hairlines
+4. Typographic thesis chapter (large type, leftover space, white passkey card)
+5. Use-case card row (who it’s for)
+6. Feature bento: session log + the three steps in one framed grid
+7. Ask a full question
+8. Proof chapter, then a four-up stats row, then receipts
+9. Honest labels, FAQ, typographic closing CTA, column footer
+
+Typography scale aims at E2B’s 72 / 56 display sizes, but in DM Sans with Newsreader italic — never all-caps condensed, never orange, never E2B assets.

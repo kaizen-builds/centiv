@@ -118,6 +118,7 @@ export default function RunTerminal({ className = "" }: { className?: string }) 
             <li key={l.key} className={`term-line term-${l.kind} print`} style={{ animationDelay: `${160 + i * 95}ms` }}>
               {l.time && <span className="term-time">{l.time}</span>}
               <span className="min-w-0 flex-1">
+                <span className="mr-1.5 text-[#a88ea0]" aria-hidden="true">›</span>
                 {l.text}
                 {l.href && l.hrefLabel && (
                   <>
