@@ -18,7 +18,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { timingSafeEqual } from "node:crypto";
@@ -168,8 +168,9 @@ type KpassSession = {
 
 /** Read-only preflight: the named session must be active, unexpired, small and scoped to the merchant. */
 export async function preflightSession(sessionId: string): Promise<{ ok: boolean; reason?: string; session?: { perTx: number; total: number; spent: number; expiresAt?: string } }> {
-  const { code, stdout } = await runKpass(["session", "list", "--output", "json", "--no-interactive"], 30_000);
-  if (code !== 0) return { ok: false, reason: `kpass session list failed (exit ${code}).` };
+  // kpass v1.10+: `agent:session list` (was `session list`).
+  const { code, stdout } = await runKpass(["agent:session", "list", "--output", "json", "--no-interactive"], 30_000);
+  if (code !== 0) return { ok: false, reason: `kpass agent:session list failed (exit ${code}).` };
   let list: { sessions?: KpassSession[] };
   try {
     list = JSON.parse(stdout);
@@ -211,8 +212,19 @@ export type LiveResult = {
 
 /** The one call that can move money. Only reached after every gate in /api/live passes. */
 export async function executeLive(sessionId: string, topic: string, url: string, price: number): Promise<LiveResult> {
-  const args = ["session", "execute", "--url", url, "--method", "GET", "--session-id", sessionId, "--no-browser", "--no-interactive", "--output", "json"];
+  // kpass v1.10+: `agent:session execute` uses the agent's current session and rejects unknown
+  // flags (--session-id, --no-browser), so pin the named session first with `agent:session use`.
+  const use = await runKpass(["agent:session", "use", "--session-id", sessionId, "--output", "json", "--no-interactive"], 30_000);
+  if (use.code !== 0) return { status: "error", topic, url, error: `kpass agent:session use failed (exit ${use.code}). Nothing signed.` };
+  const args = ["agent:session", "execute", "--url", url, "--method", "GET", "--no-interactive", "--output", "json"];
   const { code, stdout } = await runKpass(args, 90_000);
+  const debugDir = process.env.CENTIV_LIVE_DEBUG_DIR?.trim();
+  if (debugDir) {
+    try {
+      const redacted = stdout.replace(/"([^"]*(?:token|jwt|secret|authorization|signature)[^"]*)"\s*:\s*"[^"]*"/gi, '"$1":"<redacted>"');
+      writeFileSync(join(debugDir, `kpass-execute-${Date.now()}.json`), redacted);
+    } catch {}
+  }
   let out: Record<string, unknown> = {};
   try {
     out = JSON.parse(stdout);
@@ -222,7 +234,7 @@ export async function executeLive(sessionId: string, topic: string, url: string,
   const get = (o: unknown, path: string): unknown => path.split(".").reduce<unknown>((a, k) => (a && typeof a === "object" ? (a as Record<string, unknown>)[k] : undefined), o);
   if (out.status === "success") {
     const tx = String(get(out, "payment.transaction_hash") || get(out, "x402.payment_response.transaction") || "");
-    const report = String(get(out, "x402.parsed_response_body.data.report") || "");
+    const report = String(get(out, "x402.parsed_response_body.data.report") || get(out, "parsed_response_body.data.report") || get(out, "response.data.report") || get(out, "x402.parsed_response_body.report") || "");
     if (tx && /^0x[0-9a-f]{64}$/i.test(tx)) state.spent = +(state.spent + price).toFixed(6);
     return {
       status: "paid",
@@ -240,7 +252,8 @@ export async function executeLive(sessionId: string, topic: string, url: string,
     };
   }
   const errorCode = typeof out.error_code === "string" ? out.error_code : undefined;
-  const declined = Boolean(errorCode && /exceeded|expired|cap|limit|forbidden|not_in/i.test(errorCode));
+  const errText = typeof out.error === "string" ? out.error : "";
+  const declined = Boolean((errorCode && /exceeded|expired|cap|limit|forbidden|not_in/i.test(errorCode)) || /exceed|cap|limit|insufficient budget|not allowed/i.test(errText));
   return {
     status: declined ? "declined" : "error",
     topic,
