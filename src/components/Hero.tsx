@@ -42,7 +42,7 @@ export function Hero({
           <ol className="rise mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-mute" style={d(2)} aria-label="Steps">
             {["Approve a session", "Ask a question", "Watch it buy, skip or decline", "Check the audit trail"].map((t, i) => (
               <li key={t} className="flex items-center gap-2">
-                <span className="grid h-5 w-5 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-[10.5px] font-semibold text-cent">{i + 1}</span>
+                <span className="grid h-5 w-5 place-items-center rounded-full border border-[rgba(180, 73, 26,0.45)] bg-white text-[10.5px] font-semibold text-cent">{i + 1}</span>
                 {t}
               </li>
             ))}

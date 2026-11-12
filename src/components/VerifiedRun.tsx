@@ -84,7 +84,7 @@ export default function VerifiedRun({
   const replyCall = paidCalls[0];
 
   const replies = replyCall ? (
-    <figure className="rounded-[14px] border border-[rgba(201,146,46,0.35)] bg-[#fffdf8] p-5">
+    <figure className="rounded-[14px] border border-[rgba(196, 148, 100,0.35)] bg-[#fffdf8] p-5">
       <figcaption className="flex flex-wrap items-center justify-between gap-2">
         <span className="num text-[10.5px] uppercase tracking-[0.12em] text-gold-deep">
           {sameBriefing ? "Paid reply · both calls, same briefing" : `Paid reply · “${replyCall.topic}”`}
@@ -96,7 +96,7 @@ export default function VerifiedRun({
           <p key={para.slice(0, 40)}>{para.length > 640 ? `${para.slice(0, 640).replace(/\s+\S*$/, "")}…` : para}</p>
         ))}
       </blockquote>
-      <p className="mt-3 border-t border-[rgba(201,146,46,0.25)] pt-2 text-[11.5px] text-dim">
+      <p className="mt-3 border-t border-[rgba(196, 148, 100,0.25)] pt-2 text-[11.5px] text-dim">
         Source: Otto AI ({replyCall.reply.attribution.replace(/[[\]]/g, "")}). Claims are Otto AI’s and Centiv has not verified them.
         {sameBriefing ? " Both paid calls returned this same briefing." : ""}
       </p>
@@ -131,7 +131,7 @@ export default function VerifiedRun({
         {hideLead && <h2 id={`${id}-title`} className="sr-only">Receipts from the recorded run</h2>}
         {children}
 
-        <div className="mt-7 rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
+        <div className="mt-7 rounded-[14px] border border-[rgba(196, 148, 100,0.45)] bg-white">
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
             <span className="text-[12px] text-dim">Caps, set with a passkey</span>
             <span className="fig text-[15px] text-bone">
@@ -139,7 +139,7 @@ export default function VerifiedRun({
               {ttlMin ? ` · ${ttlMin} min` : ""}
             </span>
           </p>
-          <details className="group border-t border-[rgba(201,146,46,0.3)]">
+          <details className="group border-t border-[rgba(196, 148, 100,0.3)]">
             <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5 text-[13.5px] font-medium text-bone sm:px-5 [&::-webkit-details-marker]:hidden">
               Session details
               <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">
@@ -190,7 +190,7 @@ export default function VerifiedRun({
           </details>
         </div>
 
-        <ol className="mt-6 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">
+        <ol className="mt-6 divide-y divide-[rgba(196, 148, 100,0.25)] rounded-[14px] border border-[rgba(196, 148, 100,0.45)] bg-white">
           {paidCalls.map((c) => (
             <li
               key={c.tx_hash}
@@ -256,7 +256,7 @@ export default function VerifiedRun({
 
         {replies &&
           (collapseReplies ? (
-            <details className="group mt-6 rounded-[14px] border border-[rgba(201,146,46,0.35)] bg-[#fffdf8]">
+            <details className="group mt-6 rounded-[14px] border border-[rgba(196, 148, 100,0.35)] bg-[#fffdf8]">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-[14px] font-medium text-bone [&::-webkit-details-marker]:hidden">
                 What the two paid calls returned
                 <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">

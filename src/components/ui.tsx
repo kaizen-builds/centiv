@@ -80,7 +80,7 @@ export function GateSourceLabel({ source, className = "" }: { source?: GateSourc
   return <span className={`text-[11px] text-dim ${className}`}>Built-in check · Simulated</span>;
 }
 
-/** Ring gauge — plum remaining arc drains smoothly (~0.9s) as spend lands. */
+/** Ring gauge — remaining arc drains smoothly (~0.9s) as spend lands. */
 export function BudgetRing({ ratio, size = 132, label }: { ratio: number; size?: number; label?: React.ReactNode }) {
   const r = 52;
   const arc = 290 / 360;

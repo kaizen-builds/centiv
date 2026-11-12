@@ -39,7 +39,7 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
 
 function Table({ list }: { list: Row[] }) {
   return (
-    <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
+    <ul className="divide-y divide-[rgba(196, 148, 100,0.25)] overflow-hidden rounded-[18px] border border-[rgba(196, 148, 100,0.45)] bg-white">
       {list.map((r) => (
         <li key={r.part} className="grid gap-x-6 gap-y-2 px-5 py-5 sm:grid-cols-[minmax(0,16rem)_7.5rem_minmax(0,1fr)] sm:items-baseline sm:px-6">
           <div className="flex items-start justify-between gap-3 sm:contents">
@@ -66,7 +66,7 @@ export async function RealVsSimulated() {
 
 export function RealVsSimulatedFallback() {
   return (
-    <div className="rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white px-6 py-10 text-center text-[14px] text-dim" aria-hidden="true">
+    <div className="rounded-[18px] border border-[rgba(196, 148, 100,0.45)] bg-white px-6 py-10 text-center text-[14px] text-dim" aria-hidden="true">
       Checking what’s live…
     </div>
   );

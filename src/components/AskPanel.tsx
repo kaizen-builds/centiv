@@ -53,7 +53,7 @@ export function AskPanel({
             <button
               type="submit"
               disabled={disabled || !value.trim()}
-              className="ml-auto inline-flex h-9 items-center gap-2 rounded-full bg-cent px-4 text-[13px] font-semibold text-white transition hover:bg-[var(--color-cent-hover)] disabled:cursor-not-allowed disabled:opacity-30"
+              className="ml-auto inline-flex h-9 items-center gap-2 rounded-full bg-[var(--color-cent-fill)] px-4 text-[13px] font-semibold text-white transition hover:bg-[var(--color-cent-hover)] disabled:cursor-not-allowed disabled:opacity-30"
             >
               Research
               <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">

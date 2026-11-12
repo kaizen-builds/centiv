@@ -4,7 +4,7 @@ export type StatusKind = "live" | "simulated";
 
 function Sep() {
   return (
-    <span className="text-[rgba(201,146,46,0.5)]" aria-hidden="true">
+    <span className="text-[rgba(196, 148, 100,0.5)]" aria-hidden="true">
       |
     </span>
   );

@@ -128,7 +128,7 @@ export function SessionPanel({
         {session.status === "draft" && (
           <button
             onClick={onApprove}
-            className="group flex w-full items-center justify-center gap-2.5 rounded-full bg-cent px-4 py-3.5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-cent-hover)] active:translate-y-px"
+            className="group flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--color-cent-fill)] px-4 py-3.5 text-[14px] font-semibold text-white transition hover:bg-[var(--color-cent-hover)] active:translate-y-px"
           >
             <KeyGlyph />
             Approve ${usdc(session.budget)} with passkey

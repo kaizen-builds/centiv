@@ -32,7 +32,7 @@ export default function AskPreview() {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Ask a full question — a short topic is picked for each call"
-        className="mt-3 block w-full resize-none rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white px-4 py-3.5 text-[16px] leading-[1.55] text-bone outline-none placeholder:text-dim focus:border-cent sm:px-5"
+        className="mt-3 block w-full resize-none rounded-[18px] border border-[rgba(196, 148, 100,0.45)] bg-white px-4 py-3.5 text-[16px] leading-[1.55] text-bone outline-none placeholder:text-dim focus:border-cent sm:px-5"
       />
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <p className="min-w-0 text-[14.5px] leading-[1.55] text-mute">

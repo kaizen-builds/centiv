@@ -89,7 +89,7 @@ const items: { q: string; a: ReactNode }[] = [
 
 export default function Faq() {
   return (
-    <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
+    <ul className="divide-y divide-[rgba(196, 148, 100,0.25)] overflow-hidden rounded-[18px] border border-[rgba(196, 148, 100,0.45)] bg-white">
       {items.map((it, i) => (
         <li key={it.q}>
           <details className="group" open={i === 0}>

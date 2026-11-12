@@ -208,7 +208,7 @@ export default function Landing() {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
         Skip to content
       </a>
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-[rgba(201,146,46,0.18)] bg-[rgba(255,249,240,0.88)] backdrop-blur-sm">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-[rgba(196, 148, 100,0.18)] bg-[rgba(255,249,240,0.88)] backdrop-blur-sm">
         <div className={`flex h-[64px] items-center justify-between gap-3 ${shell}`}>
           <Link href="/" aria-label="Centiv home" className="shrink-0 rounded-lg">
             <CentivWordmark size={22} />
@@ -269,7 +269,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section id="built" aria-label="Built with" className="border-y border-[rgba(201,146,46,0.25)]">
+        <section id="built" aria-label="Built with" className="border-y border-[rgba(196, 148, 100,0.25)]">
           <div className={`${shell} py-12 md:py-16`}>
             <p className="eyebrow text-center text-dim">
               Built with Kite Passport, SERV Reasoning, Reppo and Otto AI
@@ -311,7 +311,7 @@ export default function Landing() {
         </section>
 
         {/* 4. Use-case cards */}
-        <section id="who" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="who-title">
+        <section id="who" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="who-title">
           <div className={`${shell} ${chapter}`}>
             <SectionHead split label="Who it’s for" id="who-title" title={<>Built for people who give agents a <span className="serif-em">budget.</span></>}>
               <p>A cap that sits outside the agent’s own code, so research can pay for data without spending past what you approved.</p>
@@ -328,7 +328,7 @@ export default function Landing() {
         </section>
 
         {/* 5. Feature bento with the session log as a code/terminal panel */}
-        <section id="how" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="how-title">
+        <section id="how" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="how-title">
           <div className={`${shell} ${chapter}`}>
             <SectionHead split label="The recorded run" id="how-title" title={<>It weighs, pays, or <span className="serif-em">stops.</span></>}>
               <p>
@@ -343,7 +343,7 @@ export default function Landing() {
               {steps.map((s, i) => (
                 <div key={s.t} className="bento-cell flex flex-col lg:col-span-4">
                   <div className="flex items-center justify-between">
-                    <span className="grid h-10 w-10 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
+                    <span className="grid h-10 w-10 place-items-center rounded-full border border-[rgba(180, 73, 26,0.45)] bg-white text-cent">
                       <StepIcon kind={s.k} />
                     </span>
                     <span className="num text-[12px] text-dim">0{i + 1}</span>
@@ -357,7 +357,7 @@ export default function Landing() {
         </section>
 
         {/* 6. Ask */}
-        <section id="ask" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="ask-title">
+        <section id="ask" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="ask-title">
           <div className={`mx-auto max-w-[800px] ${chapter}`}>
             <SectionHead label="Ask a question" id="ask-title" title={<>Type the full question. A short topic is <span className="serif-em">picked</span> for each call.</>}>
               <p>
@@ -371,7 +371,7 @@ export default function Landing() {
         </section>
 
         {/* 7. Proof + 8. stats */}
-        <section id="verified-run" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="proof-title">
+        <section id="verified-run" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="proof-title">
           <div className={`${shell} ${chapter}`}>
             <SectionHead label="The receipts" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
               <p>
@@ -403,7 +403,7 @@ export default function Landing() {
         </section>
 
         {/* 9. Honest labels */}
-        <section id="real" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="real-title">
+        <section id="real" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="real-title">
           <div className={`${shell} ${chapter}`}>
             <SectionHead label="Honest labels" id="real-title" title={<>What’s real, and what’s <span className="serif-em">simulated</span></>}>
               <p>Every result on this site carries one of three labels.</p>
@@ -427,7 +427,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <section id="faq" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="faq-title">
+        <section id="faq" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="faq-title">
           <div className={`grid items-start gap-12 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24 ${shell} ${chapter}`}>
             <SectionHead label="FAQ" id="faq-title" title={<>Questions.</>}>
               <p>What’s real on this page, what the partners did, and how to run it yourself.</p>
@@ -437,7 +437,7 @@ export default function Landing() {
                 <Faq />
               </Reveal>
               <Reveal delay={140} className="mt-10">
-                <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
+                <ul className="divide-y divide-[rgba(196, 148, 100,0.25)] overflow-hidden rounded-[18px] border border-[rgba(196, 148, 100,0.45)] bg-white">
                   {resources.map((r) => {
                     const inner = (
                       <>
@@ -475,7 +475,7 @@ export default function Landing() {
         </section>
 
         {/* 10. Closing CTA */}
-        <section id="cta" className="border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="cta-title">
+        <section id="cta" className="border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="cta-title">
           <div className={`text-center ${shell} ${chapter}`}>
             <Reveal>
               <p className="eyebrow text-cent">Try it</p>
@@ -498,7 +498,7 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-[rgba(201,146,46,0.3)]">
+      <footer className="border-t border-[rgba(196, 148, 100,0.3)]">
         <div className={`grid gap-10 py-16 md:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,0.7fr))] ${shell}`}>
           <div>
             <CentivWordmark size={18} />

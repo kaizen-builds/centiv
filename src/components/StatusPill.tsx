@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import { publicStatus } from "@/lib/server/mode";
 
 const base =
-  "h-8 items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(201,146,46,0.45)] bg-white/70 px-3 text-[12px] font-medium text-mute transition hover:border-cent/40 hover:text-bone";
+  "h-8 items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(196, 148, 100,0.45)] bg-white/70 px-3 text-[12px] font-medium text-mute transition hover:border-cent/40 hover:text-bone";
 
 /** Header pill. Rendered on the server from the same flags as /api/status, so it never sits on "Checking…". */
 export default async function StatusPill({ className = "inline-flex" }: { className?: string }) {

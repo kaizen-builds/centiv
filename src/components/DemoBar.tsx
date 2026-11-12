@@ -24,13 +24,13 @@ export function DemoBar({
   const btn = "h-8 shrink-0 whitespace-nowrap rounded-full px-3 text-[12px] transition disabled:opacity-35 disabled:cursor-not-allowed";
   return (
     <div className="fixed inset-x-0 bottom-5 z-40 flex justify-center px-4" role="region" aria-label="Demo controls">
-      <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border hairline-strong bg-ink-2/95 p-1.5 shadow-[0_18px_40px_-18px_rgba(91,42,78,0.35)] backdrop-blur">
+      <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border hairline-strong bg-ink-2/95 p-1.5 shadow-[0_18px_40px_-18px_rgba(180, 73, 26,0.35)] backdrop-blur">
         <span className="flex items-center gap-2 whitespace-nowrap px-3 text-[11.5px] text-mute" aria-live="polite">
           <span className={`h-1.5 w-1.5 rounded-full ${busy || phase === "setup" ? "pulse-dot bg-cent" : phase === "done" ? "bg-pass" : "bg-dim"}`} />
           <span className="eyebrow !text-[10px]">Demo</span>
           <span className="hidden sm:inline">{label[phase]}</span>
         </span>
-        <button onClick={onRunDemo} className={`${btn} bg-cent font-semibold text-white hover:bg-[var(--color-cent-hover)]`}>
+        <button onClick={onRunDemo} className={`${btn} bg-[var(--color-cent-fill)] font-semibold text-white hover:bg-[var(--color-cent-hover)]`}>
           Run the demo
         </button>
         <button onClick={onReset} className={`${btn} text-dim hover:bg-ink-4 hover:text-bone`}>
