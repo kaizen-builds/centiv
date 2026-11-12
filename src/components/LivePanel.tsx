@@ -91,7 +91,7 @@ function ReppoLine({ reppo }: { reppo: LiveReppoScore }) {
 export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => void }) {
   const [status, setStatus] = useState<LiveStatus | null>(null);
   const [token, setToken] = useState("");
-  const [question, setQuestion] = useState("Is anything big happening with Ethereum ETFs this week?");
+  const [question, setQuestion] = useState("What's moving in the crypto and ETH ETF market this week?");
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<LiveResult[]>([]);
   const [preview, setPreview] = useState(false);
@@ -117,7 +117,7 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
       const res = await fetch("/api/live", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, used_topics: results.map((r) => r.topic).filter(Boolean) }),
       });
       const data = (await res.json()) as LiveResult & { error?: string };
       const r: LiveResult = res.ok || data.status ? data : { status: "error", topic: data.topic || "", question, error: data.error || res.statusText };
@@ -162,7 +162,7 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
         <p className="mt-2 text-[12.5px] text-dim">Localhost preview only — payments are not armed. The Reppo line shows the honest unconfigured state.</p>
       )}
       <p className="mt-2 text-[13px] text-mute">
-        Real USDC through your approved Kite Passport session to {merchant}. Type a full question; SERV picks a short Otto topic (or a built-in extractor if SERV is unavailable). SERV then weighs each call before anything is signed. After a paid result, Reppo scores the excerpt when a key is configured. Centiv limit {limits?.maxPerCallUsdc ?? "—"} per call, {limits?.maxTotalUsdc ?? "—"} per run (spent so far {limits?.spentThisProcessUsdc ?? 0}). Kite Passport enforces its own caps on top.
+        Real USDC through your approved Kite Passport session to {merchant}. Type a full question; SERV picks a short Otto topic for each call (or a built-in extractor if SERV is unavailable), aiming for a new angle if earlier calls already used a topic. SERV then weighs the call before anything is signed. If SERV skips, Centiv does not attempt payment. After a paid result, Reppo scores the excerpt when a key is configured. Centiv limit {limits?.maxPerCallUsdc ?? "—"} per call, {limits?.maxTotalUsdc ?? "—"} per run (spent so far {limits?.spentThisProcessUsdc ?? 0}). Kite Passport enforces its own caps on top.
       </p>
       <div className="mt-4 flex flex-col gap-2">
         <div className="flex flex-wrap gap-2">
@@ -201,6 +201,9 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
               )}
               {r.error_code && <span className="num text-stop"> · {r.error_code}</span>}
               {r.error && <span className="text-mute"> · {r.error}</span>}
+              {r.topic_rationale && (
+                <p className="mt-1 text-mute">{r.topic_rationale}</p>
+              )}
               {r.serv && (
                 <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-cent">
                   <span className="pill pill-sage h-6 px-2.5 text-[11px] font-semibold text-cent">

@@ -19,6 +19,9 @@ import { chooseOttoTopic } from "@/lib/server/topic";
 
 export const maxDuration = 180;
 
+/** Topics already chosen in this live process, so each click can pick a new angle. */
+const usedTopicsThisProcess: string[] = [];
+
 /** Is owner-gated live mode armed here? Never reveals the token or session id. */
 export async function GET() {
   await connection();
@@ -43,13 +46,17 @@ export async function POST(req: Request) {
   const rl = rateLimit();
   if (!rl.ok) return NextResponse.json({ error: rl.reason }, { status: 429 });
 
-  const body = (await req.json().catch(() => ({}))) as { question?: unknown; topic?: unknown };
+  const body = (await req.json().catch(() => ({}))) as { question?: unknown; topic?: unknown; used_topics?: unknown };
   const question = typeof body.question === "string" ? body.question.trim() : "";
+  const fromClient = Array.isArray(body.used_topics)
+    ? body.used_topics.filter((t): t is string => typeof t === "string" && validTopic(t))
+    : [];
+  const usedTopics = [...new Set([...usedTopicsThisProcess, ...fromClient].map((t) => t.trim().toLowerCase()))];
   let topic: string;
   let topic_source: "serv" | "fallback" | "direct";
   let topic_rationale: string | undefined;
   if (question) {
-    const chosen = await chooseOttoTopic(question);
+    const chosen = await chooseOttoTopic(question, usedTopics);
     topic = chosen.topic;
     topic_source = chosen.source;
     topic_rationale = chosen.rationale;
@@ -59,6 +66,7 @@ export async function POST(req: Request) {
   } else {
     return NextResponse.json({ error: "Send a research question, or a one- or two-word topic." }, { status: 400 });
   }
+  if (topic && !usedTopicsThisProcess.includes(topic.toLowerCase())) usedTopicsThisProcess.push(topic.toLowerCase());
   const url = merchantUrl(topic);
   const topicMeta = { question: question || undefined, topic, topic_source, topic_rationale };
 
@@ -89,12 +97,13 @@ export async function POST(req: Request) {
     perTx: session.perTx,
     windowMinLeft,
     question: question || undefined,
+    topicRationale: topic_rationale,
+    usedTopics,
   });
   const sessionMeta = { perTx: session.perTx, total: session.total };
-  // Explicit flag, matching the recorded 12 Nov 18:27 WAT run and the site copy:
-  // SERV's real verdict is always returned and shown. A skip still attempts payment
-  // so Kite Passport remains the hard limit ("SERV flagged it, the agent paid anyway").
-  const ATTEMPT_EVEN_IF_SERV_SKIPS = true;
+  // This run always obeys SERV: a skip or decline means no payment attempt.
+  // SERV's real verdict is still returned and shown. Never override it.
+  const ATTEMPT_EVEN_IF_SERV_SKIPS = false;
   if (serv.decision !== "spend" && !ATTEMPT_EVEN_IF_SERV_SKIPS) {
     return NextResponse.json({
       status: serv.decision === "skip" ? "skipped" : "declined",
@@ -118,6 +127,7 @@ export async function POST(req: Request) {
       topic,
       excerpt: result.reply.excerpt,
       provider: result.reply.provider,
+      pollMs: 60_000,
     });
     return NextResponse.json({ ...result, ...topicMeta, serv, reppo, provenance: "live", session: sessionMeta });
   }

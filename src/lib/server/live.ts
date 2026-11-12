@@ -222,20 +222,21 @@ export type LiveResult = {
 
 
 /** Candidate for the live Otto filtered-news call. Value is high: this is the primary evidence. */
-export function liveCandidate(topic: string, price: number): Candidate {
+export function liveCandidate(topic: string, price: number, why?: string): Candidate {
   return {
     service: LIVE_MERCHANT.name,
-    endpoint: `${LIVE_MERCHANT.host}${LIVE_MERCHANT.path}`,
+    endpoint: `${LIVE_MERCHANT.host}${LIVE_MERCHANT.path}?topic=${encodeURIComponent(topic)}`,
     price,
     value: "high",
-    rationale: `Fresh filtered news on “${topic}” is primary evidence for this research question.`,
+    rationale: why?.trim() || `Fresh filtered news on “${topic}” is primary evidence for this research question.`,
     yields: "A filtered news report for the requested topic.",
   };
 }
 
 /**
  * Ask SERV whether the live call is worth buying. Caps are informational so SERV
- * judges value, not limits — Kite Passport remains the one that refuses call 3.
+ * judges value, not limits — Kite Passport remains the one that refuses a later call
+ * if the session total is already spent. A SERV skip is honoured: no payment attempt.
  */
 export async function weighLiveCall(opts: {
   topic: string;
@@ -244,14 +245,17 @@ export async function weighLiveCall(opts: {
   perTx: number;
   windowMinLeft: number;
   question?: string;
+  topicRationale?: string;
+  usedTopics?: string[];
 }): Promise<ServDecision> {
   return decideSpend({
     question: opts.question?.trim() || `Latest ${opts.topic} news for a research brief.`,
-    candidate: liveCandidate(opts.topic, opts.price),
+    candidate: liveCandidate(opts.topic, opts.price, opts.topicRationale),
     remaining: opts.remaining,
     perTx: opts.perTx,
     windowMinLeft: opts.windowMinLeft,
     caps: "informational",
+    alreadyBoughtTopics: opts.usedTopics,
   });
 }
 

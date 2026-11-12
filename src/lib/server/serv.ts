@@ -40,7 +40,8 @@ Rules:
 - Kite Passport independently enforces the per-call cap and the session total. If this call would exceed those caps, Passport will refuse the payment. Do not pre-empt that refusal. Do not decline or skip merely because remaining budget may be insufficient.
 - The Kite Passport caps in the user message are context only.
 - Prefer fresh primary data over sentiment scrapes.
-- Be concise. Do not invent prices.`;
+- If earlier calls already bought other topics, do not skip this one merely because it is also crypto or ETF news. Skip only if this specific topic would not add new evidence for the question.
+- Be concise. Do not invent prices. Do not invent a verdict to fit a script.`;
 
 function heuristic(c: Candidate, remaining: number, perTx: number, caps: CapsMode): ServDecision {
   // Informational caps: never decline on budget maths — Kite Passport enforces limits.
@@ -71,16 +72,20 @@ export async function decideSpend(opts: {
   windowMinLeft: number;
   /** Default "enforce" (research engine). Live payments use "informational". */
   caps?: CapsMode;
+  alreadyBoughtTopics?: string[];
 }): Promise<ServDecision> {
   const caps: CapsMode = opts.caps ?? "enforce";
   const key = process.env.SERV_API_KEY?.trim();
   if (!key) return heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
 
+  const already = (opts.alreadyBoughtTopics || []).map((t) => t.trim()).filter(Boolean);
   const user = JSON.stringify({
     question: opts.question,
     service: opts.candidate.service,
     endpoint: opts.candidate.endpoint,
     priceUsdc: opts.candidate.price,
+    whyThisTopic: opts.candidate.rationale,
+    alreadyBoughtTopics: already,
     catalogueHint: opts.candidate.value,
     remainingUsdc: opts.remaining,
     perCallCapUsdc: opts.perTx,

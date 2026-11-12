@@ -14,15 +14,17 @@ export type TopicChoice = {
 const BASE = process.env.SERV_BASE_URL?.trim() || "https://inference-api.openserv.ai/v1";
 const MODEL = process.env.SERV_MODEL?.trim() || "gpt-5.4-mini";
 
-const SYSTEM = `You pick a short topic for Otto AI's filtered-news API from a research question.
+const SYSTEM = `You pick a short topic for Otto AI's filtered-news API from a research question, for THIS call only.
 Reply with ONLY compact JSON, no markdown:
-{"topic":"one or two plain words","rationale":"one short sentence in British English"}
+{"topic":"one or two plain words","rationale":"one short sentence in British English saying what new evidence this topic adds"}
 
 Rules:
 - topic must be one or two words: letters, numbers, spaces or hyphens only, 31 characters or fewer.
-- Prefer the specific subject (for example "ethereum etf", not "crypto news").
-- Do not invent a subject that is not in the question.
-- If the question is already one or two words, you may reuse it, lowercased.`;
+- It must be relevant to the question.
+- If the user message lists topics already used on earlier calls, you MUST pick a different topic that still answers the question and adds evidence those earlier topics would not cover.
+- Distinct angles can include product-specific ETF news (for example "ethereum etf" or "bitcoin etf") or fund-flow news (for example "etf flows") — only when that angle is in scope of the question. These are examples, not a required list. You choose.
+- Do not invent a subject that is not in scope of the question.
+- If the question is already one or two words and nothing has been used yet, you may reuse it, lowercased.`;
 
 function parseTopic(raw: string): string | null {
   const text = raw.trim();
@@ -51,9 +53,14 @@ function parseRationale(raw: string): string | undefined {
   }
 }
 
-/** SERV first; keyword fallback if there is no key, a bad reply, or an invalid topic. */
-export async function chooseOttoTopic(question: string): Promise<TopicChoice> {
-  const fallback = extractTopicFallback(question);
+function taken(used?: string[]) {
+  return new Set((used || []).map((t) => t.trim().toLowerCase()).filter(Boolean));
+}
+
+/** SERV first; keyword fallback if there is no key, a bad reply, an invalid topic, or a repeat. */
+export async function chooseOttoTopic(question: string, usedTopics: string[] = []): Promise<TopicChoice> {
+  const used = taken(usedTopics);
+  const fallback = extractTopicFallback(question, [...used]);
   const fallbackChoice = (): TopicChoice => ({
     topic: fallback,
     source: "fallback",
@@ -65,6 +72,14 @@ export async function chooseOttoTopic(question: string): Promise<TopicChoice> {
   const q = question.trim();
   if (!q) return fallbackChoice();
 
+  const user = JSON.stringify({
+    question: q,
+    alreadyUsedTopics: [...used],
+    instruction: used.size
+      ? "Pick a different two-word topic that adds new evidence, not one of alreadyUsedTopics."
+      : "Pick the most useful two-word topic for this question.",
+  });
+
   try {
     const res = await fetch(`${BASE}/chat/completions`, {
       method: "POST",
@@ -74,11 +89,11 @@ export async function chooseOttoTopic(question: string): Promise<TopicChoice> {
       },
       body: JSON.stringify({
         model: MODEL,
-        temperature: 0.1,
-        max_completion_tokens: 120,
+        temperature: 0.2,
+        max_completion_tokens: 160,
         messages: [
           { role: "system", content: SYSTEM },
-          { role: "user", content: q },
+          { role: "user", content: user },
         ],
       }),
       signal: AbortSignal.timeout(20_000),
@@ -91,12 +106,12 @@ export async function chooseOttoTopic(question: string): Promise<TopicChoice> {
     const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
     const content = data.choices?.[0]?.message?.content ?? "";
     const topic = parseTopic(content);
-    if (!topic) return fallbackChoice();
+    if (!topic || used.has(topic.toLowerCase())) return fallbackChoice();
     const rationale = parseRationale(content);
     return {
       topic,
       source: "serv",
-      rationale: rationale || `SERV chose “${topic}” as the Otto topic for this question.`,
+      rationale: rationale || `SERV chose “${topic}” as the Otto topic for this call.`,
     };
   } catch (e) {
     console.error("SERV topic failed", e);

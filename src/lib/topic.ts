@@ -92,15 +92,31 @@ function normalizeWord(w: string): string {
   return w;
 }
 
-/** Last-resort topic from the question. Always returns a validTopic. */
-export function extractTopicFallback(question: string): string {
+function usedSet(used?: string[]) {
+  return new Set((used || []).map((t) => t.trim().toLowerCase()).filter(Boolean));
+}
+
+/** Last-resort topic from the question. Always returns a validTopic. Skips already-used topics when it can. */
+export function extractTopicFallback(question: string, used: string[] = []): string {
+  const taken = usedSet(used);
   const words = tokens(question);
   const kept = words.filter((w) => !STOP.has(w) && w.length >= 2).map(normalizeWord);
   const pool = kept.length ? kept : words.map(normalizeWord);
-  let topic = pool.slice(0, 2).join(" ").trim();
-  if (validTopic(topic)) return topic.trim();
-  topic = pool.slice(0, 1).join(" ").trim();
-  if (validTopic(topic)) return topic.trim();
+  const candidates: string[] = [];
+  for (let i = 0; i < pool.length; i++) {
+    if (i + 1 < pool.length) candidates.push(`${pool[i]} ${pool[i + 1]}`);
+    candidates.push(pool[i]);
+  }
+  for (const raw of candidates) {
+    const topic = raw.trim();
+    if (validTopic(topic) && !taken.has(topic.toLowerCase())) return topic;
+  }
+  if (validTopic("ethereum") && !taken.has("ethereum")) return "ethereum";
+  // Last resort: first valid candidate even if used, otherwise a legal default.
+  for (const raw of candidates) {
+    const topic = raw.trim();
+    if (validTopic(topic)) return topic;
+  }
   return "ethereum";
 }
 
