@@ -10,9 +10,10 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Is the refusal really from Kite Passport?",
     a: (
       <>
-        Yes. On the third call, Kite Passport returned{" "}
+        Yes. The refusal shown here is from a retake of call 3 in the same fully-spent session. Kite Passport returned{" "}
         <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code> because the
-        $0.002 session total was already spent, so Centiv never signed a payment. The record is in the{" "}
+        $0.002 session total was already spent, so Centiv never signed a payment. In the first take, call 3 was stopped
+        by Centiv’s own local limit before it reached Kite Passport. The record is in the{" "}
         <a className={a} href="/api/evidence">
           evidence JSON
         </a>
@@ -41,10 +42,9 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Did SERV or Reppo stop a payment?",
     a: (
       <>
-        No. SERV Reasoning weighed each call before payment (spend, skip, spend). Call 2 was paid despite SERV’s skip,
-        so the cap could be shown being enforced — Kite Passport is the hard limit. Reppo scored the two paid excerpts
-        after they settled, 66 and 60, both below its pass mark of 70. Reppo does not interrupt, block or undo a
-        payment.
+        No. SERV Reasoning chose a short topic and weighed each call before payment (spend, spend, spend). Centiv
+        followed SERV on both paid calls. Reppo scored the two paid excerpts after they settled, 55 and 82. Reppo does
+        not interrupt, block or undo a payment. Kite Passport is the hard limit that refused call 3.
       </>
     ),
   },
@@ -61,11 +61,10 @@ const items: { q: string; a: ReactNode }[] = [
     q: "What’s simulated?",
     a: (
       <>
-        In the public demo, payments and cap checks are simulated. You can type a full question; SERV (or a built-in
-        extractor if there’s no key) picks a one- or two-word Otto topic. The suggested demo uses the same Ethereum ETF
-        question and the same $0.001 / $0.002 caps as the recorded run. In that recorded run the topic “ethereum etf”
-        was set directly, not chosen by SERV. Receipts start with sim_ so they can’t pass for on-chain
-        hashes. See{" "}
+        The public demo is a replay of the recorded 12 Nov 19:38 WAT run, labelled “Replay of a real run · 12 Nov 19:38
+        WAT · no money moves.” It walks through the same question, SERV topics, spend verdicts, recorded 0.001 USDC
+        payments (with the real transaction links marked recorded) and the Kite Passport refusal. No money moves. If you
+        type a different question, the demo still replays this recorded example and says so. See{" "}
         <a className={a} href="#real">
           What’s real
         </a>

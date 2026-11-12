@@ -22,7 +22,7 @@ function Item({ label, detail, p }: { label: string; detail?: string; p: Provena
   );
 }
 
-/** Truth strip. SERV is Live only when a key is configured; visitor payments stay Simulated.
+/** Truth strip. SERV is Live only when a key is configured; the public demo is a recorded replay.
  *  `line` is a single typographic sentence for the landing hero; `badges` keeps the detailed legend. */
 export function StatusStrip({
   serv,
@@ -48,7 +48,7 @@ export function StatusStrip({
         aria-label="What's live, simulated, and replayed"
       >
         {reasoning}
-        {gate} · Real payments replay · Simulated demo
+        {gate} · Real payments replay · Demo is a recorded replay, no money moves
       </p>
     );
   }
@@ -61,7 +61,7 @@ export function StatusStrip({
       <Sep />
       <Item label="Quality gate" detail={reppo === "live" ? "Reppo" : "Built-in check"} p={gateP} />
       <Sep />
-      <Item label="Visitor payments" p="simulated" />
+      <Item label="Visitor demo" p="replay" />
       <Sep />
       <span className="inline-flex items-center gap-1.5">
         <span className="text-mute">Verified run</span>

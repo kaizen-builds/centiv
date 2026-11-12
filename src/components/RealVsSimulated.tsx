@@ -10,29 +10,29 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
       part: "Kite Passport caps and payments in the recorded run",
       p: "replay",
       detail:
-        "A real Kite Passport session and two real USDC payments on Base, for the Ethereum ETF question. Kite Passport refused the third call. The page replays it from the evidence file and never spends.",
+        "A real Kite Passport session and two real USDC payments on Base, for the 12 Nov 19:38 WAT crypto and ETH ETF question. SERV chose a topic per call. Kite Passport refused the third call. The page replays it from the evidence file and never spends.",
     },
     {
       part: "Payments and cap checks in the public demo",
-      p: "simulated",
+      p: "replay",
       detail:
-        "Visitors never spend money. Centiv applies the same $0.001 per-call and $0.002 total limits itself. Receipts start with sim_ so they can’t pass for on-chain hashes. The real Kite Passport refusal is in the recorded run.",
+        "The public demo replays the recorded 12 Nov 19:38 WAT run step by step. Real transaction links are shown as recorded. No money moves. If you type a different question, it still replays this recorded example and says so.",
     },
     {
       part: "SERV Reasoning",
       p: serv,
       detail:
         serv === "live"
-          ? "In the recorded run, SERV weighed each call before payment. On the live path here it does the same."
-          : "In the recorded run, SERV weighed each call before payment. No SERV key is set on this deployment, so a built-in planner stands in for visitor questions.",
+          ? "In the recorded run, SERV chose a topic and weighed each call before payment. The public demo replays those recorded verdicts. On the live path here it does the same."
+          : "In the recorded run, SERV chose a topic and weighed each call before payment. The public demo replays those recorded verdicts. No SERV key is set on this deployment, so a built-in planner is not inventing a new brief.",
     },
     {
       part: "Reppo",
       p: gate,
       detail:
         gate === "live"
-          ? "In the recorded run, Reppo scored each paid excerpt after the fact (66 and 60, both below 70). It does not block or undo a payment. Visitor briefs can be scored the same way here."
-          : "In the recorded run, Reppo scored each paid excerpt after the fact (66 and 60, both below 70). It does not block or undo a payment. A built-in check stands in for visitor questions, labelled Simulated.",
+          ? "In the recorded run, Reppo scored each paid excerpt after the fact (55 and 82). It does not block or undo a payment. The public demo replays those recorded scores. Visitor briefs on the live path can be scored the same way."
+          : "In the recorded run, Reppo scored each paid excerpt after the fact (55 and 82). It does not block or undo a payment. The public demo replays those recorded scores rather than inventing new ones.",
     },
   ];
 }

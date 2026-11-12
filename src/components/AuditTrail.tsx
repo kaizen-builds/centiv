@@ -18,7 +18,7 @@ export function AuditTrail({
   session: Session;
   spent: number;
 }) {
-  // Two ledgers, never mixed: the visitor's session (Simulated payments) and the real run (Replay).
+  // Two ledgers, never mixed: the visitor's demo session (a replay of the recorded run) and the verified-run evidence ledger.
   const [view, setView] = useState<"session" | "replay">(rows.length ? "session" : "replay");
   const [seen, setSeen] = useState(rows.length);
   if (rows.length !== seen) {
@@ -53,15 +53,19 @@ export function AuditTrail({
           </p>
           <div role="tablist" aria-label="Which ledger" className="mt-5 inline-flex flex-wrap gap-1 rounded-full border hairline-strong bg-ink-2 p-1">
             <button role="tab" aria-selected={!replay} onClick={() => setView("session")} className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] transition ${!replay ? "bg-ink-4 text-bone" : "text-dim hover:text-bone"}`}>
-              Your session <ProvenanceBadge p="simulated" short />
+              This demo <ProvenanceBadge p="replay" short />
             </button>
             <button role="tab" aria-selected={replay} onClick={() => setView("replay")} className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] transition ${replay ? "bg-ink-4 text-bone" : "text-dim hover:text-bone"}`}>
               Verified run <ProvenanceBadge p="replay" short />
             </button>
           </div>
-          {replay && (
+          {replay ? (
             <p className="mt-3 max-w-xl text-[12.5px] leading-[1.55] text-dim">
-              Real receipts from Kite Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on 12 Nov 2026, 18:27 WAT. Times in WAT. SERV weighed each call; Reppo scored the paid excerpts after the fact.
+              Real receipts from Kite Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on 12 Nov 2026, 19:38 WAT. Times in WAT. SERV chose a topic and weighed each call; Reppo scored the paid excerpts after the fact.
+            </p>
+          ) : (
+            <p className="mt-3 max-w-xl text-[12.5px] leading-[1.55] text-dim">
+              The public demo replays the same recorded run. Transaction links are real and marked recorded. No money moves.
             </p>
           )}
         </div>
@@ -75,7 +79,7 @@ export function AuditTrail({
           ["Remaining", <Money key="r" value={active ? remaining : 0} className="text-bone" />],
           ["Calls bought", <Count key="b" value={bought.length} className="text-bone" />],
           ["Skipped · declined", <span key="d" className="num"><Count value={skipped.length} className="text-skip" /><span className="text-dim"> · </span><Count value={declined.length} className={declined.length ? "text-stop" : "text-bone"} /></span>],
-          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-bone">66 · 60<span className="ml-1 text-[11px] font-normal text-dim">after the fact</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
+          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-bone">{REPLAY_ROWS.filter((row) => row.score !== undefined).map((row) => row.score).filter((v, i, a) => a.indexOf(v) === i).join(" · ") || "—"}<span className="ml-1 text-[11px] font-normal text-dim">after the fact</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
         ].map(([k, v]) => (
           <div key={k as string} className="bg-ink-2 px-4 py-4">
             <dt className="text-[11.5px] text-dim">{k}</dt>

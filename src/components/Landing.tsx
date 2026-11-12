@@ -332,7 +332,7 @@ export default function Landing() {
           <div className={`${shell} ${chapter}`}>
             <SectionHead split label="The recorded run" id="how-title" title={<>It weighs, pays, or <span className="serif-em">stops.</span></>}>
               <p>
-                One session log from 12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused call 3. Reppo scored 66 and 60 after the fact, and did not undo a payment.
+                One session log from 12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call: “eth etf”, “crypto flows”, then “fund flows”. Two payments of 0.001 USDC settled on Base. Kite Passport refused call 3. Reppo scored 55 and 82 after the fact, and did not undo a payment.
               </p>
             </SectionHead>
             <Reveal delay={100} className="bento mt-14 lg:grid-cols-12">
@@ -361,7 +361,7 @@ export default function Landing() {
           <div className={`mx-auto max-w-[800px] ${chapter}`}>
             <SectionHead label="Ask a question" id="ask-title" title={<>Type the full question. A short topic is <span className="serif-em">picked</span> for each call.</>}>
               <p>
-                Otto’s news feed takes one or two words, not a sentence. You write the question; SERV picks the short topic when a key is set. In the recorded run the topic “ethereum etf” was set directly, not chosen by SERV.
+                Otto’s news feed takes one or two words, not a sentence. You write the question; SERV picks a short topic for each call. In the recorded run SERV chose “eth etf”, then “crypto flows”, then “fund flows”.
               </p>
             </SectionHead>
             <Reveal delay={80}>
@@ -375,7 +375,7 @@ export default function Landing() {
           <div className={`${shell} ${chapter}`}>
             <SectionHead label="The receipts" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
               <p>
-                12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. Reppo scored 66 and 60 after the fact — below its pass mark of 70, and after the money had already moved.
+                12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. Reppo scored 55 and 82 after the fact — after the money had already moved. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
               </p>
             </SectionHead>
             <Reveal delay={80} className="stat-grid mt-16 grid-cols-2 md:grid-cols-4">
@@ -503,7 +503,7 @@ export default function Landing() {
           <div>
             <CentivWordmark size={18} />
             <p className="mt-5 max-w-[360px] text-[13.5px] leading-[1.65] text-dim">
-              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores after the two that paid. Demo payments are simulated. Reppo does not block or undo a payment.
+              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores after the two that paid. The public demo replays that same run — no money moves. Reppo does not block or undo a payment.
             </p>
             <p className="mt-3 text-[13px] text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
             <p className="mt-2 text-[13px] text-dim">SERV Hackathon 02 · Kite track</p>

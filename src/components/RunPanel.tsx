@@ -58,6 +58,17 @@ function StepRow({ s, last }: { s: Step; last: boolean }) {
           <span className={`text-[14px] font-medium ${s.status === "active" ? "shimmer-text" : tone}`}>{s.title}</span>
         </p>
         {s.detail && <p className="mt-1 text-[12.5px] leading-[1.5] text-mute">{s.detail}</p>}
+        {s.receipt && (
+          <p className="mt-1 text-[12px] leading-[1.5]">
+            {s.receiptUrl && s.provenance !== "simulated" ? (
+              <a href={s.receiptUrl} target="_blank" rel="noopener noreferrer" className="num text-cent underline decoration-cent/30 underline-offset-2 hover:decoration-cent" title={s.receipt}>
+                recorded {s.receipt.slice(0, 10)}…{s.receipt.slice(-4)}
+              </a>
+            ) : (
+              <span className="num text-dim">{s.receipt}</span>
+            )}
+          </p>
+        )}
         {s.checks && (
           <ul className="mt-2 grid gap-1.5 sm:grid-cols-3">
             {s.checks.map((c, i) => (
@@ -91,7 +102,7 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2.5">
           <h2 id="run-title" className="eyebrow">This run</h2>
-          <ProvenanceBadge p="simulated" short />
+          <ProvenanceBadge p="replay" short />
         </div>
         {runs.length > 0 && (
           <div role="tablist" aria-label="Runs" className="flex gap-1 rounded-lg border hairline p-0.5">
@@ -112,9 +123,9 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
 
       {!current ? (
         <div className="mt-6 grid place-items-center rounded-md border border-dashed hairline-strong px-6 py-10 text-center">
-          <p className="font-display text-[24px] text-bone">Two paid calls, then a refusal.</p>
+          <p className="font-display text-[24px] text-bone">Replay of a real run.</p>
           <p className="mt-2 max-w-sm text-[13.5px] leading-[1.55] text-dim">
-            The short demo approves a cap, buys two Ethereum ETF calls, then hard-stops at the limit. Those decisions land here.
+            12 Nov 19:38 WAT · no money moves. The same question, SERV topics, recorded 0.001 payments, Reppo scores, then the Kite Passport refusal.
           </p>
           {onRunDemo && (
             <button type="button" onClick={onRunDemo} className="pill pill-cent mt-5 h-10 px-5 text-[13.5px]">
@@ -125,6 +136,12 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
       ) : (
         <div key={current.id} className="mt-5">
           <p className="font-display text-[20px] font-medium leading-[1.4] tracking-[-0.02em] text-bone">“{current.question}”</p>
+          {current.replayLabel && (
+            <p className="mt-2 text-[12.5px] leading-[1.5] text-cent">{current.replayLabel}</p>
+          )}
+          {current.replayNote && (
+            <p className="mt-1 text-[12.5px] leading-[1.5] text-dim">{current.replayNote}</p>
+          )}
           {current.topic && (
             <p className="mt-1.5 text-[13px] leading-[1.5] text-mute">
               → <span className="font-medium text-bone">{current.topic}</span>
@@ -136,24 +153,42 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
               <StepRow key={s.id} s={s} last={i === current.steps.length - 1 && !current.answer} />
             ))}
           </ol>
-          {current.answer && current.gate && (
+          {current.answer && (
             <article
               className={`rise mt-1 rounded-md border p-5 ${
-                current.gate.verdict === "accept" ? "border-cent/30 bg-cent/[0.04]" : "border-hold/35 bg-hold/[0.05]"
+                current.replayLabel
+                  ? "border-cent/30 bg-cent/[0.04]"
+                  : current.gate?.verdict === "accept"
+                    ? "border-cent/30 bg-cent/[0.04]"
+                    : "border-hold/35 bg-hold/[0.05]"
               }`}
               aria-label="Answer"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="flex items-center gap-3">
-                  {current.gate.verdict === "accept" ? <Stamp size={26} className="stamp-in text-gold" notch="var(--color-cent)" /> : <Nib size={34} mood="stop" />}
+                  {current.replayLabel ? (
+                    <Stamp size={26} className="stamp-in text-gold" notch="var(--color-cent)" />
+                  ) : current.gate?.verdict === "accept" ? (
+                    <Stamp size={26} className="stamp-in text-gold" notch="var(--color-cent)" />
+                  ) : (
+                    <Nib size={34} mood="stop" />
+                  )}
                   <span className="text-[14px] text-bone">
-                    {current.gate.verdict === "accept" ? "Accepted. Here’s the brief." : current.gate.verdict === "revise" ? "Revised before release. Here’s the brief." : "Rejected. Nothing reliable to show yet."}
+                    {current.replayLabel
+                      ? "Recorded brief. No money moved."
+                      : current.gate?.verdict === "accept"
+                        ? "Accepted. Here’s the brief."
+                        : current.gate?.verdict === "revise"
+                          ? "Revised before release. Here’s the brief."
+                          : "Rejected. Nothing reliable to show yet."}
                   </span>
                 </p>
-                <div className="flex flex-col items-end gap-1">
-                  <VerdictTag v={current.gate.verdict} score={current.gate.score} />
-                  <GateSourceLabel source={current.gate.source} />
-                </div>
+                {current.gate && (
+                  <div className="flex flex-col items-end gap-1">
+                    <VerdictTag v={current.gate.verdict} score={current.gate.score} />
+                    <GateSourceLabel source={current.gate.source} />
+                  </div>
+                )}
               </div>
               <h3 className="mt-4 font-display text-[26px] font-semibold leading-[1.15] tracking-[-0.01em]">{current.answer.headline}</h3>
               <ul className="mt-3 grid gap-2 text-[14px] leading-[1.55] text-mute">

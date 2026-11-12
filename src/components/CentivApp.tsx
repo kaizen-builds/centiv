@@ -6,12 +6,12 @@ import {
   AuditRow,
   DEFAULT_SESSION,
   Run,
-  SCENARIOS,
   Session,
   SessionConfig,
   Step,
   resetSeed,
 } from "@/lib/centiv";
+import { recordedQuestion, REPLAY_BANNER } from "@/lib/recorded-replay";
 import { CentivWordmark } from "./Logo";
 import { Hero } from "./Hero";
 import { SessionPanel } from "./SessionPanel";
@@ -148,6 +148,10 @@ export default function CentivApp() {
             : r,
         ),
       );
+      if (step.kind === "pay" && step.status === "done" && step.amount) {
+        spentRef.current = +(spentRef.current + step.amount).toFixed(6);
+        setSpent(spentRef.current);
+      }
       await sleep(180);
     }
   };
@@ -158,6 +162,9 @@ export default function CentivApp() {
       const label = String.fromCharCode(65 + runCount.current++);
       setBusy(true);
       setSelectedRun(runId);
+      // Each public run is a full replay of the recorded session, from a zero spend.
+      spentRef.current = 0;
+      setSpent(0);
       setRuns((r) => [...r, { id: runId, label, question: q, steps: [], status: "running" }]);
 
       const s = sessionRef.current;
@@ -293,10 +300,10 @@ export default function CentivApp() {
     setPhase("A");
     scrollTo("ask");
     await sleep(600);
-    await typeOut(SCENARIOS["eth-news"].question);
+    await typeOut(recordedQuestion());
     await sleep(500);
     scrollTo("run");
-    await executeRun(SCENARIOS["eth-news"].question);
+    await executeRun(recordedQuestion());
     await sleep(1400);
   };
 
@@ -340,11 +347,11 @@ export default function CentivApp() {
 
   const current = runs.find((r) => r.id === selectedRun) ?? runs[runs.length - 1];
   const modeLabel =
-    engineMode?.mode === "live" ? "Live mode" : engineMode?.mode === "hybrid" ? "Hybrid mode" : "Simulated mode";
+    engineMode?.mode === "live" ? "Live mode" : engineMode?.mode === "hybrid" ? "Hybrid mode" : REPLAY_BANNER;
   const modeHint =
-    engineMode?.mode === "simulated"
-      ? "No API keys — figures are simulated, not live market data."
-      : engineMode?.note || "";
+    engineMode?.mode === "live" || engineMode?.mode === "hybrid"
+      ? engineMode?.note || ""
+      : "The public demo replays the recorded 12 Nov 19:38 WAT run. Transaction links are real and marked recorded. No money moves.";
 
   return (
     <div className="min-h-screen bg-ink pb-36">
@@ -407,7 +414,7 @@ export default function CentivApp() {
               disabled={session.status !== "active" || busy}
               locked={session.status !== "active"}
               typing={typing}
-              suggestions={[SCENARIOS["eth-news"].question]}
+              suggestions={[recordedQuestion()]}
             />
             <RunPanel runs={runs} current={current} onSelect={setSelectedRun} onRunDemo={runDemo} />
           </div>
@@ -435,10 +442,10 @@ export default function CentivApp() {
             </a>
           </div>
           <p className="max-w-xl">
-            Built for SERV Hackathon 02 · Kite track. {modeLabel}:{" "}
-            {engineMode?.mode === "simulated"
-              ? "payments, identity and scores fall back to the local engine — no funds move; figures are not live market data."
-              : modeHint}
+            Built for SERV Hackathon 02 · Kite track. {modeLabel}.{" "}
+            {engineMode?.mode === "live" || engineMode?.mode === "hybrid"
+              ? modeHint
+              : "The public demo replays the recorded run. No money moves."}
           </p>
         </footer>
       </main>

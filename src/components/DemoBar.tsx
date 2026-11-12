@@ -5,9 +5,9 @@ export type DemoPhase = "idle" | "setup" | "A" | "B" | "done";
 const label: Record<DemoPhase, string> = {
   idle: "Ready",
   setup: "Approving session",
-  A: "Ethereum ETFs · two paid, one refused",
-  B: "Ethereum ETFs · two paid, one refused",
-  done: "Demo complete",
+  A: "Replay · 19:38 WAT · no money moves",
+  B: "Replay · 19:38 WAT · no money moves",
+  done: "Replay complete · no money moved",
 };
 
 export function DemoBar({

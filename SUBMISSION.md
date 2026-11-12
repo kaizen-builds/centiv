@@ -17,19 +17,17 @@ The owner approves a Kite Passport session: a limit per call, a total budget and
 
 ## The proof
 
-On 10 November 2026 the owner approved session `agent_session_01a1c57f-7107-7b6e-92dc-a6313394ee07` with a passkey. Caps: $0.001 per call, $0.002 in total, one hour. Scope: `GET x402.ottoai.services/filtered-news` only. Two Otto AI calls paid in USDC on Base. Passport declined the third with `session_total_exceeded`. No money moved. The refusal came from Passport, not from Centiv's own logic.
+On 12 November 2026, 19:38 WAT, the owner approved session `agent_session_01a1d108-037e-7c83-aebf-4da7116107eb` (request `agent_session_req_01a1d106-5485-78c3-afba-66dc092ddf9a`) with a passkey. Question: “What's moving in the crypto and ETH ETF market this week?” Caps: $0.001 per call, $0.002 in total. Expires 12 Nov 2026, 21:32:05 WAT. Scope: `GET x402.ottoai.services/filtered-news` only. SERV Reasoning chose a short topic for each call and said spend on all three. Two Otto AI calls paid in USDC on Base. Kite Passport declined the third with `session_total_exceeded`. Nothing was signed. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
 
-| Call | Topic | Outcome | USDC | Transaction |
-| --- | --- | --- | --- | --- |
-| 1 | airdrops | Paid | 0.001 | [0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353](https://basescan.org/tx/0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353) |
-| 2 | stablecoins | Paid | 0.001 | [0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d](https://basescan.org/tx/0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d) |
-| 3 | ethereum | Declined by Passport (`session_total_exceeded`) | 0 | none |
+| Call | Topic (SERV) | SERV | Outcome | USDC | Reppo | Transaction |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | eth etf | spend | Paid | 0.001 | 55 / 100, reject / block | [0xabf5b682…e58de3](https://basescan.org/tx/0xabf5b682425978ccd310aefaf2ba921520a215712cfca2242604611e42e58de3) |
+| 2 | crypto flows | spend | Paid | 0.001 | 82 / 100, accept / review, low confidence | [0xa47fa940…4bc906](https://basescan.org/tx/0xa47fa9409fc19ffc0277f06b2f343526bd2d88aa815988d777abca08064bc906) |
+| 3 | fund flows | spend | Declined by Kite Passport (`session_total_exceeded`) | 0 | — | none |
 
-Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`), checked against Base mainnet. Evidence: [`evidence/`](evidence/) and [`/api/evidence`](https://centiv-gilt.vercel.app/api/evidence).
+Both payments are EIP-3009 `transferWithAuthorization` calls on USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`), checked against Base mainnet. Evidence: [`evidence/`](evidence/) and [`/api/evidence`](https://centiv-gilt.vercel.app/api/evidence). Reppo scored the paid excerpts after the fact and did not block or undo a payment.
 
-On 11 November 2026 the brief from that run was submitted to the Reppo Evaluation API. The panel scored it 86 / 100, accepted it, and routed it to review because confidence was medium. The raw result is at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval) (eval `cmwchexy5000208js0h731mwm`). Reppo did not return a public share URL, so Centiv publishes the owner-read result.
-
-In short, Reppo is a real check on the verified run (86 / 100, accept, routed to review) and a built-in check on public visitor questions.
+An earlier 10 November run, and an 11 November Reppo check of that earlier brief (86 / 100), remain archived in [`evidence/`](evidence/).
 
 ## How it works
 
@@ -41,13 +39,11 @@ In short, Reppo is a real check on the verified run (86 / 100, accept, routed to
 
 | Part | Status | Detail |
 | --- | --- | --- |
-| Passport caps and payments in the verified run | Replay | A real Kite Passport session and two real USDC payments on Base. Passport refused the third call. The page replays it from the evidence file and never spends. |
-| SERV Reasoning | Live | Real model calls. SERV decides whether each paid call is worth it for every question asked in the app. |
-| Payments in the public demo | Simulated | Visitors never spend money. Receipts start with `sim_` so they cannot pass for on-chain hashes. |
-| Cap checks in the public demo | Simulated | Centiv applies the same per-call, total and time limits itself. The real Passport refusal is in the verified run. |
-| Reppo check of the verified-run brief | Recorded | A real Reppo Evaluation API check on 11 Nov 2026. Score 86 / 100, accept, routed to review (medium confidence). Raw result: [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). The API did not return a public share URL. |
-| Quality gate in the public demo | Simulated | A built-in check scores each visitor brief, labelled Simulated. Production does not call Reppo on every question. |
-| Data, prices and briefs in the public demo | Simulated | Example datasets, prices and briefs for illustration. The landing demo is simulated and its briefs are pre-written. The real data and real price ($0.001 a call) are in the verified run. |
+| Passport caps and payments in the verified run | Replay | A real Kite Passport session and two real USDC payments on Base, 12 Nov 19:38 WAT. Kite Passport refused the third call. The page replays it from the evidence file and never spends. |
+| SERV Reasoning in the recorded run and public demo | Replay | SERV chose a topic and weighed each call before payment in the recorded run. The public demo replays those verdicts. |
+| Payments and cap checks in the public demo | Replay | The public demo replays the recorded 19:38 WAT run step by step. Real transaction links are marked recorded. No money moves. |
+| Reppo scores in the recorded run and public demo | Replay | 55 and 82 after the two paid calls. Reppo does not block or undo a payment. The demo replays those recorded scores. |
+| Earlier Reppo check of a 10 Nov brief | Recorded | A real Reppo Evaluation API check on 11 Nov 2026. Score 86 / 100. It does not score the featured 19:38 WAT run. Raw result: [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). |
 
 Live payments are owner-only and cannot run on the public Vercel site.
 

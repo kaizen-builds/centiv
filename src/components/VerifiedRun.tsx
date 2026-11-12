@@ -51,9 +51,9 @@ function ReppoLine({ call }: { call: PaidCall }) {
 }
 
 /**
- * Replay of Centiv's real, Kite Passport-capped x402 run on 12 Nov 2026, 18:27 WAT.
+ * Replay of Centiv's real, Kite Passport-capped x402 run on 12 Nov 2026, 19:38 WAT.
  * Everything here is read from src/data/verified-run.json, checked against Base.
- * SERV weighed each call before payment. Reppo scored paid excerpts after the fact.
+ * SERV chose a topic and weighed each call before payment. Reppo scored paid excerpts after the fact.
  */
 export default function VerifiedRun({
   compact = false,
@@ -81,26 +81,30 @@ export default function VerifiedRun({
   const wallets = firstTransfer ? { from: firstTransfer.from, to: firstTransfer.to } : null;
   const ttlMin = caps.ttl_seconds ? Math.round(caps.ttl_seconds / 60) : null;
   const sameBriefing = paidCalls.length === 2 && paidCalls[0].reply.excerpt.join() === paidCalls[1].reply.excerpt.join();
-  const replyCall = paidCalls[0];
+  const replyCalls = sameBriefing ? paidCalls.slice(0, 1) : paidCalls;
 
-  const replies = replyCall ? (
-    <figure className="rounded-[14px] border border-[rgba(196, 148, 100,0.35)] bg-[#fffdf8] p-5">
-      <figcaption className="flex flex-wrap items-center justify-between gap-2">
-        <span className="num text-[10.5px] uppercase tracking-[0.12em] text-gold-deep">
-          {sameBriefing ? "Paid reply · both calls, same briefing" : `Paid reply · “${replyCall.topic}”`}
-        </span>
-        <span className="num text-[10.5px] text-dim">{replyCall.reply.source_count} sources</span>
-      </figcaption>
-      <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.7] text-mute">
-        {(compact ? replyCall.reply.excerpt.slice(0, 1) : replyCall.reply.excerpt).map((para) => (
-          <p key={para.slice(0, 40)}>{para.length > 640 ? `${para.slice(0, 640).replace(/\s+\S*$/, "")}…` : para}</p>
-        ))}
-      </blockquote>
-      <p className="mt-3 border-t border-[rgba(196, 148, 100,0.25)] pt-2 text-[11.5px] text-dim">
-        Source: Otto AI ({replyCall.reply.attribution.replace(/[[\]]/g, "")}). Claims are Otto AI’s and Centiv has not verified them.
-        {sameBriefing ? " Both paid calls returned this same briefing." : ""}
-      </p>
-    </figure>
+  const replies = replyCalls.length ? (
+    <div className="grid gap-4">
+      {replyCalls.map((replyCall) => (
+        <figure key={replyCall.n} className="rounded-[14px] border border-[rgba(196, 148, 100,0.35)] bg-[#fffdf8] p-5">
+          <figcaption className="flex flex-wrap items-center justify-between gap-2">
+            <span className="num text-[10.5px] uppercase tracking-[0.12em] text-gold-deep">
+              {sameBriefing ? "Paid reply · both calls, same briefing" : `Paid reply · call ${replyCall.n} · “${replyCall.topic}”`}
+            </span>
+            <span className="num text-[10.5px] text-dim">{replyCall.reply.source_count} sources</span>
+          </figcaption>
+          <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.7] text-mute">
+            {(compact ? replyCall.reply.excerpt.slice(0, 1) : replyCall.reply.excerpt).map((para) => (
+              <p key={para.slice(0, 40)}>{para.length > 640 ? `${para.slice(0, 640).replace(/\s+\S*$/, "")}…` : para}</p>
+            ))}
+          </blockquote>
+          <p className="mt-3 border-t border-[rgba(196, 148, 100,0.25)] pt-2 text-[11.5px] text-dim">
+            Source: Otto AI ({replyCall.reply.attribution.replace(/[[\]]/g, "")}). Claims are Otto AI’s and Centiv has not verified them.
+            {sameBriefing ? " Both paid calls returned this same briefing." : ""}
+          </p>
+        </figure>
+      ))}
+    </div>
   ) : null;
 
   return (
@@ -119,12 +123,12 @@ export default function VerifiedRun({
               Two paid. Call 3 <span className="serif-em">refused.</span>
             </h2>
             <p className="mt-4 max-w-[640px] text-[15.5px] leading-[1.65] text-mute">
-              A real run, replayed. The question: “{r.question ?? "Ethereum news"}”. The owner approved a Kite Passport
+              A real run, replayed. The question: “{r.question ?? "crypto and ETH ETF market"}”. The owner approved a Kite Passport
               session: ${caps.max_amount_per_tx} a call, ${caps.max_total_amount} in total, scoped to Otto AI. SERV Reasoning
-              weighed each call before payment. Two payments settled in USDC on Base. On the third call, Kite Passport
-              refused — nothing was signed. Reppo scored the paid excerpts after the fact (66 and 60, both below 70). It
-              does not block or undo a payment. The question sat in the Kite Passport task; the topic “ethereum etf” was
-              set directly for the three calls, not chosen by SERV.
+              chose a short topic for each call and weighed the call before payment. Two payments settled in USDC on Base.
+              On the third call, Kite Passport refused — nothing was signed. Reppo scored the paid excerpts after the fact
+              (55 and 82). It does not block or undo a payment. The refusal shown is the retake of call 3 in the same
+              fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
             </p>
           </>
         )}
@@ -258,7 +262,7 @@ export default function VerifiedRun({
           (collapseReplies ? (
             <details className="group mt-6 rounded-[14px] border border-[rgba(196, 148, 100,0.35)] bg-[#fffdf8]">
               <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-[14px] font-medium text-bone [&::-webkit-details-marker]:hidden">
-                What the two paid calls returned
+                What the paid calls returned
                 <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">
                   +
                 </span>

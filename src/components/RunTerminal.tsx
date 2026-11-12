@@ -24,7 +24,7 @@ function lines(): Line[] {
           key: `serv-${c.n}`,
           time: clock(c.onchain.timestamp_wat),
           kind: "serv",
-          text: `Call ${c.n}  SERV Reasoning  ${c.serv.decision}`,
+          text: `Call ${c.n}  SERV Reasoning  ${c.serv.decision}  ·  topic “${c.topic}”`,
         });
       }
       out.push({
@@ -44,10 +44,11 @@ function lines(): Line[] {
       }
       if (c.reppo) {
         const later = c.reppo.settled === "after_the_call" ? ", settled later" : "";
+        const vs = c.reppo.score100 < c.reppo.pass_mark ? `, below ${c.reppo.pass_mark}` : c.reppo.score100 > c.reppo.pass_mark ? `, above ${c.reppo.pass_mark}` : "";
         out.push({
           key: `reppo-${c.n}`,
           kind: "reppo",
-          text: `Reppo  ${c.reppo.score100}/100  after the fact, below ${c.reppo.pass_mark}${later}. Does not undo the payment.`,
+          text: `Reppo  ${c.reppo.score100}/100  after the fact${vs}${later}. Does not undo the payment.`,
         });
       }
     } else {
@@ -56,7 +57,7 @@ function lines(): Line[] {
           key: `serv-${c.n}`,
           time: c.attempted_at_wat ? clock(c.attempted_at_wat) : undefined,
           kind: "serv",
-          text: `Call ${c.n}  SERV Reasoning  ${c.serv.decision}`,
+          text: `Call ${c.n}  SERV Reasoning  ${c.serv.decision}  ·  topic “${c.topic}”`,
         });
       }
       out.push({
@@ -71,21 +72,24 @@ function lines(): Line[] {
 }
 
 /**
- * Log of the recorded 12 Nov 2026, 18:27 WAT run.
+ * Log of the recorded 12 Nov 2026, 19:38 WAT run.
  * Every line is from verified-run.json — no invented scores or payments.
  */
 export default function RunTerminal({ className = "" }: { className?: string }) {
   const caps = VERIFIED_RUN.passport.caps;
   const log = lines();
   const first = paidCalls[0];
-  const when = first ? first.onchain.timestamp_wat.split(", ")[0] : "";
+  const barWhen = first
+    ? first.onchain.timestamp_wat.replace(/, (\d{1,2}:\d{2}):\d{2} WAT/, ", $1 WAT")
+    : "12 Nov 2026, 19:38 WAT";
   const spent = VERIFIED_RUN.passport.usage_after.spent_total_usdc;
   const refused = declinedCall?.error_code ?? "session_total_exceeded";
+  const topics = VERIFIED_RUN.calls.map((c) => c.topic).filter(Boolean).join(", ");
 
   return (
     <figure
       className={`term ${className}`}
-      aria-label={`Recorded run at 18:27 WAT: two paid calls of 0.001 USDC, then Kite Passport refused call 3 with ${refused}`}
+      aria-label={`Recorded run at 19:38 WAT: two paid calls of 0.001 USDC, then Kite Passport refused call 3 with ${refused}`}
     >
       <figcaption className="term-bar">
         <span className="flex items-center gap-2 min-w-0">
@@ -95,8 +99,8 @@ export default function RunTerminal({ className = "" }: { className?: string }) 
             <i />
           </span>
           <span className="truncate">
-            <span className="hidden sm:inline">Recorded run · {when}, 18:27 WAT</span>
-            <span className="sm:hidden">{when}, 18:27 WAT</span>
+            <span className="hidden sm:inline">Recorded run · {barWhen}</span>
+            <span className="sm:hidden">{barWhen.replace("Recorded run · ", "")}</span>
           </span>
         </span>
         <span className="shrink-0">Replay</span>
@@ -111,7 +115,7 @@ export default function RunTerminal({ className = "" }: { className?: string }) 
           Kite Passport  ${caps.max_amount_per_tx} per call  ·  ${caps.max_total_amount} total
         </p>
         <p className="term-meta print" style={{ animationDelay: "120ms" }}>
-          Topic “ethereum etf” set directly, not chosen by SERV
+          SERV chose the topics: {topics}
         </p>
         <ol className="mt-3 space-y-1.5">
           {log.map((l, i) => (

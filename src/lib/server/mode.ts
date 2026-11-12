@@ -11,7 +11,7 @@ export type IntegrationFlags = {
   reppo: boolean;
   /** Passport session + mid-task cap enforcement always runs locally for public runs. */
   passport: "local";
-  /** x402 quote source for public runs; payment is always simulated there. */
+  /** x402 quote source for leftover catalogue paths; the public demo is a recorded replay. */
   x402: "local" | "upstream";
 };
 
@@ -44,8 +44,8 @@ export function publicStatus() {
       x402: flags.x402,
     },
     payments: {
-      public: "simulated",
-      receipts: "Public runs issue sim_-prefixed receipts. No funds move.",
+      public: "replay",
+      receipts: "The public demo replays the recorded 12 Nov 19:38 WAT run. Real transaction links are marked recorded. No money moves.",
     },
     replay: {
       available: true,
@@ -58,7 +58,7 @@ export function publicStatus() {
       tx: paidCalls.map((c) => ({ hash: c.tx_hash, basescan: c.basescan_url })),
       evidence: "/api/evidence",
       section: "/#verified-run",
-      note: "SERV Reasoning weighed each call before payment. Reppo scored paid excerpts after the fact and did not block or undo a payment.",
+      note: "SERV Reasoning chose a short topic and weighed each call before payment. Reppo scored paid excerpts after the fact and did not block or undo a payment. The featured call 3 refusal is the retake in the same session.",
     },
     live_demo: {
       enabled: live.enabled,
@@ -67,7 +67,7 @@ export function publicStatus() {
     },
     note:
       mode === "simulated"
-        ? "No API keys configured — reasoning, gate and payments are simulated. Figures are not live market data."
-        : "SERV reasoning is live where configured; payments on this site are Simulated. A real Kite Passport-capped run is available as a Replay, with SERV before each call and Reppo scores after the two that paid.",
+        ? "The public demo replays the recorded 12 Nov 19:38 WAT run. Transaction links are real and marked recorded. No money moves."
+        : "SERV reasoning is live where configured on the owner live path. The public demo is a replay of the recorded 12 Nov 19:38 WAT run. No money moves.",
   };
 }

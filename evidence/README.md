@@ -2,22 +2,23 @@
 
 This folder is a public-only backup. It holds no keys, tokens or session secrets.
 
-The featured machine-readable copy is [`verified-run.json`](verified-run.json), which matches `src/data/verified-run.json` and `GET /api/evidence`. That file is the **12 Nov 2026, 18:27 WAT** Ethereum ETF run.
+The featured machine-readable copy is [`verified-run.json`](verified-run.json), which matches `src/data/verified-run.json` and `GET /api/evidence`. That file is the **12 Nov 2026, 19:38 WAT** crypto and ETH ETF run.
 
 Archived earlier runs:
 
+- [`verified-run-2026-11-12-1827.json`](verified-run-2026-11-12-1827.json) — the 12 Nov 18:27 WAT Ethereum ETF run (topic set directly; call 2 paid despite a SERV skip).
 - [`verified-run-2026-11-12-0111.json`](verified-run-2026-11-12-0111.json) — the 12 Nov 01:11 WAT Ethereum news run (no SERV or per-call Reppo on those receipts).
 - [`verified-run-2026-11-10.json`](verified-run-2026-11-10.json) — the first real run, 10 Nov 2026 (airdrops / stablecoins / ethereum).
-- [`reppo-eval.json`](reppo-eval.json) — a Reppo check of a different brief on 11 Nov 2026 (86 / 100). It does not score the featured 18:27 WAT run. Also at `GET /api/reppo-eval`.
+- [`reppo-eval.json`](reppo-eval.json) — a Reppo check of a different brief on 11 Nov 2026 (86 / 100). It does not score the featured 19:38 WAT run. Also at `GET /api/reppo-eval`.
 
-## Featured run (12 Nov 2026, 18:27 WAT)
+## Featured run (12 Nov 2026, 19:38 WAT)
 
-- **Question:** Is anything big happening with Ethereum ETFs this week?
-- **Topic:** `ethereum etf` — set directly for the three calls, not chosen by SERV. The question sat in the Kite Passport task.
-- **Session:** `agent_session_01a1d0c9-a0a7-788c-9e89-58aa4fbcfbf7`
-- **Request:** `agent_session_req_01a1d0c6-07aa-78fe-831b-66525e4e62d8`
+- **Question:** What's moving in the crypto and ETH ETF market this week?
+- **Topics:** chosen by SERV for each call — `eth etf`, then `crypto flows`, then `fund flows`.
+- **Session:** `agent_session_01a1d108-037e-7c83-aebf-4da7116107eb`
+- **Request:** `agent_session_req_01a1d106-5485-78c3-afba-66dc092ddf9a`
 - **Approved:** with the owner's passkey on agentpassport.ai.
-- **Expired:** 12 Nov 2026, 20:23:57 WAT (2 hour TTL).
+- **Expired:** 12 Nov 2026, 21:32:05 WAT.
 - **Caps:** $0.001 per call, $0.002 in total.
 - **Scope:** `GET x402.ottoai.services /filtered-news`, scoped mode.
 - **Kite Passport wallet (payer):** `0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b`
@@ -28,25 +29,28 @@ Archived earlier runs:
 
 | # | Topic | SERV | Outcome | USDC | Reppo | Base block | Time (WAT) | Transaction |
 |---|---|---|---|---|---|---|---|---|
-| 1 | ethereum etf | spend | Paid | 0.001 | 66 / 100, after the fact (below 70) | 56,570,462 | 18:27:48 | [0xed19ecf0…88bcd7](https://basescan.org/tx/0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7) |
-| 2 | ethereum etf | skip | Paid anyway | 0.001 | 60 / 100, settled after the call (below 70) | 56,570,707 | 18:28:37 | [0xde575cb6…a2b06b](https://basescan.org/tx/0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b) |
-| 3 | ethereum etf | spend | **Declined by Kite Passport** | 0 | — | — | 18:29:25 (from the screen recording) | none. `session_total_exceeded`: "payment amount exceeds max_total_amount" |
+| 1 | eth etf | spend | Paid | 0.001 | 55 / 100, reject / block, during the request | 56,591,687 | 19:38:33 | [0xabf5b682…e58de3](https://basescan.org/tx/0xabf5b682425978ccd310aefaf2ba921520a215712cfca2242604611e42e58de3) |
+| 2 | crypto flows | spend | Paid | 0.001 | 82 / 100, accept / review, low confidence, during the request | 56,592,109 | 19:39:57 | [0xa47fa940…64bc906](https://basescan.org/tx/0xa47fa9409fc19ffc0277f06b2f343526bd2d88aa815988d777abca08064bc906) |
+| 3 | fund flows | spend | **Declined by Kite Passport** (retake) | 0 | — | — | 19:46 (from the screen recording) | none. `session_total_exceeded`: "payment amount exceeds max_total_amount" |
 
-Call 2 was paid despite SERV’s skip so the cap could be shown being enforced: SERV flagged it, the agent paid anyway — Kite Passport is the hard limit.
+Centiv followed SERV on every call (both paid calls were spend).
 
-Reppo scores a paid excerpt after the fact. It does not block or undo a payment. Both paid calls scored below Reppo’s pass mark of 70.
+Reppo scores a paid excerpt after the fact. It does not block or undo a payment.
+
+The featured call 3 refusal is the **retake** in the same fully-spent session. In the first take, call 3 was stopped by Centiv’s own local limit (`centiv_run_total_limit`) before reaching Kite Passport, and SERV was not asked to weigh that first-take call 3. Call 3 was retaken with that local limit off, and Kite Passport declined with `session_total_exceeded`.
 
 ### On-chain verification
 
-Both transactions were checked on 12 Nov 2026 against `https://mainnet.base.org`, using `eth_getTransactionByHash`, `eth_getTransactionReceipt` and `eth_getBlockByNumber`.
+Both transactions were checked on 12 Nov 2026 against `https://base-rpc.publicnode.com`, using `eth_getTransactionByHash`, `eth_getTransactionReceipt` and `eth_getBlockByNumber`.
 
 - Both have receipt status **1 (success)**.
-- Each has a USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`) `Transfer` log: **from** `0x1f1bf1b9…a815b` (the Kite Passport wallet), **to** `0x0e84dded…6b808` (Otto AI), **amount 1000 raw, which is 0.001 USDC** (6 decimals).
+- Each has a USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`) `Transfer` log: **from** `0x1F1Bf1b9…A815b` (the Kite Passport wallet), **to** `0x0E84dDEd…6b808` (Otto AI), **amount 1000 raw, which is 0.001 USDC** (6 decimals).
 - Each also has a USDC `AuthorizationUsed` log. The call is `transferWithAuthorization` (EIP-3009, selector `0xe3ee160e`) on the USDC contract.
-- **The transaction `from` is not the payer.** Transaction 1 was sent by `0xe74817f4cdc15844314812b2271276e64e890fae`, and transaction 2 by `0x625d8a65134079f8faaac39a7947c73d93c6ac39`. These accounts submitted the transactions and paid the gas. Because the payment is an EIP-3009 signed authorisation, they are best read as x402 facilitator relayers. The USDC itself moved from the Kite Passport wallet.
-- Block timestamps: 17:27:48 UTC and 17:28:37 UTC (18:27:48 and 18:28:37 WAT).
+- **The transaction `from` is not the payer.** Transaction 1 was sent by `0x59b7ebc67a3d627fabaf06768c818638452ae704`, and transaction 2 by `0x68a96f41ff1e9f2e7b591a931a4ad224e7c07863`. These accounts submitted the transactions and paid the gas. Because the payment is an EIP-3009 signed authorisation, they are best read as x402 facilitator relayers. The USDC itself moved from the Kite Passport wallet.
+- Block timestamps: 18:38:33 UTC and 18:39:57 UTC (19:38:33 and 19:39:57 WAT). Checked at 18:52:42 UTC, when the chain head was 56,595,935 (4,248 and 3,826 confirmations).
 
 ### Notes
 
 - Kite Passport enforced the caps. Settlement was USDC on **Base mainnet** (`eip155:8453`), not on Kite chain.
-- The news replies are excerpts of Otto AI’s paid responses, trimmed at 900 characters as returned by the live call. The claims in them are Otto AI’s and Centiv has not verified them. Both paid calls returned the same briefing (180 sources).
+- The news replies are excerpts of Otto AI’s paid responses, trimmed at 900 characters as returned by the live call. The claims in them are Otto AI’s and Centiv has not verified them. The two paid calls returned different briefings (152 and 182 sources).
+- The public interactive demo on the site is a replay of this run. It is labelled “Replay of a real run · 12 Nov 19:38 WAT · no money moves.”

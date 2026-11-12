@@ -1,0 +1,201 @@
+{
+  "_about": "Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run on 12 Nov 2026, 18:27 WAT. Contains no keys, tokens or session secrets. SERV Reasoning weighed each call before payment. Reppo scored each paid excerpt after the fact and did not block or undo a payment.",
+  "label": "Replay \u00b7 real on-chain run",
+  "generated_at_utc": "2026-11-12T17:42:35Z",
+  "question": "Is anything big happening with Ethereum ETFs this week?",
+  "honesty": "SERV Reasoning weighed each call before payment (spend, skip, spend). Call 2 was paid despite SERV\u2019s skip so the $0.002 Kite Passport cap could be shown being enforced. Reppo scored the two paid excerpts after they settled (66/100 and 60/100, both below the pass mark of 70). Reppo does not block or undo a payment. Call 2\u2019s Reppo score settled after the call (eval cmwdtnnz2000908lcsg8w9mtc); the 66 was returned during the live request. The research question was in the Kite Passport task; the topic \u201cethereum etf\u201d was set directly for the three calls, not chosen by SERV.",
+  "passport": {
+    "environment": "Kite Passport (production)",
+    "session_id": "agent_session_01a1d0c9-a0a7-788c-9e89-58aa4fbcfbf7",
+    "session_type": "dedicated",
+    "request_id": "agent_session_req_01a1d0c6-07aa-78fe-831b-66525e4e62d8",
+    "expires_at_utc": "2026-11-12T19:23:57.215738Z",
+    "expires_at_wat": "12 Nov 2026, 20:23:57 WAT",
+    "caps": {
+      "currency": "USD",
+      "max_amount_per_tx": "0.001",
+      "max_total_amount": "0.002",
+      "ttl_seconds": 7200
+    },
+    "scope": {
+      "mode": "scoped",
+      "method": "GET",
+      "host": "x402.ottoai.services",
+      "path_prefix": "/filtered-news"
+    },
+    "task_summary": "Pay Otto AI for up to two $0.001 filtered-news calls to answer: is anything big happening with Ethereum ETFs this week? The $0.002 Kite Passport cap should refuse a third call.",
+    "wallet": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+    "wallet_type": "agent_wallet",
+    "usage_after": {
+      "spent_total_usdc": "0.002",
+      "spent_total_raw": "2000"
+    }
+  },
+  "merchant": {
+    "name": "Otto AI",
+    "endpoint": "https://x402.ottoai.services/filtered-news",
+    "pay_to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808"
+  },
+  "settlement": {
+    "chain": "Base mainnet",
+    "caip2": "eip155:8453",
+    "asset": "USDC",
+    "asset_contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "decimals": 6,
+    "note": "Kite Passport enforced the session caps; payments settled in USDC on Base. SERV weighed each call before payment. Reppo scored paid excerpts after the fact and did not block or undo a payment."
+  },
+  "calls": [
+    {
+      "n": 1,
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
+      "basescan_url": "https://basescan.org/tx/0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
+      "blockscout_url": "https://base.blockscout.com/tx/0xed19ecf02c8173bb61397ddd96164a3a209fcb435abae5709d808d635d88bcd7",
+      "session_spent_after_usdc": "0.001",
+      "serv": {
+        "decision": "spend",
+        "source": "serv",
+        "rationale": "Fresh filtered news on Ethereum ETF developments is directly relevant to a research brief and likely to add current primary evidence. The call is narrowly scoped and low-cost, so it is worth buying."
+      },
+      "reppo": {
+        "source": "reppo",
+        "score100": 66,
+        "decision": "reject",
+        "route": "review",
+        "confidence": "medium",
+        "evalId": "cmwdtmm2a000808lcz3jiu8sz",
+        "pass_mark": 70,
+        "settled": "during_call",
+        "note": "The response was rejected with a score of 66, primarily due to low factual accuracy and instruction adherence. This score also triggered a 'review' routing for the submission. Reppo scored the excerpt after payment and did not undo it."
+      },
+      "onchain": {
+        "status": "success",
+        "block": 56570462,
+        "confirmations_at_check": 3701,
+        "timestamp_utc": "2026-11-12T17:27:48Z",
+        "timestamp_wat": "12 Nov 2026, 18:27:48 WAT",
+        "tx_sender": "0xe74817f4cdc15844314812b2271276e64e890fae",
+        "tx_sender_note": "This account submitted the transaction and paid the gas (an x402 facilitator). The USDC moved from the Kite Passport wallet, as the Transfer log shows.",
+        "tx_to": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "method": "transferWithAuthorization",
+        "usdc_transfer": {
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "from": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+          "to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "Otto AI (Powered by $OTTO AI | @useOttoAI)",
+        "source_count": 180,
+        "excerpt": [
+          "Ethereum ETF coverage is plentiful, so this is a direct analysis of the most important current developments. The dominant theme right now is persistent institutional outflow from spot ETH ETFs. Lookonchain shows ETH ETFs bleeding $132.41M in a single day (Nov 12) and $422.51M over seven days, with Cointelegraph confirming continued net outflows across BTC, ETH, and XRP products.",
+          "The brief relief on Nov 10 -- where ETH outflows shrank to just $1.3M -- was erased the following session with $144.8M leaving, exactly as @alver1301 flagged. BlackRock-related selling pressure is visible too: @conorfkenny cites $90.76M of ETH sold by BlackRock ETF vehicles, and @WhaleInsider notes $75.20M in ETF client ETH sales against only $53.02M of buying a day earlier. This is a clear distribution regime, not accumulation. Price action confirms it: @DylanTeil reports ETH breaking below $2K amid $530M in liq"
+        ],
+        "note": "Excerpt as returned by the live call, trimmed at 900 characters. Claims are Otto AI\u2019s and Centiv has not verified them. Both paid calls returned this same briefing."
+      }
+    },
+    {
+      "n": 2,
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
+      "basescan_url": "https://basescan.org/tx/0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
+      "blockscout_url": "https://base.blockscout.com/tx/0xde575cb65587b546d848bf71f7af07425b0681eef4c595f2a4781e8c35a2b06b",
+      "session_spent_after_usdc": "0.002",
+      "paid_despite_serv_skip": true,
+      "serv": {
+        "decision": "skip",
+        "source": "serv",
+        "rationale": "This is relevant but appears to be filtered news rather than fresh primary evidence, so it is lower value for a research brief than a direct source. I\u2019d reserve spend for more authoritative or original data."
+      },
+      "reppo": {
+        "source": "reppo",
+        "score100": 60,
+        "decision": "reject",
+        "route": "review",
+        "confidence": "low",
+        "evalId": "cmwdtnnz2000908lcsg8w9mtc",
+        "pass_mark": 70,
+        "settled": "after_the_call",
+        "note": "The response was rejected due to an overall score of 60, falling below the pass threshold of 70. This score was primarily driven by low marks across factual accuracy, instruction adherence, and completeness. The score settled after the call; Reppo did not undo the payment."
+      },
+      "onchain": {
+        "status": "success",
+        "block": 56570707,
+        "confirmations_at_check": 3456,
+        "timestamp_utc": "2026-11-12T17:28:37Z",
+        "timestamp_wat": "12 Nov 2026, 18:28:37 WAT",
+        "tx_sender": "0x625d8a65134079f8faaac39a7947c73d93c6ac39",
+        "tx_sender_note": "This account submitted the transaction and paid the gas (an x402 facilitator). The USDC moved from the Kite Passport wallet, as the Transfer log shows.",
+        "tx_to": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "method": "transferWithAuthorization",
+        "usdc_transfer": {
+          "token": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "from": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+          "to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "Otto AI (Powered by $OTTO AI | @useOttoAI)",
+        "source_count": 180,
+        "excerpt": [
+          "Ethereum ETF coverage is plentiful, so this is a direct analysis of the most important current developments. The dominant theme right now is persistent institutional outflow from spot ETH ETFs. Lookonchain shows ETH ETFs bleeding $132.41M in a single day (Nov 12) and $422.51M over seven days, with Cointelegraph confirming continued net outflows across BTC, ETH, and XRP products.",
+          "The brief relief on Nov 10 -- where ETH outflows shrank to just $1.3M -- was erased the following session with $144.8M leaving, exactly as @alver1301 flagged. BlackRock-related selling pressure is visible too: @conorfkenny cites $90.76M of ETH sold by BlackRock ETF vehicles, and @WhaleInsider notes $75.20M in ETF client ETH sales against only $53.02M of buying a day earlier. This is a clear distribution regime, not accumulation. Price action confirms it: @DylanTeil reports ETH breaking below $2K amid $530M in liq"
+        ],
+        "note": "Excerpt as returned by the live call, trimmed at 900 characters. Claims are Otto AI\u2019s and Centiv has not verified them. Both paid calls returned this same briefing."
+      }
+    },
+    {
+      "n": 3,
+      "topic": "ethereum etf",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
+      "method": "GET",
+      "outcome": "declined",
+      "declined_by": "Kite Passport",
+      "error_code": "session_total_exceeded",
+      "error": "payment amount exceeds max_total_amount",
+      "user_message": "The spending limit you approved for this task is used up. Nothing was signed and no money moved.",
+      "money_moved": false,
+      "tx_hash": null,
+      "attempted_at_utc": "2026-11-12T17:29:25Z",
+      "attempted_at_wat": "12 Nov 2026, 18:29:25 WAT",
+      "serv": {
+        "decision": "spend",
+        "source": "serv",
+        "rationale": "Fresh filtered news on Ethereum ETF developments is directly useful for a research brief and likely to add current primary evidence. The call is narrowly scoped and high-value for timeliness, so it merits purchase."
+      },
+      "note": "Kite Passport declined before signing: the $0.002 session total was already spent. SERV had said spend. The attempted time is taken from the local screen recording (still of the refusal), not from a transaction."
+    }
+  ],
+  "verification": {
+    "rpc": "https://mainnet.base.org",
+    "checked_at_utc": "2026-11-12T17:32:20Z",
+    "chain_head_at_check": 56574162,
+    "method": "eth_getTransactionByHash, eth_getTransactionReceipt and eth_getBlockByNumber; USDC Transfer and AuthorizationUsed logs decoded."
+  }
+}

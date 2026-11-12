@@ -1,5 +1,6 @@
 import { connection, NextResponse } from "next/server";
-import { executeResearchRun } from "@/lib/server/engine";
+import { publicStatus } from "@/lib/server/mode";
+import { buildRecordedReplay } from "@/lib/recorded-replay";
 
 export const maxDuration = 60;
 
@@ -12,11 +13,7 @@ export async function POST(req: Request) {
 
   const session = body.session as {
     id?: string;
-    budget?: number;
-    perTx?: number;
-    windowMin?: number;
     approvedAt?: number;
-    spent?: number;
   };
 
   if (!session.id || !session.approvedAt) {
@@ -24,19 +21,19 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await executeResearchRun({
+    const runId = `run_${Date.now()}`;
+    const runLabel = typeof body.runLabel === "string" ? body.runLabel : "R";
+    const built = buildRecordedReplay({
       question: body.question,
-      runLabel: typeof body.runLabel === "string" ? body.runLabel : undefined,
-      session: {
-        id: session.id,
-        budget: Number(session.budget) || 0.5,
-        perTx: Number(session.perTx) || 0.2,
-        windowMin: Number(session.windowMin) || 30,
-        approvedAt: Number(session.approvedAt),
-        spent: Number(session.spent) || 0,
-      },
+      runId,
+      runLabel,
     });
-    return NextResponse.json(result);
+    return NextResponse.json({
+      mode: publicStatus(),
+      session: { id: session.id, spent: built.session.spent, remaining: built.session.remaining },
+      run: built.run,
+      audit: built.audit,
+    });
   } catch (e) {
     console.error("run failed", e);
     return NextResponse.json({ error: e instanceof Error ? e.message : "Run failed" }, { status: 500 });

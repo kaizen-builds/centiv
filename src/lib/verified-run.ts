@@ -1,9 +1,11 @@
 // Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run.
 // Source of truth: src/data/verified-run.json (mirrored in /evidence).
 // Contains no keys, tokens or session secrets — only public on-chain facts.
-// Featured run: 12 Nov 2026, 18:27 WAT, Ethereum ETFs. SERV weighed each call
-// before payment; Reppo scored paid excerpts after the fact and did not block
-// or undo a payment. The earlier 01:11 WAT run is archived in evidence/.
+// Featured run: 12 Nov 2026, 19:38 WAT, crypto and ETH ETF market. SERV chose
+// a short topic for each call and weighed the call before payment. Reppo scored
+// paid excerpts after the fact and did not block or undo a payment. The featured
+// call 3 refusal is the retake. Earlier runs, including 12 Nov 18:27 WAT, are
+// archived in evidence/.
 
 import data from "@/data/verified-run.json";
 import type { AuditRow, Decision } from "@/lib/centiv";
@@ -45,6 +47,8 @@ export type ReppoAfterTheFact = {
 export type PaidCall = {
   n: number;
   topic: string;
+  topic_source?: "serv" | "fallback" | "direct";
+  topic_rationale?: string;
   url: string;
   method: string;
   outcome: "paid";
@@ -65,6 +69,8 @@ export type PaidCall = {
 export type DeclinedCall = {
   n: number;
   topic: string;
+  topic_source?: "serv" | "fallback" | "direct";
+  topic_rationale?: string;
   url: string;
   method: string;
   outcome: "declined";
@@ -141,6 +147,9 @@ export function replayAuditRows(): AuditRow[] {
       receipt: c.tx_hash,
       receiptUrl: c.basescan_url,
       provenance: "replay",
+      score: c.reppo?.score100,
+      verdict: c.reppo?.decision === "accept" ? "accept" : c.reppo?.decision === "reject" ? "reject" : undefined,
+      gateSource: c.reppo ? "reppo" : undefined,
     };
   });
   if (declinedCall) {
@@ -149,7 +158,7 @@ export function replayAuditRows(): AuditRow[] {
       id: `replay_${declinedCall.n}`,
       runId: "replay",
       runLabel: "V",
-      at: rows.length ? rows[rows.length - 1].at + 1000 : 0,
+      at: declinedCall.attempted_at_utc ? Date.parse(declinedCall.attempted_at_utc) : (rows.length ? rows[rows.length - 1].at + 1000 : 0),
       atLabel: declinedCall.attempted_at_wat?.split(", ")[1] ?? "just after",
       service: `Otto AI · filtered news “${declinedCall.topic}”`,
       decision: "decline",

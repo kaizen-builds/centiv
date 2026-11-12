@@ -1,7 +1,7 @@
 // Centiv shared types, catalogue scenarios, and helpers.
 // Live orchestration lives in src/lib/server/* and /api/*.
-// The public-demo catalogue mirrors the recorded Otto Ethereum ETF run
-// ($0.001 a call, $0.002 total). Payments in that path stay simulated.
+// Shared types and helpers. The public demo is a replay of the recorded run
+// (see recorded-replay.ts and verified-run.json). No money moves on that path.
 
 export type Decision = "spend" | "skip" | "decline";
 export type Verdict = "accept" | "revise" | "reject";
@@ -67,6 +67,8 @@ export interface Step {
   amount?: number;
   checks?: Check[];
   receipt?: string;
+  receiptUrl?: string;
+  provenance?: "live" | "simulated" | "replay";
 }
 
 export interface Answer {
@@ -94,6 +96,9 @@ export interface Run {
   status: "running" | "done";
   gate?: GateResult;
   answer?: Answer;
+  /** Banner on the public demo when this run is a replay of the recorded proof. */
+  replayLabel?: string;
+  replayNote?: string;
 }
 
 export interface AuditRow {
