@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import CapProgress, { recordedCapState } from "./CapProgress";
+import ClippedText from "./ClippedText";
 import { Stamp } from "./Logo";
 import { DecisionTag, ProvenanceBadge } from "./ui";
 import { VERIFIED_RUN, basescanAddress, declinedCall, paidCalls, type PaidCall } from "@/lib/verified-run";
@@ -33,20 +35,10 @@ function ServLine({ decision, rationale }: { decision: string; rationale: string
 function ReppoLine({ call }: { call: PaidCall }) {
   const r = call.reppo;
   if (!r) return null;
-  const below = r.score100 < r.pass_mark;
   return (
-    <details className="group mt-1.5">
-      <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 [&::-webkit-details-marker]:hidden">
-        <span className="pill pill-sage inline-flex h-6 items-center px-2.5 text-[11px] font-semibold text-cent">
-          Reppo: <span className="serif-em ml-1 font-normal">{r.score100} / 100</span>
-        </span>
-        <span className="text-[12.5px] text-dim">
-          after the fact{below ? `, below ${r.pass_mark}` : ""}
-          {r.settled === "after_the_call" ? " · settled later" : ""}. Does not undo the payment.
-        </span>
-      </summary>
-      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-mute">{r.note}</p>
-    </details>
+    <p className="mt-1.5 text-[12.5px] leading-[1.5] text-dim">
+      Reppo {r.score100}/100 after payment — a quality record, not a later spend decision.
+    </p>
   );
 }
 
@@ -93,9 +85,9 @@ export default function VerifiedRun({
             </span>
             <span className="num text-[10.5px] text-dim">{replyCall.reply.source_count} sources</span>
           </figcaption>
-          <blockquote className="mt-3 space-y-2 text-[13.5px] leading-[1.7] text-mute">
+          <blockquote className="mt-3 space-y-3 text-[13.5px] leading-[1.7] text-mute">
             {(compact ? replyCall.reply.excerpt.slice(0, 1) : replyCall.reply.excerpt).map((para) => (
-              <p key={para.slice(0, 40)}>{para.length > 640 ? `${para.slice(0, 640).replace(/\s+\S*$/, "")}…` : para}</p>
+              <ClippedText key={para.slice(0, 40)} text={para} max={compact ? 240 : 320} />
             ))}
           </blockquote>
           <p className="mt-3 border-t border-[rgba(196, 148, 100,0.25)] pt-2 text-[11.5px] text-dim">
@@ -127,15 +119,30 @@ export default function VerifiedRun({
               session: ${caps.max_amount_per_tx} a call, ${caps.max_total_amount} in total, scoped to Otto AI. SERV Reasoning
               chose a short topic for each call and weighed the call before payment. Two payments settled in USDC on Base.
               On the third call, Kite Passport refused — nothing was signed. Reppo scored the paid excerpts after the fact
-              (55 and 82). It does not block or undo a payment. The refusal shown is the retake of call 3 in the same
-              fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
+              (55 and 82), as a quality record — not a later spend decision, and not a block or undo. The refusal shown is
+              the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit
+              before it reached Kite Passport.
             </p>
           </>
         )}
         {hideLead && <h2 id={`${id}-title`} className="sr-only">Receipts from the recorded run</h2>}
         {children}
+        {!hideLead && (
+          <div className="mt-7">
+            <CapProgress spent={recordedCapState().spent} cap={recordedCapState().cap} blocked={recordedCapState().blocked} />
+          </div>
+        )}
 
-        <div className="mt-7 rounded-[14px] border border-[rgba(196, 148, 100,0.45)] bg-white">
+        <details className="group mt-7 rounded-[14px] border border-[rgba(196, 148, 100,0.45)] bg-white">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-[14px] font-medium text-bone sm:px-5 [&::-webkit-details-marker]:hidden">
+            Call-by-call receipts
+            <span aria-hidden="true" className="text-[18px] leading-none text-dim transition group-open:rotate-45">
+              +
+            </span>
+          </summary>
+          <div className="border-t border-[rgba(196, 148, 100,0.3)] px-4 pb-5 sm:px-5">
+
+        <div className="mt-4 rounded-[14px] border border-[rgba(196, 148, 100,0.45)] bg-white">
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
             <span className="text-[12px] text-dim">Caps, set with a passkey</span>
             <span className="fig text-[15px] text-bone">
@@ -272,13 +279,15 @@ export default function VerifiedRun({
           ) : (
             <div className="mt-6">{replies}</div>
           ))}
+          </div>
+        </details>
 
         <p className="mt-6 text-[12.5px] leading-[1.65] text-dim">
-          SERV Reasoning weighed each call before payment. Reppo scored the two paid excerpts after they settled — it
-          does not block or undo a payment. Payments settled in USDC on Base mainnet ({r.settlement.caip2}). Each
-          transaction was submitted by an x402 facilitator that paid the gas. The USDC moved from the Kite Passport
-          wallet, as the Transfer log shows. Checked against {r.verification.rpc.replace("https://", "")} on{" "}
-          {r.verification.checked_at_utc.slice(0, 10)}.{" "}
+          SERV Reasoning weighed each call before payment. Reppo scores on the two paid excerpts are a quality record
+          — they do not decide later calls, and they do not block or undo a payment. Payments settled in USDC on Base
+          mainnet ({r.settlement.caip2}). Each transaction was submitted by an x402 facilitator that paid the gas. The
+          USDC moved from the Kite Passport wallet, as the Transfer log shows. Checked against{" "}
+          {r.verification.rpc.replace("https://", "")} on {r.verification.checked_at_utc.slice(0, 10)}.{" "}
           <a href="/api/evidence" className="underline underline-offset-2 hover:text-bone">
             Evidence JSON
           </a>

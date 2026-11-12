@@ -8,9 +8,9 @@ import { RealVsSimulated, RealVsSimulatedFallback } from "./RealVsSimulated";
 import Reveal from "./Reveal";
 import RunTerminal from "./RunTerminal";
 import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
-import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
 import StatusPill, { StatusPillFallback } from "./StatusPill";
 import { ProvenanceBadge } from "./ui";
+import CapProgress, { recordedCapState } from "./CapProgress";
 import VerifiedRun from "./VerifiedRun";
 import { declinedCall, paidCalls, VERIFIED_RUN } from "@/lib/verified-run";
 
@@ -102,7 +102,7 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
   {
     k: "pay",
     t: "It pays, or it stops",
-    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves. After a payment, Reppo can score what was bought — it does not block or undo it.",
+    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves. After a payment, Reppo may score what was bought, as a quality record. That score does not decide later calls, and it does not block or undo a payment.",
   },
 ];
 
@@ -119,7 +119,7 @@ const partners: { name: string; role: string; href: string }[] = [
   },
   {
     name: "Reppo",
-    role: "Scores research after it is bought.",
+    role: "A quality record of what was bought.",
     href: "https://eval.reppo.xyz/agents.md",
   },
   {
@@ -202,6 +202,7 @@ export default function Landing() {
   const declined = declinedCall ? 1 : 0;
   const spent = VERIFIED_RUN.passport.usage_after.spent_total_usdc;
   const code = declinedCall?.error_code ?? "session_total_exceeded";
+  const cap = recordedCapState();
 
   return (
     <div className="min-h-screen bg-ink">
@@ -225,7 +226,7 @@ export default function Landing() {
               <StatusPill className="mr-1 hidden md:inline-flex" />
             </Suspense>
             <Link href="/app?demo=1" className="pill pill-cent h-11 px-5 text-[14px]">
-              Try the demo
+              Replay the run
             </Link>
           </div>
         </div>
@@ -249,19 +250,28 @@ export default function Landing() {
               <p className="rise mt-6 max-w-[480px] text-pretty text-[17px] leading-[1.55] text-mute" style={{ animationDelay: "180ms" }}>
                 You approve a spending cap with Kite Passport. Centiv buys data one call at a time, only when it’s worth what’s left.
               </p>
+              <p className="rise mt-5 max-w-[520px] text-[15px] leading-[1.6] text-mute" style={{ animationDelay: "220ms" }}>
+                Kite Passport sets the cap. SERV decides whether a call is worth it. Reppo scores what you bought.
+              </p>
+              <p className="rise mt-2 max-w-[520px] text-[14px] leading-[1.6] text-dim" style={{ animationDelay: "250ms" }}>
+                x402 is a web standard: an API replies “payment required” with a price, and the agent pays that amount in USDC, one call at a time.
+              </p>
               <div className="rise mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "270ms" }}>
                 <Link href="/app?demo=1" className={primary}>
-                  Try the demo
+                  Replay a recorded run
                 </Link>
                 <a href="#verified-run" className={outline}>
                   See the receipts
                 </a>
               </div>
-              <a href="#real" className="rise mt-5 hidden rounded-lg py-1 transition hover:opacity-80 sm:inline-block" style={{ animationDelay: "330ms" }}>
-                <Suspense fallback={<StatusStripFallback variant="line" />}>
-                  <StatusStripServer variant="line" className="text-pretty lg:text-left" />
-                </Suspense>
-              </a>
+              <p className="rise mt-5 text-[13px] leading-[1.55] text-dim" style={{ animationDelay: "330ms" }}>
+                The demo replays the recorded 12 Nov 19:38 WAT run. No money moves.
+              </p>
+              <p className="rise mt-1.5 text-[13px] leading-[1.55]" style={{ animationDelay: "360ms" }}>
+                <a href="#real" className="font-medium text-cent underline decoration-cent/30 underline-offset-[3px] hover:decoration-cent">
+                  What’s real, and what’s simulated
+                </a>
+              </p>
             </div>
             <div className="rise min-w-0" style={{ animationDelay: "220ms" }}>
               <RunTerminal />
@@ -301,7 +311,7 @@ export default function Landing() {
                 Set a cap. Buy only what’s <span className="serif-em">worth it.</span>
               </h2>
               <p className="mt-7 max-w-[520px] text-[17px] leading-[1.6] text-mute">
-                You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo can score what was bought — that score does not block or undo the payment.
+                You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo may score what was bought, as a quality record — Centiv does not use that score to decide later calls, and it does not block or undo the payment.
               </p>
             </Reveal>
             <Reveal delay={160} className="mt-20 md:mt-28">
@@ -327,32 +337,28 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* 5. Feature bento with the session log as a code/terminal panel */}
+        {/* 5. Three steps — the session log lives once, collapsed, in the receipts */}
         <section id="how" className="scroll-mt-20 border-t border-[rgba(196, 148, 100,0.25)]" aria-labelledby="how-title">
           <div className={`${shell} ${chapter}`}>
-            <SectionHead split label="The recorded run" id="how-title" title={<>It weighs, pays, or <span className="serif-em">stops.</span></>}>
+            <SectionHead split label="The steps" id="how-title" title={<>It weighs, pays, or <span className="serif-em">stops.</span></>}>
               <p>
-                One session log from 12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call: “eth etf”, “crypto flows”, then “fund flows”. Two payments of 0.001 USDC settled on Base. Kite Passport refused call 3. Reppo scored 55 and 82 after the fact, and did not undo a payment.
+                A short recorded log is in the hero. The full 12 Nov 2026, 19:38 WAT receipts — topics, payments, Basescan links, Reppo scores and the Kite Passport refusal — are in one place below, collapsed.
               </p>
             </SectionHead>
-            <Reveal delay={100} className="bento mt-14 lg:grid-cols-12">
-              <div className="bento-cell border-t-0 p-3 sm:p-4 lg:col-span-8 lg:row-span-3">
-                <p className="eyebrow mb-3 px-1 text-gold-deep">Session log</p>
-                <RunTerminal />
-              </div>
+            <ul className="mt-14 grid gap-5 md:grid-cols-3 md:gap-6">
               {steps.map((s, i) => (
-                <div key={s.t} className="bento-cell flex flex-col lg:col-span-4">
+                <Reveal as="li" key={s.t} delay={i * 80} className="card-gold flex flex-col p-7 md:min-h-[240px] md:p-8">
                   <div className="flex items-center justify-between">
                     <span className="grid h-10 w-10 place-items-center rounded-full border border-[rgba(180, 73, 26,0.45)] bg-white text-cent">
                       <StepIcon kind={s.k} />
                     </span>
                     <span className="num text-[12px] text-dim">0{i + 1}</span>
                   </div>
-                  <h3 className="mt-5 text-[18px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
-                  <p className="mt-2 text-[14.5px] leading-[1.6] text-mute">{s.s}</p>
-                </div>
+                  <h3 className="mt-5 text-[22px] font-medium tracking-[-0.03em] text-bone">{s.t}</h3>
+                  <p className="mt-3 flex-1 text-[15px] leading-[1.65] text-mute">{s.s}</p>
+                </Reveal>
               ))}
-            </Reveal>
+            </ul>
           </div>
         </section>
 
@@ -375,9 +381,12 @@ export default function Landing() {
           <div className={`${shell} ${chapter}`}>
             <SectionHead label="The receipts" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
               <p>
-                12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. Reppo scored 55 and 82 after the fact — after the money had already moved. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
+                12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport. Call-by-call receipts are collapsed below.
               </p>
             </SectionHead>
+            <Reveal delay={60} className="mx-auto mt-12 max-w-[560px]">
+              <CapProgress spent={cap.spent} cap={cap.cap} blocked={cap.blocked} />
+            </Reveal>
             <Reveal delay={80} className="stat-grid mt-16 grid-cols-2 md:grid-cols-4">
               <div className="stat-cell">
                 <p className="fig text-[40px] leading-none tracking-[-0.05em] text-bone md:text-[52px]">{paid}</p>
@@ -483,14 +492,14 @@ export default function Landing() {
                 Set a cap. See it <span className="serif-em">hold.</span>
               </h2>
               <p className="mx-auto mt-6 max-w-[460px] text-[16px] leading-[1.65] text-mute">
-                Payments in the public app are simulated, so visitors never spend anything. The recorded run on this page is real.
+                The public demo replays the recorded 12 Nov 19:38 WAT run. No money moves. If you type a different question, you still see this recorded example — not a live answer.
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                 <Link href="/app?demo=1" className={primary}>
-                  Try the demo
+                  Replay a recorded run
                 </Link>
                 <Link href="/app?ask=1" className={outline}>
-                  Ask your own question
+                  Type a question first
                 </Link>
               </div>
             </Reveal>
@@ -503,7 +512,7 @@ export default function Landing() {
           <div>
             <CentivWordmark size={18} />
             <p className="mt-5 max-w-[360px] text-[13.5px] leading-[1.65] text-dim">
-              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores after the two that paid. The public demo replays that same run — no money moves. Reppo does not block or undo a payment.
+              The recorded run is a replay of real Base payments, with SERV Reasoning before each call. Reppo scores on the two that paid are a quality record — they do not decide later calls, and they do not block or undo a payment. The public demo replays that same run. No money moves.
             </p>
             <p className="mt-3 text-[13px] text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
             <p className="mt-2 text-[13px] text-dim">SERV Hackathon 02 · Kite track</p>

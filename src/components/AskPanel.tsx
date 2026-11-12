@@ -63,6 +63,9 @@ export function AskPanel({
           </div>
         </div>
       </form>
+      <p className="mt-3 text-[12.5px] leading-[1.5] text-dim">
+        A different question still replays the recorded 12 Nov 19:38 WAT run. The demo will say so, and no money moves.
+      </p>
       <div className="mt-3 flex flex-wrap gap-2" aria-label="Suggested questions">
         {suggestions.map((s) => (
           <button

@@ -1,6 +1,8 @@
 "use client";
 import type { Run, Step } from "@/lib/centiv";
 import { usdc } from "@/lib/centiv";
+import CapProgress from "./CapProgress";
+import ClippedText from "./ClippedText";
 import { GateSourceLabel, ProvenanceBadge, VerdictTag } from "./ui";
 import { Nib, Stamp } from "./Logo";
 
@@ -96,7 +98,21 @@ function StepRow({ s, last }: { s: Step; last: boolean }) {
   );
 }
 
-export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; current?: Run; onSelect: (id: string) => void; onRunDemo?: () => void }) {
+export function RunPanel({
+  runs,
+  current,
+  onSelect,
+  onRunDemo,
+  spent = 0,
+  cap = 0.002,
+}: {
+  runs: Run[];
+  current?: Run;
+  onSelect: (id: string) => void;
+  onRunDemo?: () => void;
+  spent?: number;
+  cap?: number;
+}) {
   return (
     <section id="run" aria-labelledby="run-title" className="card scroll-mt-24 p-6" aria-live="polite">
       <div className="flex items-center justify-between gap-4">
@@ -129,7 +145,7 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
           </p>
           {onRunDemo && (
             <button type="button" onClick={onRunDemo} className="pill pill-cent mt-5 h-10 px-5 text-[13.5px]">
-              Run the demo
+              Replay a recorded run
             </button>
           )}
         </div>
@@ -148,6 +164,12 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
               {current.topicSource === "serv" ? " · SERV" : current.topicSource === "direct" ? " · set directly" : " · built-in"}
             </p>
           )}
+          <CapProgress
+            className="mt-4"
+            spent={spent}
+            cap={cap}
+            blocked={current.steps.some((s) => s.kind === "decline" && s.status === "blocked")}
+          />
           <ol className="mt-5">
             {current.steps.map((s, i) => (
               <StepRow key={s.id} s={s} last={i === current.steps.length - 1 && !current.answer} />
@@ -195,7 +217,9 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
                 {current.answer.points.map((p) => (
                   <li key={p} className="flex gap-3">
                     <span className="mt-[9px] h-[2px] w-3 shrink-0 rounded bg-cent" aria-hidden="true" />
-                    {p}
+                    <div className="min-w-0 flex-1">
+                      <ClippedText text={p} max={280} />
+                    </div>
                   </li>
                 ))}
               </ul>

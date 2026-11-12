@@ -31,7 +31,7 @@ export function DemoBar({
           <span className="hidden sm:inline">{label[phase]}</span>
         </span>
         <button onClick={onRunDemo} className={`${btn} bg-[var(--color-cent-fill)] font-semibold text-white hover:bg-[var(--color-cent-hover)]`}>
-          Run the demo
+          Replay a recorded run
         </button>
         <button onClick={onReset} className={`${btn} text-dim hover:bg-ink-4 hover:text-bone`}>
           Reset

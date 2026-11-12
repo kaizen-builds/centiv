@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { extractTopicFallback } from "@/lib/topic";
+import { useState } from "react";
 import { VERIFIED_RUN } from "@/lib/verified-run";
 
 const DEMO = VERIFIED_RUN.question ?? "What's moving in the crypto and ETH ETF market this week?";
@@ -15,7 +14,6 @@ const recordedTopics = VERIFIED_RUN.calls.map((c) => c.topic).filter(Boolean);
  */
 export default function AskPreview() {
   const [question, setQuestion] = useState(DEMO);
-  const topic = useMemo(() => extractTopicFallback(question), [question]);
   const recorded = question.trim() === DEMO.trim();
 
   return (
@@ -48,19 +46,16 @@ export default function AskPreview() {
                 </span>
               </>
             ) : (
-              <>
-                Built-in preview topic: <span className="font-medium text-bone">“{topic}”</span>
-                <span className="mt-1 block text-[13px] text-dim">
-                  This is only a built-in guess. The public demo always replays the recorded 12 Nov 19:38 WAT run — it won’t fetch a live briefing for a different question. No money moves.
-                </span>
-              </>
+              <span className="mt-1 block text-[13px] leading-[1.55] text-dim">
+                The public demo always replays the recorded 12 Nov 19:38 WAT run for the question above. It will not fetch a live briefing, invent an answer, or show a new payment for what you typed. No money moves.
+              </span>
             )
           ) : (
-            <span className="text-dim">Type a full question to see the short topic.</span>
+            <span className="text-dim">Type a question — the demo still replays the recorded run, and says so.</span>
           )}
         </p>
         <Link href="/app?ask=1" className="pill pill-cent h-12 shrink-0 px-7 text-[15px]">
-          Ask in the demo
+          Replay the recorded run
         </Link>
       </div>
     </form>

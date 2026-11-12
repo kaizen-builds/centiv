@@ -49,7 +49,7 @@ export function AuditTrail({
             Every cent, <span className="serif-em text-cent">stamped.</span>
           </h2>
           <p className="mt-3 max-w-xl text-[14.5px] leading-[1.55] text-mute">
-            Each buy, skip and decline — with the reason SERV gave, what it cost, what was left, and how the quality gate scored the answer it fed.
+            Each buy, skip and decline — with the reason SERV gave, what it cost, what was left, and the Reppo quality score after a payment, if one was recorded.
           </p>
           <div role="tablist" aria-label="Which ledger" className="mt-5 inline-flex flex-wrap gap-1 rounded-full border hairline-strong bg-ink-2 p-1">
             <button role="tab" aria-selected={!replay} onClick={() => setView("session")} className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12.5px] transition ${!replay ? "bg-ink-4 text-bone" : "text-dim hover:text-bone"}`}>
@@ -141,7 +141,7 @@ export function AuditTrail({
               <th scope="col" className="px-4 py-3 font-medium">Decision</th>
               <th scope="col" className="px-4 py-3 text-right font-medium">Amount</th>
               <th scope="col" className="px-4 py-3 text-right font-medium">Remaining</th>
-              <th scope="col" className="px-4 py-3 font-medium">Quality gate</th>
+              <th scope="col" className="px-4 py-3 font-medium">Quality score</th>
               <th scope="col" className="px-4 py-3 font-medium">Receipt</th>
             </tr>
           </thead>

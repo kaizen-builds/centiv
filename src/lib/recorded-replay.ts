@@ -2,6 +2,7 @@
 // No money moves. Receipts are the real Base transaction hashes, labelled recorded.
 
 import type { Answer, AuditRow, Check, Run, Step } from "@/lib/centiv";
+import { clipAtSentence } from "@/lib/clip";
 import { usdc } from "@/lib/centiv";
 import {
   declinedCall,
@@ -41,7 +42,7 @@ function capChecks(spentBefore: number, price: number, okTotal: boolean): Check[
 function paidAnswer(): Answer {
   const points: string[] = paidCalls.map((c) => {
     const opening = c.reply.excerpt[0] ?? "";
-    const clipped = opening.length > 280 ? `${opening.slice(0, 280).replace(/\s+\S*$/, "")}…` : opening;
+    const clipped = clipAtSentence(opening, 280).preview;
     return `Call ${c.n} (“${c.topic}”, ${c.reply.source_count} sources): ${clipped}`;
   });
   if (declinedCall) {

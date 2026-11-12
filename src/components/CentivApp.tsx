@@ -416,7 +416,7 @@ export default function CentivApp() {
               typing={typing}
               suggestions={[recordedQuestion()]}
             />
-            <RunPanel runs={runs} current={current} onSelect={setSelectedRun} onRunDemo={runDemo} />
+            <RunPanel runs={runs} current={current} onSelect={setSelectedRun} onRunDemo={runDemo} spent={spent} cap={session.budget} />
           </div>
         </section>
 

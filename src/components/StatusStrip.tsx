@@ -41,7 +41,7 @@ export function StatusStrip({
   const gateP: Provenance = reppo === "live" ? "live" : "simulated";
   if (variant === "line") {
     const reasoning = serv === "live" ? "Live reasoning" : "Simulated reasoning";
-    const gate = reppo === "live" ? " · Live quality gate" : "";
+    const gate = reppo === "live" ? " · Live quality score" : "";
     return (
       <p
         className={`whitespace-nowrap text-[12px] leading-snug text-dim sm:text-[12.5px] ${align === "center" ? "text-center" : "text-left"} ${className}`}
@@ -59,7 +59,7 @@ export function StatusStrip({
     >
       <Item label="SERV Reasoning" p={servP} />
       <Sep />
-      <Item label="Quality gate" detail={reppo === "live" ? "Reppo" : "Built-in check"} p={gateP} />
+      <Item label="Quality score" detail={reppo === "live" ? "Reppo" : "Built-in check"} p={gateP} />
       <Sep />
       <Item label="Visitor demo" p="replay" />
       <Sep />

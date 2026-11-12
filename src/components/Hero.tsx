@@ -1,6 +1,7 @@
 "use client";
 import type { AuditRow, Session } from "@/lib/centiv";
 import { useNow } from "@/lib/hooks";
+import CapProgress from "./CapProgress";
 import { BudgetRing, Count, Money } from "./ui";
 
 
@@ -47,7 +48,10 @@ export function Hero({
               </li>
             ))}
           </ol>
-          <div className="rise mt-7 flex flex-wrap items-center gap-4" style={d(3)}>
+          <p className="rise mt-5 max-w-[540px] text-[15px] leading-[1.6] text-mute" style={d(3)}>
+            Kite Passport sets the cap. SERV decides whether a call is worth it. Reppo scores what you bought.
+          </p>
+          <div className="rise mt-7 flex flex-wrap items-center gap-4" style={d(4)}>
             <button
               onClick={onRunDemo}
               className="pill pill-cent group h-11 px-6 text-[14px]"
@@ -55,12 +59,12 @@ export function Hero({
               <svg width="11" height="12" viewBox="0 0 11 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l9 5-9 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
               </svg>
-              Run the demo
+              Replay a recorded run
             </button>
             <a href="#session" className="font-medium text-[14px] text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent">
               or set your own session
             </a>
-            <span className="text-[12.5px] text-dim">≈ 30 s · two paid calls, then one refused</span>
+            <span className="text-[12.5px] text-dim">Replays 12 Nov 19:38 WAT · no money moves</span>
           </div>
         </div>
 
@@ -104,6 +108,12 @@ export function Hero({
                 </div>
               </dl>
             </div>
+            <CapProgress
+              className="mt-5"
+              spent={spent}
+              cap={session.budget}
+              blocked={declined > 0 || (active && spent >= session.budget - 1e-9)}
+            />
           </div>
         </aside>
       </div>
