@@ -17,8 +17,8 @@ function rows(serv: Provenance, gate: Provenance): Row[] {
       p: serv,
       detail:
         serv === "live"
-          ? "Real model calls. SERV decides whether each paid call is worth it for every question asked in the app."
-          : "No SERV key is configured on this deployment, so a built-in planner stands in.",
+          ? "Real model calls. SERV Reasoning weighs each call before payment for every question asked in the app."
+          : "No SERV key is configured on this deployment, so a built-in planner stands in and still weighs each call before a simulated payment.",
     },
     {
       part: "Payments in the public demo",

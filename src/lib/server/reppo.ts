@@ -23,6 +23,23 @@ export type ReppoGate = GateResult & {
   pending?: boolean;
 };
 
+/** Independent Reppo score of a paid live excerpt. Never invents a numeric score. */
+export type LiveReppoScore = {
+  source: "reppo" | "unconfigured" | "error" | "pending";
+  /** 0–100 when Reppo completed. Omitted if unconfigured, failed, or still settling. */
+  score100?: number;
+  decision?: string;
+  route?: string;
+  confidence?: string;
+  reason?: string;
+  evalId?: string;
+  note: string;
+};
+
+export function reppoConfigured(): boolean {
+  return Boolean(process.env.REPPO_API_KEY?.trim());
+}
+
 function mapRoute(route?: string, decision?: string): Verdict {
   if (route === "ship" || decision === "accept") return "accept";
   if (route === "block" || decision === "reject") return "reject";
@@ -54,25 +71,30 @@ function heuristic(answer: Answer, gotAllHigh: boolean): ReppoGate {
   };
 }
 
-export async function evaluateDraft(opts: {
-  question: string;
-  answer: Answer;
-  gotAllHigh: boolean;
-  pollMs?: number;
-}): Promise<ReppoGate> {
-  const key = process.env.REPPO_API_KEY?.trim();
-  if (!key) return heuristic(opts.answer, opts.gotAllHigh);
+type ReppoResult = {
+  score100: number;
+  verdict: Verdict;
+  decision?: string;
+  route?: string;
+  confidence?: string;
+  reason: string;
+};
 
-  const input = [
-    `User prompt: ${opts.question}`,
-    "",
-    `AI response headline: ${opts.answer.headline}`,
-    ...opts.answer.points.map((p, i) => `${i + 1}. ${p}`),
-    "",
-    `Sources: ${opts.answer.sources}`,
-    "",
-    "Constraints: British English. Do not treat forecasts as facts. Flag unsourced claims. Public research brief only — no private data.",
-  ].join("\n");
+type PollOutcome =
+  | { kind: "completed"; evalId: string; result: ReppoResult }
+  | { kind: "failed"; evalId: string }
+  | { kind: "pending"; evalId: string }
+  | { kind: "submit-error"; status?: number; message: string }
+  | { kind: "no-id" }
+  | { kind: "thrown"; message: string };
+
+/**
+ * Shared submit + poll. Callers decide how to surface a missing key or a failure.
+ * Does not invent a score.
+ */
+async function submitAndPoll(input: string, pollMs: number): Promise<PollOutcome> {
+  const key = process.env.REPPO_API_KEY?.trim();
+  if (!key) throw new Error("submitAndPoll called without REPPO_API_KEY");
 
   try {
     const submit = await fetch(`${BASE}/agents/evals`, {
@@ -91,18 +113,14 @@ export async function evaluateDraft(opts: {
     if (!submit.ok) {
       const err = await submit.text().catch(() => "");
       console.error("Reppo submit failed", submit.status, err.slice(0, 300));
-      const h = heuristic(opts.answer, opts.gotAllHigh);
-      return { ...h, note: `Reppo submit failed (${submit.status}); using heuristic. ${h.note}` };
+      return { kind: "submit-error", status: submit.status, message: err.slice(0, 180) };
     }
 
     const created = (await submit.json()) as { id?: string; status?: string };
     const evalId = created.id;
-    if (!evalId) {
-      const h = heuristic(opts.answer, opts.gotAllHigh);
-      return { ...h, note: `Reppo returned no id; using heuristic. ${h.note}` };
-    }
+    if (!evalId) return { kind: "no-id" };
 
-    const deadline = Date.now() + (opts.pollMs ?? 45_000);
+    const deadline = Date.now() + pollMs;
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 4_000));
       const read = await fetch(`${BASE}/agents/evals/${encodeURIComponent(evalId)}`, {
@@ -123,37 +141,143 @@ export async function evaluateDraft(opts: {
         } | null;
       };
 
-      if (body.status === "FAILED") {
-        const h = heuristic(opts.answer, opts.gotAllHigh);
-        return { ...h, evalId, note: `Reppo FAILED; using heuristic. ${h.note}` };
-      }
+      if (body.status === "FAILED") return { kind: "failed", evalId };
 
       if (body.status === "COMPLETED" && body.result) {
         const score100 = body.result.score ?? body.score ?? 0;
-        const verdict = mapRoute(body.result.route ?? body.route ?? undefined, body.result.decision);
+        const route = body.result.route ?? body.route ?? undefined;
+        const verdict = mapRoute(route, body.result.decision);
         return {
-          verdict,
-          score: +(score100 / 100).toFixed(2),
-          note: body.result.reason || `Reppo ${verdict} · confidence ${body.result.confidence ?? "n/a"}.`,
-          source: "reppo",
+          kind: "completed",
           evalId,
-          confidence: body.result.confidence,
-          route: body.result.route ?? body.route ?? undefined,
+          result: {
+            score100,
+            verdict,
+            decision: body.result.decision,
+            route,
+            confidence: body.result.confidence,
+            reason: body.result.reason || `Reppo ${verdict} · confidence ${body.result.confidence ?? "n/a"}.`,
+          },
         };
       }
     }
 
-    // Don't block the demo for a slow panel — keep the evalId.
-    const h = heuristic(opts.answer, opts.gotAllHigh);
-    return {
-      ...h,
-      evalId,
-      pending: true,
-      note: `Reppo eval ${evalId} still settling — showing heuristic for the live demo. Poll later.`,
-      source: "heuristic",
-    };
+    return { kind: "pending", evalId };
   } catch (e) {
     console.error("Reppo evaluate failed", e);
-    return heuristic(opts.answer, opts.gotAllHigh);
+    return { kind: "thrown", message: e instanceof Error ? e.message : "Reppo evaluate failed" };
   }
+}
+
+function draftInput(question: string, answer: Answer): string {
+  return [
+    `User prompt: ${question}`,
+    "",
+    `AI response headline: ${answer.headline}`,
+    ...answer.points.map((p, i) => `${i + 1}. ${p}`),
+    "",
+    `Sources: ${answer.sources}`,
+    "",
+    "Constraints: British English. Do not treat forecasts as facts. Flag unsourced claims. Public research brief only — no private data.",
+  ].join("\n");
+}
+
+export async function evaluateDraft(opts: {
+  question: string;
+  answer: Answer;
+  gotAllHigh: boolean;
+  pollMs?: number;
+}): Promise<ReppoGate> {
+  const key = process.env.REPPO_API_KEY?.trim();
+  if (!key) return heuristic(opts.answer, opts.gotAllHigh);
+
+  const outcome = await submitAndPoll(draftInput(opts.question, opts.answer), opts.pollMs ?? 45_000);
+  const h = heuristic(opts.answer, opts.gotAllHigh);
+
+  if (outcome.kind === "completed") {
+    return {
+      verdict: outcome.result.verdict,
+      score: +(outcome.result.score100 / 100).toFixed(2),
+      note: outcome.result.reason,
+      source: "reppo",
+      evalId: outcome.evalId,
+      confidence: outcome.result.confidence,
+      route: outcome.result.route,
+    };
+  }
+  if (outcome.kind === "failed") {
+    return { ...h, evalId: outcome.evalId, note: `Reppo FAILED; using heuristic. ${h.note}` };
+  }
+  if (outcome.kind === "pending") {
+    return {
+      ...h,
+      evalId: outcome.evalId,
+      pending: true,
+      note: `Reppo eval ${outcome.evalId} still settling — showing heuristic for the live demo. Poll later.`,
+      source: "heuristic",
+    };
+  }
+  if (outcome.kind === "submit-error") {
+    return { ...h, note: `Reppo submit failed (${outcome.status}); using heuristic. ${h.note}` };
+  }
+  if (outcome.kind === "no-id") {
+    return { ...h, note: `Reppo returned no id; using heuristic. ${h.note}` };
+  }
+  return heuristic(opts.answer, opts.gotAllHigh);
+}
+
+/**
+ * Score a paid live Otto excerpt. If REPPO_API_KEY is missing, returns
+ * "Reppo: not configured" with no numeric score. Never falls back to a heuristic score.
+ */
+export async function evaluateLiveExcerpt(opts: {
+  topic: string;
+  excerpt: string;
+  provider: string;
+  pollMs?: number;
+}): Promise<LiveReppoScore> {
+  if (!reppoConfigured()) {
+    return { source: "unconfigured", note: "Reppo: not configured" };
+  }
+
+  const input = [
+    `User prompt: Latest ${opts.topic} news for a research brief.`,
+    "",
+    `AI response (paid ${opts.provider} excerpt):`,
+    opts.excerpt,
+    "",
+    "Constraints: British English. Do not treat forecasts as facts. Flag unsourced claims. Public research excerpt only — no private data.",
+  ].join("\n");
+
+  const outcome = await submitAndPoll(input, opts.pollMs ?? 40_000);
+
+  if (outcome.kind === "completed") {
+    return {
+      source: "reppo",
+      score100: outcome.result.score100,
+      decision: outcome.result.decision,
+      route: outcome.result.route,
+      confidence: outcome.result.confidence,
+      reason: outcome.result.reason,
+      evalId: outcome.evalId,
+      note: outcome.result.reason,
+    };
+  }
+  if (outcome.kind === "pending") {
+    return {
+      source: "pending",
+      evalId: outcome.evalId,
+      note: `Reppo eval ${outcome.evalId} still settling. No score yet.`,
+    };
+  }
+  if (outcome.kind === "failed") {
+    return { source: "error", evalId: outcome.evalId, note: `Reppo FAILED for eval ${outcome.evalId}.` };
+  }
+  if (outcome.kind === "submit-error") {
+    return { source: "error", note: `Reppo submit failed (${outcome.status}).` };
+  }
+  if (outcome.kind === "no-id") {
+    return { source: "error", note: "Reppo returned no eval id." };
+  }
+  return { source: "error", note: outcome.message || "Reppo evaluate failed." };
 }

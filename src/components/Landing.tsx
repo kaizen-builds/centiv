@@ -98,12 +98,12 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
   {
     k: "weigh",
     t: "It weighs each call",
-    s: "Before it buys anything, it asks whether the data is worth what’s left of the budget. Then it buys, skips or declines.",
+    s: "SERV Reasoning weighs each call before payment: is the data worth what’s left? Then it buys, skips or declines.",
   },
   {
     k: "pay",
     t: "It pays, or it stops",
-    s: "Inside the cap, the payment goes through. Over it, nothing is signed and no money moves. Every decision is logged.",
+    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves. Every decision is logged.",
   },
 ];
 
@@ -168,13 +168,13 @@ const partners: { name: string; role: string; href: string; external?: boolean }
   },
   {
     name: "SERV Reasoning",
-    role: "Decides, call by call, whether to buy, skip or decline paid data.",
+    role: "Weighs each call before payment, and decides whether to buy, skip or decline.",
     href: "https://docs.openserv.ai/serv-reasoning/api",
     external: true,
   },
   {
     name: "Reppo",
-    role: "Scored the verified run’s brief: 86/100, accepted, sent to review. Visitor questions use a built-in check.",
+    role: "Independently scores the research that was bought. The verified run’s brief scored 86/100, accepted, sent to review. Visitor questions use a built-in check.",
     href: "#verified-run",
   },
 ];
@@ -356,7 +356,7 @@ export default function Landing() {
         <section id="how" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="how-title">
           <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
             <SectionHead split label="How it works" id="how-title" title={<>Set a cap. Buy only what’s <span className="serif-em">worth it.</span></>}>
-              <p>You approve a spending cap with a passkey. Centiv buys data one call at a time, only when it’s worth what’s left, and stops when the cap is reached.</p>
+              <p>You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. Reppo independently scores the research that was bought — a recorded check of the verified run, and a built-in check for visitor questions.</p>
             </SectionHead>
             <ol className="mt-10 grid gap-4 md:grid-cols-3">
               {steps.map((s, i) => (
@@ -481,8 +481,8 @@ export default function Landing() {
           <CentivWordmark size={18} />
           <div className="space-y-2 text-[13px] leading-[1.6] text-dim">
             <p>
-              The verified run is a replay of real Base payments. Demo payments are simulated. Reppo checked the verified-run
-              brief; visitor questions use a built-in check.
+              The verified run is a replay of real Base payments. Demo payments are simulated. SERV Reasoning weighs each call
+              before payment. Reppo checked the verified-run brief; visitor questions use a built-in check.
             </p>
             <p className="text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
           </div>

@@ -14,8 +14,9 @@ import {
   validTopic,
   weighLiveCall,
 } from "@/lib/server/live";
+import { evaluateLiveExcerpt } from "@/lib/server/reppo";
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 /** Is owner-gated live mode armed here? Never reveals the token or session id. */
 export async function GET() {
@@ -90,5 +91,16 @@ export async function POST(req: Request) {
 
   // Passport enforces its own per-call and total caps here — a cap breach comes back as a decline.
   const result = await executeLive(sessionId, topic, url, quote.price);
+
+  // Score only after a paid result with Otto text. Never invents a score; payment already settled.
+  if (result.status === "paid" && result.reply?.excerpt) {
+    const reppo = await evaluateLiveExcerpt({
+      topic,
+      excerpt: result.reply.excerpt,
+      provider: result.reply.provider,
+    });
+    return NextResponse.json({ ...result, serv, reppo, provenance: "live", session: sessionMeta });
+  }
+
   return NextResponse.json({ ...result, serv, provenance: "live", session: sessionMeta });
 }

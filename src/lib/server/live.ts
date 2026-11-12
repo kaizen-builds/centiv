@@ -14,6 +14,10 @@
  *   8. SERV Reasoning weighs the call on its merits (value, not limits) and must say
  *      "spend" before anything is signed. Caps are passed as context only, so SERV
  *      will not pre-empt Kite Passport's refusal of a call that exceeds the session total.
+ *   9. After a paid call returns Otto's text, Reppo's Eval API independently scores that
+ *      excerpt when REPPO_API_KEY is set. If the key is missing, the panel shows
+ *      "Reppo: not configured" and invents no score. A missing or failed score never
+ *      undoes a payment that already settled.
  * Passport then enforces its own caps on top (that is the decline you see on call 3).
  *
  * Never passes --use-allowance, so it cannot fall back to the owner's account allowance.
@@ -27,6 +31,7 @@ import { join } from "node:path";
 import { timingSafeEqual } from "node:crypto";
 import type { Candidate } from "@/lib/centiv";
 import { decideSpend, type ServDecision } from "./serv";
+import type { LiveReppoScore } from "./reppo";
 
 export const LIVE_MERCHANT = {
   name: "Otto AI",
@@ -214,6 +219,7 @@ export type LiveResult = {
   error?: string;
   reply?: { provider: string; excerpt: string; source_count?: number };
   serv?: ServDecision;
+  reppo?: LiveReppoScore;
 };
 
 
