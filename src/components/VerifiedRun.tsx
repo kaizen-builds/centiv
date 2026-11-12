@@ -59,6 +59,7 @@ export default function VerifiedRun({
   compact = false,
   collapseReplies = true,
   receipts = false,
+  hideLead = false,
   id = "verified-run",
   children,
 }: {
@@ -66,6 +67,8 @@ export default function VerifiedRun({
   collapseReplies?: boolean;
   /** Kept so existing call sites compile; the layout is now a single receipts-style card. */
   receipts?: boolean;
+  /** Hide the title and long intro when a parent section already tells the story. */
+  hideLead?: boolean;
   id?: string;
   children?: ReactNode;
 }) {
@@ -110,17 +113,22 @@ export default function VerifiedRun({
           </span>
         </div>
 
-        <h2 id={`${id}-title`} className={`mt-5 font-normal leading-[1.08] tracking-[-0.035em] text-bone ${compact ? "text-[32px] md:text-[40px]" : "text-[32px] md:text-[44px]"}`}>
-          Two paid. Call 3 <span className="serif-em">refused.</span>
-        </h2>
-        <p className="mt-4 max-w-[640px] text-[15.5px] leading-[1.65] text-mute">
-          A real run, replayed. The question: “{r.question ?? "Ethereum news"}”. The owner approved a Kite Passport
-          session: ${caps.max_amount_per_tx} a call, ${caps.max_total_amount} in total, scoped to Otto AI. SERV Reasoning
-          weighed each call before payment. Two payments settled in USDC on Base. On the third call, Kite Passport
-          refused — nothing was signed. Reppo scored the paid excerpts after the fact (66 and 60, both below 70). It
-          does not block or undo a payment. The question sat in the Kite Passport task; the topic “ethereum etf” was
-          set directly for the three calls, not chosen by SERV.
-        </p>
+        {!hideLead && (
+          <>
+            <h2 id={`${id}-title`} className={`mt-5 font-normal leading-[1.08] tracking-[-0.035em] text-bone ${compact ? "text-[32px] md:text-[40px]" : "text-[32px] md:text-[44px]"}`}>
+              Two paid. Call 3 <span className="serif-em">refused.</span>
+            </h2>
+            <p className="mt-4 max-w-[640px] text-[15.5px] leading-[1.65] text-mute">
+              A real run, replayed. The question: “{r.question ?? "Ethereum news"}”. The owner approved a Kite Passport
+              session: ${caps.max_amount_per_tx} a call, ${caps.max_total_amount} in total, scoped to Otto AI. SERV Reasoning
+              weighed each call before payment. Two payments settled in USDC on Base. On the third call, Kite Passport
+              refused — nothing was signed. Reppo scored the paid excerpts after the fact (66 and 60, both below 70). It
+              does not block or undo a payment. The question sat in the Kite Passport task; the topic “ethereum etf” was
+              set directly for the three calls, not chosen by SERV.
+            </p>
+          </>
+        )}
+        {hideLead && <h2 id={`${id}-title`} className="sr-only">Receipts from the recorded run</h2>}
         {children}
 
         <div className="mt-7 rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white">

@@ -1,15 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
-import { CentivWordmark, Stamp } from "./Logo";
-import LedgerField from "./LedgerField";
+import AskPreview from "./AskPreview";
+import Faq from "./Faq";
+import { CentivWordmark } from "./Logo";
 import { RealVsSimulated, RealVsSimulatedFallback } from "./RealVsSimulated";
 import Reveal from "./Reveal";
+import RunTerminal from "./RunTerminal";
 import { GITHUB_REPO, GitHubMark } from "./StatusStrip";
 import { StatusStripFallback, StatusStripServer } from "./StatusStripServer";
-import Faq from "./Faq";
 import StatusPill, { StatusPillFallback } from "./StatusPill";
-import { DecisionTag, ProvenanceBadge } from "./ui";
+import { ProvenanceBadge } from "./ui";
 import VerifiedRun from "./VerifiedRun";
 import { declinedCall, paidCalls, VERIFIED_RUN } from "@/lib/verified-run";
 
@@ -54,22 +55,20 @@ function SectionHead({
   id,
   title,
   children,
-  center = false,
   split = false,
 }: {
   label: string;
   id: string;
   title: ReactNode;
   children?: ReactNode;
-  center?: boolean;
   split?: boolean;
 }) {
   if (split) {
     return (
-      <Reveal className="grid items-end gap-5 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)] md:gap-16">
+      <Reveal className="grid items-end gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:gap-20">
         <div>
-          <p className="text-[14px] font-medium text-cent">{label}</p>
-          <h2 id={id} className="mt-3 text-[34px] font-normal leading-[1.1] tracking-[-0.035em] text-bone md:text-[44px]">
+          <p className="eyebrow text-cent">{label}</p>
+          <h2 id={id} className="mt-4 text-[36px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[52px]">
             {title}
           </h2>
         </div>
@@ -78,12 +77,12 @@ function SectionHead({
     );
   }
   return (
-    <Reveal className={center ? "mx-auto max-w-[680px] text-center" : "max-w-[760px]"}>
-      <p className="text-[14px] font-medium text-cent">{label}</p>
-      <h2 id={id} className="mt-3 text-[34px] font-normal leading-[1.1] tracking-[-0.035em] text-bone md:text-[44px]">
+    <Reveal className="max-w-[760px]">
+      <p className="eyebrow text-cent">{label}</p>
+      <h2 id={id} className="mt-4 text-[36px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[52px]">
         {title}
       </h2>
-      {children && <div className="mt-4 text-[16px] leading-[1.65] text-mute">{children}</div>}
+      {children && <div className="mt-5 max-w-[540px] text-[16px] leading-[1.65] text-mute">{children}</div>}
     </Reveal>
   );
 }
@@ -106,89 +105,26 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
   },
 ];
 
-/** Hero card: the recorded 12 Nov 18:27 WAT run, not a made-up example. */
-function RealRunGlance({ className = "" }: { className?: string }) {
-  const caps = VERIFIED_RUN.passport.caps;
-  const rows = [
-    ...paidCalls.map((c) => ({
-      key: c.tx_hash,
-      d: "spend" as const,
-      call: `Call ${c.n} · SERV ${c.serv?.decision ?? "spend"}`,
-      amount: `$${Number(c.price_usdc).toFixed(3)}`,
-    })),
-    ...(declinedCall
-      ? [
-          {
-            key: "decline",
-            d: "decline" as const,
-            call: `Call ${declinedCall.n} · refused`,
-            amount: `$${caps.max_amount_per_tx}`,
-          },
-        ]
-      : []),
-  ];
-  return (
-    <div className={`card-gold w-full p-3.5 text-left sm:p-6 ${className}`} aria-label="Recorded run: two paid calls, then Kite Passport refused the third">
-      <div className="flex items-center justify-between gap-3">
-        <p className="num whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-gold-deep">
-          ${caps.max_total_amount} cap · Kite Passport
-        </p>
-        <ProvenanceBadge p="replay" short />
-      </div>
-      {VERIFIED_RUN.question && (
-        <p className="mt-2 text-[13px] leading-[1.45] text-mute">“{VERIFIED_RUN.question}”</p>
-      )}
-      <ul className="mt-3 divide-y divide-[rgba(201,146,46,0.25)] rounded-[14px] border border-[rgba(201,146,46,0.45)] bg-white sm:mt-4">
-        {rows.map((r) => (
-          <li key={r.key} className="flex items-center gap-2.5 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3.5">
-            <Stamp
-              size={22}
-              className={`shrink-0 ${r.d === "spend" ? "text-gold" : "text-stop"}`}
-              notch={r.d === "spend" ? "var(--color-cent)" : undefined}
-            />
-            <p className="min-w-0 flex-1 text-[14px] font-medium leading-[1.3] tracking-[-0.015em] text-bone sm:text-[14.5px]">
-              {r.call}
-            </p>
-            <span className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
-              <span className={`fig text-[14.5px] leading-none sm:text-[15px] ${r.d === "spend" ? "text-bone" : "text-stop line-through"}`}>
-                {r.amount}
-              </span>
-              <span className="sm:flex sm:w-[86px] sm:justify-end">
-                <DecisionTag d={r.d} />
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-3 text-[12.5px] leading-[1.5] text-dim">
-        Real USDC on Base.{" "}
-        <a href="#verified-run" className="font-medium text-cent underline decoration-cent/30 underline-offset-2 hover:decoration-cent">
-          Receipts below
-        </a>
-        .
-      </p>
-    </div>
-  );
-}
-
-const partners: { name: string; role: string; href: string; external?: boolean }[] = [
+const partners: { name: string; role: string; href: string }[] = [
   {
     name: "Kite Passport",
-    role: "Session caps you approve with a passkey. It refuses any payment past them.",
+    role: "The cap you approve with a passkey. It refuses any payment past it.",
     href: "https://docs.gokite.ai/passport",
-    external: true,
   },
   {
     name: "SERV Reasoning",
     role: "Weighs each call before payment, and decides whether to buy, skip or decline.",
     href: "https://docs.openserv.ai/serv-reasoning/api",
-    external: true,
   },
   {
     name: "Reppo",
-    role: "Scores research after it is bought. It does not block or undo a payment. In the recorded run, both paid calls scored below 70.",
+    role: "Scores research after it is bought. It does not block or undo a payment.",
     href: "https://eval.reppo.xyz/agents.md",
-    external: true,
+  },
+  {
+    name: "Otto AI",
+    role: "The news feed the recorded run paid, in USDC on Base.",
+    href: "https://x402.ottoai.services/filtered-news?topic=ethereum%20etf",
   },
 ];
 
@@ -207,7 +143,6 @@ const audiences: { t: string; s: string }[] = [
   },
 ];
 
-/** Fill these in once the video and post are public. Empty means the link is not shown. */
 const DEMO_VIDEO_URL = "";
 const X_POST_URL = "";
 
@@ -223,24 +158,60 @@ const resources: { label: string; href: string; external?: boolean; note: string
 ];
 
 const nav: [string, string][] = [
-  ["#verified-run", "Proof"],
   ["#how", "How it works"],
+  ["#ask", "Ask"],
+  ["#verified-run", "Proof"],
   ["#real", "What’s real"],
   ["#faq", "FAQ"],
 ];
 
+function PasskeyCard() {
+  const caps = VERIFIED_RUN.passport.caps;
+  const scope = VERIFIED_RUN.passport.scope;
+  return (
+    <aside className="passkey-card w-full max-w-[360px] p-6 text-left" aria-label="Kite Passport session approved for the recorded run">
+      <p className="num text-[11px] uppercase tracking-[0.14em] text-cent">Kite Passport</p>
+      <h3 className="mt-3 text-[22px] font-medium tracking-[-0.03em] text-bone">Approve with your passkey</h3>
+      <dl className="mt-5 space-y-2.5 text-[14px]">
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-dim">Per call</dt>
+          <dd className="fig text-bone">${caps.max_amount_per_tx}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-dim">Total</dt>
+          <dd className="fig text-bone">${caps.max_total_amount}</dd>
+        </div>
+        <div className="flex items-baseline justify-between gap-4">
+          <dt className="text-dim">Scope</dt>
+          <dd className="num text-right text-[12.5px] text-bone">
+            {scope.host}
+            {scope.path_prefix}
+          </dd>
+        </div>
+      </dl>
+      <p className="mt-5 text-[12.5px] leading-[1.55] text-dim">
+        These are the caps from the recorded run, already approved. This card does not spend anything.
+      </p>
+    </aside>
+  );
+}
+
 export default function Landing() {
+  const paid = paidCalls.length;
+  const declined = declinedCall ? 1 : 0;
+  const spent = VERIFIED_RUN.passport.usage_after.spent_total_usdc;
+
   return (
     <div className="min-h-screen bg-ink">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
         Skip to content
       </a>
-      <header className="fixed inset-x-0 top-0 z-40 bg-[rgba(255,249,240,0.86)] backdrop-blur-sm">
-        <div className="mx-auto flex h-[64px] max-w-[1180px] items-center justify-between gap-3 px-4 sm:px-5 md:px-8">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-[rgba(201,146,46,0.18)] bg-[rgba(255,249,240,0.88)] backdrop-blur-sm">
+        <div className="mx-auto flex h-[64px] max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6 md:px-8">
           <Link href="/" aria-label="Centiv home" className="shrink-0 rounded-lg">
             <CentivWordmark size={22} />
           </Link>
-          <nav aria-label="Main" className="hidden items-center gap-1 text-[14px] font-medium lg:flex">
+          <nav aria-label="Main" className="hidden items-center gap-0.5 text-[14px] font-medium lg:flex">
             {nav.map(([h, l]) => (
               <a key={h} href={h} className="whitespace-nowrap rounded-full px-3.5 py-2 text-mute transition hover:bg-sage hover:text-bone">
                 {l}
@@ -251,163 +222,146 @@ export default function Landing() {
             <Suspense fallback={<StatusPillFallback className="mr-1 hidden md:inline-flex" />}>
               <StatusPill className="mr-1 hidden md:inline-flex" />
             </Suspense>
-            <a href="#verified-run" className="inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[14px] font-medium text-bone transition hover:bg-sage lg:hidden">
-              Proof
-            </a>
-            <a
-              href={GITHUB_REPO}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Centiv source on GitHub"
-              title="Source on GitHub"
-              className="hidden h-11 w-11 place-items-center rounded-full text-mute transition hover:bg-sage hover:text-bone sm:grid"
-            >
-              <GitHubMark size={17} />
-            </a>
-            <Link href="/app" className="pill pill-cent h-10 shrink-0 whitespace-nowrap px-4 text-[14px] sm:px-5">
-              Open the app <NE />
+            <Link href="/app?demo=1" className="pill pill-cent h-11 px-5 text-[14px]">
+              Try the demo
             </Link>
           </div>
         </div>
       </header>
 
-      <main id="main">
-        <section className="relative overflow-hidden pb-16 pt-[96px] md:pb-24 md:pt-[168px]" aria-labelledby="landing-title">
-          <LedgerField />
-          <div className="relative mx-auto grid max-w-[1180px] grid-cols-[minmax(0,1fr)] items-center gap-14 px-5 md:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-20">
-            <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
-              <p className="badge-live rise">Built on Kite Passport · SERV Hackathon 02</p>
+      <main id="main" className="pt-[64px]">
+        <section id="hero" className="relative" aria-labelledby="landing-title">
+          <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 pb-16 pt-12 sm:px-6 md:px-8 md:pb-20 md:pt-16 lg:grid-cols-2 lg:gap-16 lg:pt-20">
+            <div className="max-w-[560px]">
+              <p className="eyebrow rise text-cent" style={{ animationDelay: "40ms" }}>
+                A research agent with a cap
+              </p>
               <h1
                 id="landing-title"
-                className="rise mt-5 text-[40px] font-normal leading-[1.06] tracking-[-0.04em] text-bone sm:mt-6 sm:text-[60px] lg:text-[60px] xl:text-[66px]"
+                className="rise mt-5 text-[40px] font-normal leading-[1.05] tracking-[-0.045em] text-bone sm:text-[56px] lg:text-[64px]"
                 style={{ animationDelay: "90ms" }}
               >
                 Research that pays in cents, and <span className="serif-em whitespace-nowrap">can stop.</span>
               </h1>
-              <p className="rise mt-5 max-w-[520px] text-pretty text-[16.5px] leading-[1.6] text-mute sm:mt-6 md:text-[18px]" style={{ animationDelay: "180ms" }}>
-                You approve a spending cap. Centiv buys data one call at a time, only when it’s worth what’s left.
+              <p className="rise mt-6 max-w-[480px] text-pretty text-[17px] leading-[1.6] text-mute" style={{ animationDelay: "180ms" }}>
+                You approve a spending cap with Kite Passport. Centiv buys data one call at a time, only when it’s worth what’s left.
               </p>
-              <div className="rise mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mt-10 lg:justify-start" style={{ animationDelay: "270ms" }}>
+              <div className="rise mt-9 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ animationDelay: "270ms" }}>
                 <Link href="/app?demo=1" className={primary}>
                   Try the demo
                 </Link>
                 <a href="#verified-run" className={textLink}>
-                  See the proof ↓
+                  See the receipts
                 </a>
               </div>
-              <a href="#real" className="rise mt-6 rounded-lg px-2 py-1 transition hover:opacity-80 lg:-ml-2" style={{ animationDelay: "330ms" }}>
+              <a href="#real" className="rise mt-6 hidden rounded-lg py-1 transition hover:opacity-80 sm:inline-block" style={{ animationDelay: "330ms" }}>
                 <Suspense fallback={<StatusStripFallback variant="line" />}>
-                  <StatusStripServer variant="line" className="lg:text-left" />
+                  <StatusStripServer variant="line" className="text-pretty lg:text-left" />
                 </Suspense>
               </a>
-              <div className="rise mt-8 w-full max-w-[460px] lg:hidden" style={{ animationDelay: "390ms" }}>
-                <RealRunGlance />
-              </div>
             </div>
-            <div className="rise hidden lg:block" style={{ animationDelay: "360ms" }}>
-              <RealRunGlance />
+            <div className="rise min-w-0" style={{ animationDelay: "220ms" }}>
+              <RunTerminal />
+              <p className="mt-3 text-[12.5px] leading-[1.55] text-dim">
+                {paid} paid calls · {declined} refused · ${spent} USDC spent on Base. SERV spend, skip, spend. Reppo 66 and 60 after the fact.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Proof: the recorded live run */}
-        <div className="mx-auto max-w-[1080px] px-4 pb-8 sm:px-5 md:px-8 md:pb-12">
-          <VerifiedRun collapseReplies receipts />
-        </div>
+        <section id="built" aria-label="Built with" className="border-y border-[rgba(201,146,46,0.25)]">
+          <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 md:px-8 md:py-12">
+            <p className="eyebrow text-center text-dim">Built with</p>
+            <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4 sm:gap-8">
+              {partners.map((b) => (
+                <li key={b.name}>
+                  <a href={b.href} target="_blank" rel="noopener noreferrer" className="group block">
+                    <p className="text-[16px] font-medium tracking-[-0.02em] text-bone transition group-hover:text-cent">
+                      {b.name} <span className="inline-block text-dim transition group-hover:text-cent"><NE /></span>
+                    </p>
+                    <p className="mt-1.5 text-[13.5px] leading-[1.5] text-mute">{b.role}</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
-        {/* Who it’s for — short, no gold cards */}
-        <section id="who" className="scroll-mt-20" aria-labelledby="who-title">
-          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+        <section id="how" className="scroll-mt-20" aria-labelledby="how-title">
+          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
+            <SectionHead split label="How it works" id="how-title" title={<>Set a cap. Buy only what’s <span className="serif-em">worth it.</span></>}>
+              <p>
+                You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo can score what was bought — that score does not block or undo the payment.
+              </p>
+            </SectionHead>
+            <div className="mt-14 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
+              <ol className="grid gap-6 sm:grid-cols-3 sm:gap-6">
+                {steps.map((s, i) => (
+                  <Reveal as="li" key={s.t} delay={i * 90} className="card-gold flex flex-col p-6 sm:p-7">
+                    <div className="flex items-center justify-between">
+                      <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
+                        <StepIcon kind={s.k} />
+                      </span>
+                      <span className="num text-[12px] text-dim">0{i + 1}</span>
+                    </div>
+                    <h3 className="mt-6 text-[20px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
+                    <p className="mt-2 flex-1 text-[15px] leading-[1.65] text-mute">{s.s}</p>
+                  </Reveal>
+                ))}
+              </ol>
+              <Reveal delay={160} className="flex justify-center lg:justify-end">
+                <PasskeyCard />
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        <section id="ask" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="ask-title">
+          <div className="mx-auto max-w-[800px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
+            <SectionHead label="Ask a question" id="ask-title" title={<>Type the full question. A short topic is <span className="serif-em">picked</span> for each call.</>}>
+              <p>
+                Otto’s news feed takes one or two words, not a sentence. You write the question; SERV picks the short topic when a key is set. In the recorded run the topic “ethereum etf” was set directly, not chosen by SERV.
+              </p>
+            </SectionHead>
+            <Reveal delay={80}>
+              <AskPreview />
+            </Reveal>
+          </div>
+        </section>
+
+        <section id="verified-run" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="proof-title">
+          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
+            <SectionHead label="The recorded run" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
+              <p>
+                12 Nov 2026, 18:27 WAT. SERV said spend, skip, spend. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with session_total_exceeded. Reppo scored 66 and 60 after the fact — below its pass mark of 70, and after the money had already moved.
+              </p>
+            </SectionHead>
+            <Reveal delay={100} className="mt-12">
+              <VerifiedRun collapseReplies receipts hideLead />
+            </Reveal>
+          </div>
+        </section>
+
+        <section id="who" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="who-title">
+          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
             <SectionHead label="Who it’s for" id="who-title" title={<>Built for people who give agents a <span className="serif-em">budget.</span></>} />
-            <ul className="mt-12 grid gap-10 md:grid-cols-3 md:gap-14">
+            <ul className="mt-14 grid gap-10 md:grid-cols-3 md:gap-16">
               {audiences.map((a, i) => (
                 <Reveal as="li" key={a.t} delay={i * 80}>
-                  <h3 className="text-[18px] font-medium tracking-[-0.02em] text-bone">{a.t}</h3>
-                  <p className="mt-2 text-[15px] leading-[1.65] text-mute">{a.s}</p>
+                  <h3 className="text-[20px] font-medium tracking-[-0.02em] text-bone">{a.t}</h3>
+                  <p className="mt-3 text-[15.5px] leading-[1.65] text-mute">{a.s}</p>
                 </Reveal>
               ))}
             </ul>
           </div>
         </section>
 
-        <section id="how" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="how-title">
-          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
-            <SectionHead split label="How it works" id="how-title" title={<>Set a cap. Buy only what’s <span className="serif-em">worth it.</span></>}>
-              <p>
-                You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo can score what was bought — that score does not block or undo the payment.
-              </p>
-            </SectionHead>
-            <ol className="mt-14 grid gap-8 md:grid-cols-3 md:gap-8">
-              {steps.map((s, i) => (
-                <Reveal as="li" key={s.t} delay={i * 90} className="card-gold flex flex-col p-7">
-                  <div className="flex items-center justify-between">
-                    <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(91,42,78,0.45)] bg-white text-cent">
-                      <StepIcon kind={s.k} />
-                    </span>
-                    <span className="num text-[12px] text-dim">0{i + 1}</span>
-                  </div>
-                  <h3 className="mt-6 text-[20px] font-medium tracking-[-0.02em] text-bone">{s.t}</h3>
-                  <p className="mt-2 flex-1 text-[15px] leading-[1.65] text-mute">{s.s}</p>
-                </Reveal>
-              ))}
-            </ol>
-            <div id="built" className="scroll-mt-20">
-              <Reveal delay={80} className="mt-16">
-                <p className="text-[14px] font-medium text-cent">Built with</p>
-                <ul className="mt-8 divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
-                  {partners.map((b) => {
-                    const body = (
-                      <>
-                        <span className="flex items-center justify-between text-[16px] font-medium tracking-[-0.015em] text-bone">
-                          {b.name}
-                          <span className="text-dim transition group-hover:text-cent">
-                            <NE />
-                          </span>
-                        </span>
-                        <span className="mt-1.5 block text-[14px] leading-[1.6] text-mute">{b.role}</span>
-                      </>
-                    );
-                    const cls = "group block px-5 py-5 transition hover:bg-[#fffaf0] sm:px-6";
-                    return (
-                      <li key={b.name}>
-                        {b.external ? (
-                          <a href={b.href} target="_blank" rel="noopener noreferrer" className={cls}>
-                            {body}
-                          </a>
-                        ) : (
-                          <a href={b.href} className={cls}>
-                            {body}
-                          </a>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-                <p className="mt-4 text-[12.5px] leading-[1.6] text-dim">
-                  In the recorded run, SERV weighed every call, and Reppo scored the two paid excerpts after they settled.
-                </p>
-              </Reveal>
-            </div>
-            <Reveal delay={120} className="mt-14 flex flex-col items-center gap-3 text-center">
-              <p className="text-[15px] text-mute">Payments in the public app are simulated, so visitors never spend anything.</p>
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-                <Link href="/app?demo=1" className={primary}>
-                  Try the demo
-                </Link>
-                <Link href="/app?ask=1" className={textLink}>
-                  Ask your own question
-                </Link>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-
         <section id="real" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="real-title">
-          <div className="mx-auto max-w-[1080px] px-5 py-20 md:px-8 md:py-28">
+          <div className="mx-auto max-w-[1200px] px-4 py-20 sm:px-6 md:px-8 md:py-28">
             <SectionHead label="Honest labels" id="real-title" title={<>What’s real, and what’s <span className="serif-em">simulated</span></>}>
               <p>Every result on this site carries one of three labels.</p>
             </SectionHead>
-            <Reveal className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-mute">
+            <Reveal className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-mute">
               <span className="inline-flex items-center gap-2">
                 <ProvenanceBadge p="live" short title="Live · real calls" /> real calls, right now
               </span>
@@ -427,7 +381,7 @@ export default function Landing() {
         </section>
 
         <section id="faq" className="scroll-mt-20 border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="faq-title">
-          <div className="mx-auto grid max-w-[1080px] items-start gap-10 px-5 py-20 md:px-8 md:py-28 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-20">
+          <div className="mx-auto grid max-w-[1200px] items-start gap-12 px-4 py-20 sm:px-6 md:px-8 md:py-28 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-24">
             <SectionHead label="FAQ" id="faq-title" title={<>Questions.</>}>
               <p>What’s real on this page, what the partners did, and how to run it yourself.</p>
             </SectionHead>
@@ -472,20 +426,55 @@ export default function Landing() {
             </div>
           </div>
         </section>
+
+        <section id="cta" className="border-t border-[rgba(201,146,46,0.25)]" aria-labelledby="cta-title">
+          <div className="mx-auto max-w-[1200px] px-4 py-20 text-center sm:px-6 md:px-8 md:py-28">
+            <Reveal>
+              <p className="eyebrow text-cent">Try it</p>
+              <h2 id="cta-title" className="mx-auto mt-4 max-w-[18ch] text-[40px] font-normal leading-[1.08] tracking-[-0.04em] text-bone md:text-[56px]">
+                Set a cap. See it <span className="serif-em">hold.</span>
+              </h2>
+              <p className="mx-auto mt-5 max-w-[460px] text-[16px] leading-[1.65] text-mute">
+                Payments in the public app are simulated, so visitors never spend anything. The recorded run on this page is real.
+              </p>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                <Link href="/app?demo=1" className={primary}>
+                  Try the demo
+                </Link>
+                <Link href="/app?ask=1" className={textLink}>
+                  Ask your own question
+                </Link>
+              </div>
+            </Reveal>
+          </div>
+        </section>
       </main>
 
       <footer className="border-t border-[rgba(201,146,46,0.3)]">
-        <div className="mx-auto grid max-w-[1080px] gap-6 px-5 py-12 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-start md:gap-10 md:px-8">
-          <CentivWordmark size={18} />
-          <div className="space-y-2 text-[13px] leading-[1.65] text-dim">
-            <p>
-              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores
-              after the two that paid. Demo payments are simulated. Reppo does not block or undo a payment.
+        <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,1.2fr)_repeat(2,minmax(0,0.7fr))] md:px-8">
+          <div>
+            <CentivWordmark size={18} />
+            <p className="mt-4 max-w-[360px] text-[13.5px] leading-[1.65] text-dim">
+              The recorded run is a replay of real Base payments, with SERV Reasoning before each call and Reppo scores after the two that paid. Demo payments are simulated. Reppo does not block or undo a payment.
             </p>
-            <p className="text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
+            <p className="mt-3 text-[13px] text-mute">Built on Kite Passport · SERV Reasoning · x402 · Reppo</p>
+            <p className="mt-2 text-[13px] text-dim">SERV Hackathon 02 · Kite track</p>
           </div>
-          <div className="flex flex-col gap-2 text-[13px] md:items-end">
-            <ul className="flex flex-wrap gap-x-4 gap-y-1">
+          <div>
+            <p className="eyebrow text-dim">On this page</p>
+            <ul className="mt-4 space-y-2 text-[14px]">
+              {nav.map(([h, l]) => (
+                <li key={h}>
+                  <a href={h} className="text-mute transition hover:text-cent">
+                    {l}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="eyebrow text-dim">Links</p>
+            <ul className="mt-4 space-y-2 text-[14px]">
               {footerLinks.map((l) => (
                 <li key={l.label}>
                   <a
@@ -499,8 +488,12 @@ export default function Landing() {
                   </a>
                 </li>
               ))}
+              <li>
+                <a href="/api/evidence" className="text-mute transition hover:text-cent">
+                  Evidence JSON
+                </a>
+              </li>
             </ul>
-            <p className="text-dim">SERV Hackathon 02 · Kite track</p>
           </div>
         </div>
       </footer>
