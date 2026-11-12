@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AuditRow } from "@/lib/centiv";
+import type { AuditRow, Decision } from "@/lib/centiv";
 import { ProvenanceBadge } from "./ui";
 
+type ServDecision = { decision: Decision; rationale: string; source: "serv" | "heuristic" };
 type LiveStatus = { enabled: boolean; reason: string; merchant: string; limits?: { maxPerCallUsdc: number; maxTotalUsdc: number; spentThisProcessUsdc: number } };
 type LiveResult = {
-  status: "paid" | "declined" | "error";
+  status: "paid" | "declined" | "skipped" | "error";
   topic: string;
   price?: number;
   tx_hash?: string;
@@ -15,6 +16,7 @@ type LiveResult = {
   error_code?: string;
   error?: string;
   reply?: { provider: string; excerpt: string; source_count?: number };
+  serv?: ServDecision;
 };
 
 /**
@@ -46,18 +48,21 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
         body: JSON.stringify({ topic }),
       });
       const data = (await res.json()) as LiveResult & { error?: string };
-      const r: LiveResult = res.ok ? data : { status: "error", topic, error: data.error || res.statusText };
+      const r: LiveResult = res.ok || data.status ? data : { status: "error", topic, error: data.error || res.statusText };
       setResults((x) => [r, ...x]);
+      const servLine = r.serv ? `SERV ${r.serv.decision} (${r.serv.source}): ${r.serv.rationale}` : "";
       onRow({
         runId: "live",
         runLabel: "L",
         at: Date.now(),
         service: `Otto AI · filtered news “${topic}”`,
-        decision: r.status === "paid" ? "spend" : "decline",
+        decision: r.status === "paid" ? "spend" : r.status === "skipped" ? "skip" : "decline",
         amount: r.price ?? 0,
         charged: r.status === "paid" ? r.price ?? 0 : 0,
         remaining: 0,
-        reason: r.status === "paid" ? `Paid via Kite Passport · session spent ${r.spent_total ?? "?"} USDC.` : `${r.error_code ?? "error"} — ${r.error ?? ""}`,
+        reason: r.status === "paid"
+          ? `${servLine ? servLine + " " : ""}Paid via Kite Passport · session spent ${r.spent_total ?? "?"} USDC.`
+          : `${servLine ? servLine + " " : ""}${r.error_code ?? "error"} — ${r.error ?? ""}`.trim(),
         receipt: r.tx_hash,
         receiptUrl: r.basescan_url,
         provenance: "live",
@@ -74,7 +79,7 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
         <ProvenanceBadge p="live" />
       </div>
       <p className="mt-2 text-[13px] text-mute">
-        Real USDC through your approved Passport session to {status.merchant}. Centiv limit {status.limits?.maxPerCallUsdc} per call, {status.limits?.maxTotalUsdc} per run (spent so far {status.limits?.spentThisProcessUsdc}). Passport enforces its own caps on top.
+        Real USDC through your approved Passport session to {status.merchant}. SERV Reasoning weighs each call before anything is signed. Centiv limit {status.limits?.maxPerCallUsdc} per call, {status.limits?.maxTotalUsdc} per run (spent so far {status.limits?.spentThisProcessUsdc}). Passport enforces its own caps on top.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <input type="password" autoComplete="off" placeholder="Owner token" value={token} onChange={(e) => setToken(e.target.value)} className="num h-10 w-56 rounded-full border hairline-strong bg-white px-4 text-[12.5px]" aria-label="Owner token" />
@@ -86,8 +91,8 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
       {results.length > 0 && (
         <ul className="mt-4 space-y-2">
           {results.map((r, i) => (
-            <li key={i} className={`rounded-md border px-3 py-2 text-[12.5px] ${r.status === "paid" ? "border-pass/40 bg-pass/[0.06]" : "border-stop/45 bg-stop/[0.06]"}`}>
-              <span className="font-semibold">{r.status === "paid" ? "Paid" : r.status === "declined" ? "Declined" : "Error"}</span> · “{r.topic}”
+            <li key={i} className={`rounded-md border px-3 py-2 text-[12.5px] ${r.status === "paid" ? "border-pass/40 bg-pass/[0.06]" : r.status === "skipped" ? "border-cent/25 bg-sage/60" : "border-stop/45 bg-stop/[0.06]"}`}>
+              <span className="font-semibold">{r.status === "paid" ? "Paid" : r.status === "declined" ? "Declined" : r.status === "skipped" ? "Skipped" : "Error"}</span> · “{r.topic}”
               {r.basescan_url && (
                 <>
                   {" "}· <a className="num text-cent underline" href={r.basescan_url} target="_blank" rel="noopener noreferrer">{r.tx_hash?.slice(0, 10)}… on Basescan ↗</a>
@@ -95,6 +100,15 @@ export function LivePanel({ onRow }: { onRow: (row: Omit<AuditRow, "id">) => voi
               )}
               {r.error_code && <span className="num text-stop"> · {r.error_code}</span>}
               {r.error && <span className="text-mute"> · {r.error}</span>}
+              {r.serv && (
+                <p className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-cent">
+                  <span className="pill pill-sage h-6 px-2.5 text-[11px] font-semibold text-cent">
+                    SERV Reasoning: <span className="serif-em font-normal">{r.serv.decision}</span>
+                    {r.serv.source === "heuristic" ? <span className="ml-1 font-normal text-dim">· built-in</span> : null}
+                  </span>
+                  <span className="text-[12.5px]">{r.serv.rationale}</span>
+                </p>
+              )}
               {r.reply && <p className="mt-1 text-mute">{r.reply.excerpt.slice(0, 280)}… <span className="text-dim">— {r.reply.provider}</span></p>}
             </li>
           ))}

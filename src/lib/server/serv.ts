@@ -15,7 +15,9 @@ export type ServDecision = {
   source: "serv" | "heuristic";
 };
 
-const SYSTEM = `You are SERV Reasoning inside Centiv, a pay-per-call research agent on Kite.
+export type CapsMode = "enforce" | "informational";
+
+const SYSTEM_ENFORCE = `You are SERV Reasoning inside Centiv, a pay-per-call research agent on Kite.
 Decide whether to buy one paid data call. Reply with ONLY compact JSON, no markdown:
 {"decision":"spend"|"skip"|"decline","rationale":"one or two short sentences in British English"}
 
@@ -26,7 +28,28 @@ Rules:
 - Prefer fresh primary data over sentiment scrapes.
 - Be concise. Do not invent prices.`;
 
-function heuristic(c: Candidate, remaining: number, perTx: number): ServDecision {
+// Live payments: SERV judges value only. Kite Passport independently enforces
+// per-call and session-total caps, including the demo's call-3 refusal
+// (session_total_exceeded). Do not pre-empt that refusal with budget maths.
+const SYSTEM_INFORMATIONAL = `You are SERV Reasoning inside Centiv, a pay-per-call research agent on Kite.
+Decide whether this paid data call is worth buying on its merits. Reply with ONLY compact JSON, no markdown:
+{"decision":"spend"|"skip"|"decline","rationale":"one or two short sentences in British English"}
+
+Rules:
+- Judge value, not limits. "spend" if the call is high-value evidence for the question. "skip" if it is low value, nice-to-have, or redundant. "decline" only if the call itself is inappropriate (wrong merchant, clearly junk), not because a budget cap may be tight.
+- Kite Passport independently enforces the per-call cap and the session total. If this call would exceed those caps, Passport will refuse the payment. Do not pre-empt that refusal. Do not decline or skip merely because remaining budget may be insufficient.
+- The Kite Passport caps in the user message are context only.
+- Prefer fresh primary data over sentiment scrapes.
+- Be concise. Do not invent prices.`;
+
+function heuristic(c: Candidate, remaining: number, perTx: number, caps: CapsMode): ServDecision {
+  // Informational caps: never decline on budget maths — Kite Passport enforces limits.
+  if (caps === "informational") {
+    if (c.value === "low") {
+      return { decision: "skip", rationale: c.rationale, source: "heuristic" };
+    }
+    return { decision: "spend", rationale: c.rationale, source: "heuristic" };
+  }
   if (c.price > perTx || c.price > remaining) {
     return {
       decision: "decline",
@@ -46,9 +69,12 @@ export async function decideSpend(opts: {
   remaining: number;
   perTx: number;
   windowMinLeft: number;
+  /** Default "enforce" (research engine). Live payments use "informational". */
+  caps?: CapsMode;
 }): Promise<ServDecision> {
+  const caps: CapsMode = opts.caps ?? "enforce";
   const key = process.env.SERV_API_KEY?.trim();
-  if (!key) return heuristic(opts.candidate, opts.remaining, opts.perTx);
+  if (!key) return heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
 
   const user = JSON.stringify({
     question: opts.question,
@@ -59,6 +85,10 @@ export async function decideSpend(opts: {
     remainingUsdc: opts.remaining,
     perCallCapUsdc: opts.perTx,
     minutesLeft: opts.windowMinLeft,
+    kitePassportCaps:
+      caps === "informational"
+        ? "Context only. Kite Passport enforces these independently — do not decline just because remaining budget may be insufficient."
+        : "Enforce these limits in your decision.",
   });
 
   try {
@@ -73,7 +103,7 @@ export async function decideSpend(opts: {
         temperature: 0.2,
         max_completion_tokens: 220,
         messages: [
-          { role: "system", content: SYSTEM },
+          { role: "system", content: caps === "informational" ? SYSTEM_INFORMATIONAL : SYSTEM_ENFORCE },
           { role: "user", content: user },
         ],
       }),
@@ -83,7 +113,7 @@ export async function decideSpend(opts: {
     if (!res.ok) {
       const err = await res.text().catch(() => "");
       console.error("SERV Reasoning error", res.status, err.slice(0, 300));
-      return heuristic(opts.candidate, opts.remaining, opts.perTx);
+      return heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
     }
 
     const data = (await res.json()) as {
@@ -91,28 +121,33 @@ export async function decideSpend(opts: {
     };
     const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return heuristic(opts.candidate, opts.remaining, opts.perTx);
+    if (!jsonMatch) return heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
     const parsed = JSON.parse(jsonMatch[0]) as { decision?: string; rationale?: string };
+    const fallback = heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
     const decision = (["spend", "skip", "decline"] as Decision[]).includes(parsed.decision as Decision)
       ? (parsed.decision as Decision)
-      : heuristic(opts.candidate, opts.remaining, opts.perTx).decision;
+      : fallback.decision;
 
-    // Hard safety: never allow SERV to spend past a real cap.
-    if (decision === "spend" && (opts.candidate.price > opts.perTx || opts.candidate.price > opts.remaining)) {
+    // Hard safety only when caps are ours to enforce. Live mode leaves refusal to Kite Passport.
+    if (
+      caps === "enforce" &&
+      decision === "spend" &&
+      (opts.candidate.price > opts.perTx || opts.candidate.price > opts.remaining)
+    ) {
       return {
         decision: "decline",
-        rationale: parsed.rationale?.trim() || heuristic(opts.candidate, opts.remaining, opts.perTx).rationale,
+        rationale: parsed.rationale?.trim() || fallback.rationale,
         source: "serv",
       };
     }
 
     return {
       decision,
-      rationale: (parsed.rationale || "").trim() || heuristic(opts.candidate, opts.remaining, opts.perTx).rationale,
+      rationale: (parsed.rationale || "").trim() || fallback.rationale,
       source: "serv",
     };
   } catch (e) {
     console.error("SERV Reasoning failed", e);
-    return heuristic(opts.candidate, opts.remaining, opts.perTx);
+    return heuristic(opts.candidate, opts.remaining, opts.perTx, caps);
   }
 }

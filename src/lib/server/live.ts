@@ -11,6 +11,9 @@
  *      stays within CENTIV_LIVE_MAX_TOTAL_USDC, and the Passport session's own caps are small,
  *      active and scoped to the allow-listed merchant.
  *   7. A simple rate limit.
+ *   8. SERV Reasoning weighs the call on its merits (value, not limits) and must say
+ *      "spend" before anything is signed. Caps are passed as context only, so SERV
+ *      will not pre-empt Kite Passport's refusal of a call that exceeds the session total.
  * Passport then enforces its own caps on top (that is the decline you see on call 3).
  *
  * Never passes --use-allowance, so it cannot fall back to the owner's account allowance.
@@ -22,6 +25,8 @@ import { existsSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { timingSafeEqual } from "node:crypto";
+import type { Candidate } from "@/lib/centiv";
+import { decideSpend, type ServDecision } from "./serv";
 
 export const LIVE_MERCHANT = {
   name: "Otto AI",
@@ -196,7 +201,7 @@ export async function preflightSession(sessionId: string): Promise<{ ok: boolean
 }
 
 export type LiveResult = {
-  status: "paid" | "declined" | "error";
+  status: "paid" | "declined" | "skipped" | "error";
   topic: string;
   url: string;
   price?: number;
@@ -208,7 +213,42 @@ export type LiveResult = {
   error_code?: string;
   error?: string;
   reply?: { provider: string; excerpt: string; source_count?: number };
+  serv?: ServDecision;
 };
+
+
+/** Candidate for the live Otto filtered-news call. Value is high: this is the primary evidence. */
+export function liveCandidate(topic: string, price: number): Candidate {
+  return {
+    service: LIVE_MERCHANT.name,
+    endpoint: `${LIVE_MERCHANT.host}${LIVE_MERCHANT.path}`,
+    price,
+    value: "high",
+    rationale: `Fresh filtered news on “${topic}” is primary evidence for this research question.`,
+    yields: "A filtered news report for the requested topic.",
+  };
+}
+
+/**
+ * Ask SERV whether the live call is worth buying. Caps are informational so SERV
+ * judges value, not limits — Kite Passport remains the one that refuses call 3.
+ */
+export async function weighLiveCall(opts: {
+  topic: string;
+  price: number;
+  remaining: number;
+  perTx: number;
+  windowMinLeft: number;
+}): Promise<ServDecision> {
+  return decideSpend({
+    question: `Latest ${opts.topic} news for a research brief.`,
+    candidate: liveCandidate(opts.topic, opts.price),
+    remaining: opts.remaining,
+    perTx: opts.perTx,
+    windowMinLeft: opts.windowMinLeft,
+    caps: "informational",
+  });
+}
 
 /** The one call that can move money. Only reached after every gate in /api/live passes. */
 export async function executeLive(sessionId: string, topic: string, url: string, price: number): Promise<LiveResult> {

@@ -12,6 +12,7 @@ import {
   runningTotal,
   tokenOk,
   validTopic,
+  weighLiveCall,
 } from "@/lib/server/live";
 
 export const maxDuration = 120;
@@ -57,7 +58,37 @@ export async function POST(req: Request) {
   const pre = await preflightSession(sessionId);
   if (!pre.ok) return NextResponse.json({ status: "declined", topic, url, price: quote.price, error_code: "centiv_session_preflight", error: pre.reason });
 
+  const session = pre.session!;
+  const remaining = Math.max(0, +(session.total - session.spent).toFixed(6));
+  const windowMinLeft = session.expiresAt
+    ? Math.max(0, Math.ceil((Date.parse(session.expiresAt) - Date.now()) / 60_000))
+    : 30;
+
+  // SERV judges value only. Caps are context; a "spend" still goes to Kite Passport,
+  // which is what refuses call 3 when the session total is exceeded.
+  const serv = await weighLiveCall({
+    topic,
+    price: quote.price,
+    remaining,
+    perTx: session.perTx,
+    windowMinLeft,
+  });
+  const sessionMeta = { perTx: session.perTx, total: session.total };
+  if (serv.decision !== "spend") {
+    return NextResponse.json({
+      status: serv.decision === "skip" ? "skipped" : "declined",
+      topic,
+      url,
+      price: quote.price,
+      error_code: serv.decision === "skip" ? "serv_skip" : "serv_decline",
+      error: serv.rationale,
+      serv,
+      provenance: "live",
+      session: sessionMeta,
+    });
+  }
+
   // Passport enforces its own per-call and total caps here — a cap breach comes back as a decline.
   const result = await executeLive(sessionId, topic, url, quote.price);
-  return NextResponse.json({ ...result, provenance: "live", session: { perTx: pre.session!.perTx, total: pre.session!.total } });
+  return NextResponse.json({ ...result, serv, provenance: "live", session: sessionMeta });
 }
