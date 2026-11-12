@@ -3,7 +3,6 @@ import { useState } from "react";
 import type { AuditRow, Session } from "@/lib/centiv";
 import { clock, usdc } from "@/lib/centiv";
 import { Count, DecisionTag, GateSourceLabel, Money, ProvenanceBadge, Receipt, VerdictTag } from "./ui";
-import { RECORDED_REPPO, RECORDED_REPPO_SCORE01 } from "@/lib/reppo-eval";
 import { VERIFIED_RUN, replayAuditRows } from "@/lib/verified-run";
 
 const REPLAY_ROWS = replayAuditRows();
@@ -62,7 +61,7 @@ export function AuditTrail({
           </div>
           {replay && (
             <p className="mt-3 max-w-xl text-[12.5px] leading-[1.55] text-dim">
-              Real receipts from Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on {VERIFIED_RUN.passport.approved_at_wat.split(",")[0]}. Times in WAT. A recorded Reppo check of the brief from this run scored {RECORDED_REPPO.verdict.score} / 100 ({RECORDED_REPPO.verdict.decision}, routed to {RECORDED_REPPO.verdict.route}) on 11 Nov 2026.
+              Real receipts from Kite Passport session <span className="num text-mute">{VERIFIED_RUN.passport.session_id}</span>, on 12 Nov 2026. Times in WAT. SERV Reasoning and Reppo were not part of this run.
             </p>
           )}
         </div>
@@ -76,7 +75,7 @@ export function AuditTrail({
           ["Remaining", <Money key="r" value={active ? remaining : 0} className="text-bone" />],
           ["Calls bought", <Count key="b" value={bought.length} className="text-bone" />],
           ["Skipped · declined", <span key="d" className="num"><Count value={skipped.length} className="text-skip" /><span className="text-dim"> · </span><Count value={declined.length} className={declined.length ? "text-stop" : "text-bone"} /></span>],
-          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-bone">{RECORDED_REPPO_SCORE01.toFixed(2)} <span className="text-[11px] font-normal text-dim">Reppo · recorded</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
+          ["Avg gate score", replay ? <span key="p" className="num text-[16px] text-dim">— <span className="text-[11px] font-normal">not scored</span></span> : <Count key="p" value={avg} decimals={2} className={avg >= 0.75 ? "text-pass" : "text-bone"} />],
         ].map(([k, v]) => (
           <div key={k as string} className="bg-ink-2 px-4 py-4">
             <dt className="text-[11.5px] text-dim">{k}</dt>

@@ -5,8 +5,8 @@ export type DemoPhase = "idle" | "setup" | "A" | "B" | "done";
 const label: Record<DemoPhase, string> = {
   idle: "Ready",
   setup: "Approving session",
-  A: "Scene A · paid call",
-  B: "Scene B · cap hit",
+  A: "Ethereum news · two paid, one refused",
+  B: "Ethereum news · two paid, one refused",
   done: "Demo complete",
 };
 

@@ -7,10 +7,10 @@ import { Nib, Stamp } from "./Logo";
 const kindLabel: Record<Step["kind"], string> = {
   reason: "SERV",
   quote: "x402",
-  check: "Passport",
+  check: "Kite Passport",
   pay: "x402",
   skip: "SERV",
-  decline: "Passport",
+  decline: "Kite Passport",
   fetch: "Data",
   draft: "SERV",
   gate: "Gate",
@@ -112,13 +112,13 @@ export function RunPanel({ runs, current, onSelect, onRunDemo }: { runs: Run[]; 
 
       {!current ? (
         <div className="mt-6 grid place-items-center rounded-md border border-dashed hairline-strong px-6 py-10 text-center">
-          <p className="font-display text-[24px] text-bone">A paid call, then a decline.</p>
+          <p className="font-display text-[24px] text-bone">Two paid calls, then a refusal.</p>
           <p className="mt-2 max-w-sm text-[13.5px] leading-[1.55] text-dim">
             The short A → B demo approves a cap, buys one call, then hard-stops at the limit. Both decisions land here.
           </p>
           {onRunDemo && (
             <button type="button" onClick={onRunDemo} className="pill pill-cent mt-5 h-10 px-5 text-[13.5px]">
-              Run demo A → B
+              Run the demo
             </button>
           )}
         </div>

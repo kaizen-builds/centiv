@@ -1,6 +1,8 @@
 // Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run.
 // Source of truth: src/data/verified-run.json (mirrored in /evidence).
 // Contains no keys, tokens or session secrets — only public on-chain facts.
+// The 12 Nov 2026 run was recorded before SERV gating and per-call Reppo
+// scoring were added; those steps are not claimed for this evidence.
 
 import data from "@/data/verified-run.json";
 import type { AuditRow } from "@/lib/centiv";
@@ -50,28 +52,31 @@ export type DeclinedCall = {
   money_moved: false;
   tx_hash: null;
   note: string;
+  attempted_at_utc?: string;
+  attempted_at_wat?: string;
 };
 
 export type VerifiedRun = {
   label: string;
   generated_at_utc: string;
+  honesty?: string;
   passport: {
     environment: string;
     session_id: string;
-    session_request_id: string;
-    approved_with: string;
-    approved_at_utc: string;
-    approved_at_wat: string;
+    session_type?: string;
+    expires_at_utc: string;
     expires_at_wat: string;
-    caps: { currency: string; max_amount_per_tx: string; max_total_amount: string; ttl_seconds: number };
+    caps: { currency: string; max_amount_per_tx: string; max_total_amount: string; ttl_seconds?: number };
     scope: { mode: string; method: string; host: string; path_prefix: string };
+    task_summary?: string;
     wallet: string;
+    wallet_type?: string;
     usage_after: { spent_total_usdc: string };
   };
   merchant: { name: string; endpoint: string; pay_to: string };
   settlement: { chain: string; caip2: string; asset: string; asset_contract: string; note: string };
   calls: (PaidCall | DeclinedCall)[];
-  verification: { rpc: string; checked_at_utc: string; method: string };
+  verification: { rpc: string; checked_at_utc: string; method: string; chain_head_at_check?: number };
 };
 
 export const VERIFIED_RUN = data as unknown as VerifiedRun;
@@ -91,7 +96,7 @@ export function replayAuditRows(): AuditRow[] {
     at: Date.parse(c.onchain.timestamp_utc),
     atLabel: c.onchain.timestamp_wat.split(", ")[1],
     service: `Otto AI · filtered news “${c.topic}”`,
-    decision: "spend",
+    decision: "spend" as const,
     amount: c.onchain.usdc_transfer.amount_usdc,
     charged: c.onchain.usdc_transfer.amount_usdc,
     remaining: +(cap - Number(c.session_spent_after_usdc)).toFixed(6),
@@ -106,7 +111,7 @@ export function replayAuditRows(): AuditRow[] {
       runId: "replay",
       runLabel: "V",
       at: rows.length ? rows[rows.length - 1].at + 1000 : 0,
-      atLabel: "just after",
+      atLabel: declinedCall.attempted_at_wat?.split(", ")[1] ?? "just after",
       service: `Otto AI · filtered news “${declinedCall.topic}”`,
       decision: "decline",
       amount: Number(VERIFIED_RUN.passport.caps.max_amount_per_tx),

@@ -7,47 +7,32 @@ type Row = { part: string; p: Provenance; detail: string };
 function rows(serv: Provenance, gate: Provenance): Row[] {
   return [
     {
-      part: "Kite Passport caps and payments in the verified run",
+      part: "Kite Passport caps and payments in the recorded run",
       p: "replay",
       detail:
-        "A real Kite Passport session and two real USDC payments on Base. Passport refused the third call. The page replays it from the evidence file and never spends.",
+        "A real Kite Passport session and two real USDC payments on Base. Kite Passport refused the third call. The page replays it from the evidence file and never spends.",
+    },
+    {
+      part: "Payments and cap checks in the public demo",
+      p: "simulated",
+      detail:
+        "Visitors never spend money. Centiv applies the same $0.001 per-call and $0.002 total limits itself. Receipts start with sim_ so they can’t pass for on-chain hashes. The real Kite Passport refusal is in the recorded run.",
     },
     {
       part: "SERV Reasoning",
       p: serv,
       detail:
         serv === "live"
-          ? "Real model calls. SERV Reasoning weighs each call before payment for every question asked in the app."
-          : "No SERV key is configured on this deployment, so a built-in planner stands in and still weighs each call before a simulated payment.",
+          ? "Real model calls on the live path, which weighs each call before payment. SERV was not part of the recorded run above."
+          : "No SERV key is configured on this deployment, so a built-in planner stands in. SERV was not part of the recorded run above.",
     },
     {
-      part: "Payments in the public demo",
-      p: "simulated",
-      detail: "Visitors never spend money. Receipts start with sim_ so they can’t pass for on-chain hashes.",
-    },
-    {
-      part: "Cap checks in the public demo",
-      p: "simulated",
-      detail: "Centiv applies the same per-call, total and time limits itself. The real Kite Passport refusal is in the verified run.",
-    },
-    {
-      part: "Reppo check of the verified-run brief",
-      p: "replay",
-      detail:
-        "A real independent evaluation on 11 Nov 2026, recorded and shown in the proof. Not a live score of questions visitors ask.",
-    },
-    {
-      part: "Quality gate in the public demo",
+      part: "Reppo",
       p: gate,
       detail:
         gate === "live"
-          ? "Each visitor brief is scored by a live Reppo call before it reaches you. Evaluations should not include private data."
-          : "A built-in check scores each visitor brief, labelled Simulated. This deployment does not call Reppo on every question.",
-    },
-    {
-      part: "Data, prices and briefs in the public demo",
-      p: "simulated",
-      detail: "Example datasets, prices and briefs for illustration. The real data and real price ($0.001 a call) are in the verified run.",
+          ? "Each visitor brief can be scored by a live Reppo call. Reppo did not score the recorded run above."
+          : "A built-in check stands in for visitor questions, labelled Simulated. Reppo did not score the recorded run above.",
     },
   ];
 }
@@ -56,14 +41,14 @@ function Table({ list }: { list: Row[] }) {
   return (
     <ul className="divide-y divide-[rgba(201,146,46,0.25)] overflow-hidden rounded-[18px] border border-[rgba(201,146,46,0.45)] bg-white">
       {list.map((r) => (
-        <li key={r.part} className="grid gap-x-6 gap-y-2 px-5 py-4 sm:grid-cols-[minmax(0,15rem)_7.5rem_minmax(0,1fr)] sm:items-baseline sm:px-6">
+        <li key={r.part} className="grid gap-x-6 gap-y-2 px-5 py-5 sm:grid-cols-[minmax(0,16rem)_7.5rem_minmax(0,1fr)] sm:items-baseline sm:px-6">
           <div className="flex items-start justify-between gap-3 sm:contents">
             <p className="text-[15px] font-medium tracking-[-0.015em] text-bone">{r.part}</p>
             <p className="shrink-0">
               <ProvenanceBadge p={r.p} short title={r.p === "live" ? "Live · real calls" : undefined} />
             </p>
           </div>
-          <p className="text-[14px] leading-[1.55] text-mute">{r.detail}</p>
+          <p className="text-[14px] leading-[1.6] text-mute">{r.detail}</p>
         </li>
       ))}
     </ul>

@@ -7,10 +7,12 @@
  * - Priority repos: kite-x402-hono, kite-x402-explorer, kite-x402-axum, kite_counter_dapp
  * - Official test endpoint: https://x402.dev.gokite.ai/api/weather?location=San%20Francisco
  *
- * Centiv's research use case is ETH funding history. There is no public
- * funding x402 catalogue endpoint that works without a funded Passport wallet,
- * so we:
- * 1. Quote against our local research catalogue (prices mirror the demo scenes), OR
+ * The public-demo catalogue mirrors the recorded Otto Ethereum news run.
+ * Real payments happen only through the owner-gated local route /api/live,
+ * never from a visitor's request. Public runs always settle as Simulated.
+ *
+ * We still:
+ * 1. Quote against the local research catalogue (prices match the recorded run), OR
  * 2. Probe X402_DATA_URL for a real 402 PAYMENT-REQUIRED header when set, OR
  *
  * Public runs (/api/run) ALWAYS settle as Simulated: no funds move and the
@@ -108,27 +110,14 @@ export async function quoteCandidate(c: Candidate): Promise<X402Quote> {
   };
 }
 
-function mockFundingPayload() {
+function mockOttoPayload() {
   return {
-    asset: "ETH",
-    window: "7d",
-    venues: ["A", "B", "C", "D"],
-    note: "Simulated funding rows for Centiv demo — not live venue data.",
-    series: [
-      { t: "t-7d", avg: 0.011 },
-      { t: "t-3d", avg: 0.006 },
-      { t: "t-0", avg: 0.002 },
-    ],
-    negatives: { B: 3, D: 3 },
-  };
-}
-
-function mockDepthPayload() {
-  return {
-    asset: "ETH",
-    resolution: "1m",
-    note: "Simulated depth snapshots for Centiv demo — not live venue data.",
-    askDepthChangePct: { B: -22, D: -22, A: 0, C: 0 },
+    provider: "Otto AI",
+    topic: "ethereum",
+    source_count: 146,
+    note: "Simulated payment — no funds moved. Wording is from Otto AI’s paid reply in the recorded run of 12 Nov 2026, published in the evidence file.",
+    excerpt:
+      "Ethereum (ETH) has extensive, specific coverage across today's sources, so this is a focused ETH analysis. The most consequential development is Deutsche Bank -- a $2.23 trillion global bank -- officially launching regulated BTC/ETH custody under MiCA for institutional clients.",
   };
 }
 
@@ -137,15 +126,14 @@ export async function payForData(opts: {
   quote: X402Quote;
   scenarioKey: Scenario["key"];
 }): Promise<X402PayResult> {
-  // Public path: simulated settlement under the Passport session ledger
-  // (the cap check itself is real). Payload and receipt are labelled.
-  const payload = opts.scenarioKey === "depth" ? mockDepthPayload() : mockFundingPayload();
+  void opts.scenarioKey;
+  // Public path: simulated settlement. Payload and receipt are labelled.
   const receipt = `sim_${randomBytes(8).toString("hex")}`;
   return {
     ok: true,
     source: "simulated",
     receipt,
-    payload,
-    yields: opts.candidate.yields || (opts.scenarioKey === "depth" ? "Depth snapshots (demo catalogue)" : "84 rows · 4 venues × 21 funding intervals"),
+    payload: mockOttoPayload(),
+    yields: opts.candidate.yields || "Otto AI ETH briefing (wording from the recorded run). Demo payment is simulated.",
   };
 }

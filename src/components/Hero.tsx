@@ -55,12 +55,12 @@ export function Hero({
               <svg width="11" height="12" viewBox="0 0 11 12" aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 1l9 5-9 5z" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
               </svg>
-              Run demo A → B
+              Run the demo
             </button>
             <a href="#session" className="font-medium text-[14px] text-cent underline decoration-cent/30 underline-offset-[6px] transition hover:decoration-cent">
               or set your own session
             </a>
-            <span className="text-[12.5px] text-dim">≈ 30 s · one paid call, then one declined</span>
+            <span className="text-[12.5px] text-dim">≈ 30 s · two paid calls, then one refused</span>
           </div>
         </div>
 

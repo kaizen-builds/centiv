@@ -1,0 +1,175 @@
+{
+  "_about": "Public, sanitised evidence of Centiv's real Kite Passport-capped x402 run. Contains no keys, tokens or session secrets.",
+  "label": "Replay · real on-chain run",
+  "generated_at_utc": "2026-11-10T13:35:25Z",
+  "passport": {
+    "environment": "Kite Passport (production)",
+    "session_id": "agent_session_01a1c57f-7107-7b6e-92dc-a6313394ee07",
+    "session_request_id": "agent_session_req_01a1c57e-aa78-70e5-8272-cf428f026490",
+    "session_type": "dedicated",
+    "approved_with": "Owner passkey on agentpassport.ai",
+    "approved_at_utc": "2026-11-10T12:47:05Z",
+    "approved_at_wat": "10 Nov 2026, 13:47:05 WAT",
+    "approved_at_basis": "expires_at minus the 3600 s TTL",
+    "expires_at_utc": "2026-11-10T13:47:05Z",
+    "expires_at_wat": "10 Nov 2026, 14:47:05 WAT",
+    "caps": {
+      "currency": "USD",
+      "max_amount_per_tx": "0.001",
+      "max_total_amount": "0.002",
+      "ttl_seconds": 3600
+    },
+    "scope": {
+      "mode": "scoped",
+      "method": "GET",
+      "host": "x402.ottoai.services",
+      "path_prefix": "/filtered-news"
+    },
+    "task_summary": "Centiv demo: pay Otto AI for two crypto-news research calls at $0.001 each; a third call should be declined by the cap.",
+    "wallet": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+    "wallet_type": "agent_wallet",
+    "usage_after": {
+      "spent_total_usdc": "0.002",
+      "spent_total_raw": "2000"
+    }
+  },
+  "merchant": {
+    "name": "Otto AI",
+    "endpoint": "https://x402.ottoai.services/filtered-news",
+    "pay_to": "0x0E84dDEdAaE6A779c462C22a59F301EC31B6b808"
+  },
+  "settlement": {
+    "chain": "Base mainnet",
+    "caip2": "eip155:8453",
+    "asset": "USDC",
+    "asset_contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "decimals": 6,
+    "note": "Passport enforced the session caps; payments settled in USDC on Base."
+  },
+  "calls": [
+    {
+      "n": 1,
+      "topic": "airdrops",
+      "url": "https://x402.ottoai.services/filtered-news?topic=airdrops",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353",
+      "basescan_url": "https://basescan.org/tx/0x869213b1702cc37f3a7c5c3b8a4a5f17c56e5812ba2f414d6939da4e90f25353",
+      "merchant_receipt_timestamp_utc": "2026-11-10T12:48:06.940Z",
+      "session_spent_after_usdc": "0.001",
+      "onchain": {
+        "status": "success",
+        "block": 55622556,
+        "confirmations_at_check": 14193,
+        "timestamp_utc": "2026-11-10T12:48:06Z",
+        "timestamp_wat": "10 Nov 2026, 13:48:06 WAT",
+        "tx_sender": "0x8cda367232d78c067116e3260da881d2da8ffa39",
+        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
+        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "usdc_transfer": {
+          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
+          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
+        "source_count": 130,
+        "excerpt": [
+          "Airdrops are showing limited specific coverage in the provided sources, with most mentions coming from promotional tweets rather than substantive analysis. However, here are today's key crypto developments that could affect airdrop-focused assets:",
+          "1. Macro Pressure on Risk Assets: Bitcoin is facing significant headwinds, eyeing $74K as Fed rate-hike bets hit 96% and ETF outflows accelerate (BlackRock's IBIT lost $1.66B over seven sessions). This risk-off environment typically reduces appetite for speculative airdrop farming, as traders become more cautious with capital and time.",
+          "2. Security Concerns Dominate: The Binance $6.3B hack (linked to North Korea) and subsequent warnings about iOS wallet key exposure are raising alarms across the ecosystem. Airdrop participants, who often connect wallets to unknown sites, should be extra vigilant—scams and exploits tend to proliferate during periods of heightened insecurity."
+        ],
+        "note": "Excerpt of Otto AI's paid response, trimmed by Centiv. Claims are Otto AI's, not verified by Centiv."
+      }
+    },
+    {
+      "n": 2,
+      "topic": "stablecoins",
+      "url": "https://x402.ottoai.services/filtered-news?topic=stablecoins",
+      "method": "GET",
+      "http_status": 200,
+      "outcome": "paid",
+      "price_usdc": "0.001",
+      "amount_onchain_raw": 1000,
+      "network": "eip155:8453",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payer": "0x1F1Bf1b9de99A8a78a3b0D01C5B49E71f49A815b",
+      "tx_hash": "0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d",
+      "basescan_url": "https://basescan.org/tx/0x2a38b086915d3d7c92ac79ed3e8ce103cf4c7d1d117197f12f6131de9e063b2d",
+      "merchant_receipt_timestamp_utc": "2026-11-10T12:48:23.667Z",
+      "session_spent_after_usdc": "0.002",
+      "onchain": {
+        "status": "success",
+        "block": 55622640,
+        "confirmations_at_check": 14109,
+        "timestamp_utc": "2026-11-10T12:48:23Z",
+        "timestamp_wat": "10 Nov 2026, 13:48:23 WAT",
+        "tx_sender": "0x4c934c63c786157fefd990945b25ea60a0fb0205",
+        "tx_sender_note": "Account that submitted the transaction and paid gas (an x402 facilitator/relayer, inferred from the EIP-3009 transferWithAuthorization call). The USDC moved from the payer shown in the Transfer log.",
+        "tx_to": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "method": "transferWithAuthorization (EIP-3009, selector 0xe3ee160e)",
+        "usdc_transfer": {
+          "token": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+          "from": "0x1f1bf1b9de99a8a78a3b0d01c5b49e71f49a815b",
+          "to": "0x0e84ddedaae6a779c462c22a59f301ec31b6b808",
+          "amount_raw": 1000,
+          "amount_usdc": 0.001
+        },
+        "authorization_used_log": true
+      },
+      "reply": {
+        "provider": "Otto AI",
+        "attribution": "[Powered by $OTTO AI | @useOttoAI]",
+        "source_count": 172,
+        "excerpt": [
+          "Stablecoin-specific coverage in today's data is unusually rich, centered on USDC and its expanding real-world payments footprint. The most material developments: (1) Samsung Wallet launched USDC trading/transfers for 82M+ US Galaxy devices, with Coinbase powering USDC as the default dollar stablecoin; (2) PNC Bank ($627B in assets) began piloting USDC payments on Ethereum for corporate/institutional clients via Coinbase, with automatic 1:1 conversion into USD bank deposits; (3) Circle reported Arc mainnet has processed over $30B in USDC and disclosed 100+ banks/payment leaders building on the network (BNY, HSBC, Mastercard, Visa), alongside USYC fund composition shifting toward longer-duration T-bills. Algorand set a new annual USDC transaction record, and USDC reportedly represents 53% of stablecoin volume on Fireblocks, with stablecoins now two-thirds of all digital asset transaction volume there. These are genuine adoption signals that strengthen the \"payments rail\" thesis for regulated dollar stablecoins."
+        ],
+        "note": "Excerpt of Otto AI's paid response, trimmed by Centiv. Claims are Otto AI's, not verified by Centiv."
+      }
+    },
+    {
+      "n": 3,
+      "topic": "ethereum",
+      "url": "https://x402.ottoai.services/filtered-news?topic=ethereum",
+      "method": "GET",
+      "outcome": "declined",
+      "declined_by": "Kite Passport",
+      "error_code": "session_total_exceeded",
+      "error": "payment amount exceeds max_total_amount",
+      "user_message": "The spending limit you approved for this task is used up. I can ask you to approve a new one, or pay from your account allowance if you want. Which do you prefer?",
+      "money_moved": false,
+      "tx_hash": null,
+      "note": "Declined before signing: the $0.002 session total was already spent."
+    }
+  ],
+  "verification": {
+    "rpc": "https://mainnet.base.org",
+    "checked_at_utc": "2026-11-10T13:35:25Z",
+    "chain_head_at_check": 55636749,
+    "method": "eth_getTransactionByHash, eth_getTransactionReceipt and eth_getBlockByNumber; USDC Transfer and AuthorizationUsed logs decoded."
+  },
+  "quality_gate": {
+    "source": "reppo",
+    "label": "Reppo independent check · real run, 11 Nov 2026",
+    "eval_id": "cmwchexy5000208js0h731mwm",
+    "score": 86,
+    "decision": "accept",
+    "route": "review",
+    "confidence": "medium",
+    "evaluated_at_utc": "2026-11-11T18:59:21.137Z",
+    "evidence": "/api/reppo-eval",
+    "note": "Recorded real Reppo evaluation of the verified-run brief on 11 Nov 2026. Not a live per-question score in the public demo."
+  }
+}

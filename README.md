@@ -78,8 +78,8 @@ Keep the Passport balance small. Live mode only spends from the session you appr
 ## Routes
 
 - `/` — landing
-- `/app` — workspace; autoplays the short A → B demo (a paid call, then a decline)
-- `/app?demo=ab` — same autoplay (used by “Try the demo”)
+- `/app` — workspace; autoplays the short demo (two simulated Otto Ethereum news calls, then a refusal)
+- `/app?demo=1` or `/app?demo=ab` — same autoplay (used by “Try the demo”)
 - `/app?ask=1` — workspace without autoplay, so you can ask your own question
 - `GET /api/status` — engine mode, integrations, payments (public = simulated), replay evidence, live_demo gate
 - `GET /api/evidence` — sanitised evidence of the verified run (Replay)
@@ -90,10 +90,9 @@ Keep the Passport balance small. Live mode only spends from the session you appr
 
 ## The demo
 
-- **Scene A · paid call** — ETH funding brief. SERV buys 7-day funding history (0.18 USDC), skips a low-value sentiment scrape, and the built-in quality check accepts (labelled Simulated on the public site).
-- **Scene B · cap hit** — 1-minute order-book depth (0.35 USDC). Passport fails the per-call cap / remaining budget; Centiv declines before signing; the built-in quality check returns *revise* (labelled Simulated on the public site).
+The public demo uses the same example as the recorded run: Otto AI Ethereum news at $0.001 a call, with a $0.002 Kite Passport cap. It attempts three calls. The first two settle as simulated payments (receipts start with `sim_`; no funds move). The third is refused because the $0.002 total is already spent. In this demo Centiv applies the limits itself; the real Kite Passport refusal is in the recorded run.
 
-Centiv checks these limits itself against your session settings — raise the per-call cap to 0.35 and Scene B will buy instead of declining.
+The wording shown is from Otto AI’s paid replies in the recorded run of 12 Nov 2026. Claims are Otto AI’s. SERV Reasoning and Reppo were not part of that recorded run.
 
 ## Environment variables
 
@@ -119,7 +118,7 @@ See [`.env.example`](.env.example). Summary:
 1. **OpenServ** — account + API key + credits ([hackathon](https://www.openserv.ai/hackathon-2)).
 2. **Kite Passport** — install `kpass`, passkey, fund the Passport wallet with USDC on Base (the verified run used 2.16 USDC sent on Base), approve a capped spending session ([Passport](https://docs.gokite.ai/passport), [CLI](https://docs.gokite.ai/reference/kpass-cli), [payments](https://docs.gokite.ai/passport/payments)). There is no public HTTP Passport API yet, so live payments go through `kpass session execute`, and only via the owner-gated `/api/live` route.
 3. **x402 data source** — one research feed. Centiv ships a funding catalogue at `/api/data/funding`. For a real seller, wrap an upstream with [`kite-x402-hono`](https://www.npmjs.com/package/kite-x402-hono) / explorer / axum (hackathon priority repos). Optional test URL: `https://x402.dev.gokite.ai/api/weather?location=San%20Francisco`.
-4. **Reppo** — optional for live per-run scoring. API key from [eval.reppo.xyz](https://eval.reppo.xyz); live shape is in [agents.md](https://eval.reppo.xyz/agents.md). Without `REPPO_API_KEY`, visitor briefs use the built-in check, labelled **Built-in check · Simulated**. With a key, live results are labelled **Reppo**. Do not submit private data. The public production site does not set this key, so visitor questions are not sent to Reppo. A recorded real check of the verified-run brief (11 Nov 2026, score 86, accept, routed to review) is published at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). The Evaluation API did not return a public share URL. If a live key is present, the demo polls briefly (~45s) then falls back with the `evalId` if still settling.
+4. **Reppo** — optional for live per-run scoring. API key from [eval.reppo.xyz](https://eval.reppo.xyz); live shape is in [agents.md](https://eval.reppo.xyz/agents.md). Without `REPPO_API_KEY`, visitor briefs use the built-in check, labelled **Built-in check · Simulated**. With a key, live results are labelled **Reppo**. Do not submit private data. The public production site does not set this key, so visitor questions are not sent to Reppo. A recorded Reppo check of an earlier 10 Nov brief (score 86, accept, routed to review) remains at [`/api/reppo-eval`](https://centiv-gilt.vercel.app/api/reppo-eval). It does not score the 12 Nov Ethereum news run. The Evaluation API did not return a public share URL. If a live key is present, the demo polls briefly (~45s) then falls back with the `evalId` if still settling.
 
 ## Structure
 

@@ -289,14 +289,14 @@ export default function CentivApp() {
     await sleep(700);
   };
 
-  const scene = async (key: "funding" | "depth") => {
-    setPhase(key === "funding" ? "A" : "B");
+  const scene = async () => {
+    setPhase("A");
     scrollTo("ask");
     await sleep(600);
-    await typeOut(SCENARIOS[key].question);
+    await typeOut(SCENARIOS["eth-news"].question);
     await sleep(500);
     scrollTo("run");
-    await executeRun(SCENARIOS[key].question);
+    await executeRun(SCENARIOS["eth-news"].question);
     await sleep(1400);
   };
 
@@ -315,8 +315,7 @@ export default function CentivApp() {
     await sleep(200);
     setPhase("setup");
     await ensureSession();
-    await scene("funding");
-    await scene("depth");
+    await scene();
     scrollTo("audit");
     setPhase("done");
   });
@@ -327,7 +326,7 @@ export default function CentivApp() {
     // ?ask=1 is the “ask your own question” path; everything else, including bare /app, starts A→B.
     if (params.get("ask") === "1") return;
     autoStarted.current = true;
-    if (params.get("demo") === "ab") {
+    if (params.get("demo") === "ab" || params.get("demo") === "1") {
       window.history.replaceState(null, "", window.location.pathname);
     }
     const t = setTimeout(() => runDemo(), 600);
@@ -408,7 +407,7 @@ export default function CentivApp() {
               disabled={session.status !== "active" || busy}
               locked={session.status !== "active"}
               typing={typing}
-              suggestions={[SCENARIOS.funding.question, SCENARIOS.depth.question]}
+              suggestions={[SCENARIOS["eth-news"].question]}
             />
             <RunPanel runs={runs} current={current} onSelect={setSelectedRun} onRunDemo={runDemo} />
           </div>

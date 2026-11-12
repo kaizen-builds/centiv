@@ -7,12 +7,16 @@ const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 const items: { q: string; a: ReactNode }[] = [
   {
-    q: "Is the decline really from Kite Passport?",
+    q: "Is the refusal really from Kite Passport?",
     a: (
       <>
-        Yes. On the third call, Kite Passport returned <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code>{" "}
-        because the $0.002 session total was already spent, so Centiv never signed a payment. The record is in the{" "}
-        <a className={a} href="/api/evidence">evidence JSON</a>.
+        Yes. On the third call, Kite Passport returned{" "}
+        <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code> because the
+        $0.002 session total was already spent, so Centiv never signed a payment. The record is in the{" "}
+        <a className={a} href="/api/evidence">
+          evidence JSON
+        </a>
+        .
       </>
     ),
   },
@@ -20,20 +24,26 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Did real money move?",
     a: (
       <>
-        Yes, twice: two payments of 0.001 USDC on Base ({paidCalls.map((c, i) => (
+        Yes, twice: two payments of 0.001 USDC on Base (
+        {paidCalls.map((c, i) => (
           <span key={c.tx_hash}>
             {i > 0 && ", "}
-            <a className={a} href={c.basescan_url} {...ext}>tx {c.n}</a>
+            <a className={a} href={c.basescan_url} {...ext}>
+              tx {c.n}
+            </a>
           </span>
-        ))}). The third call moved nothing, and this page never spends.
+        ))}
+        ). The third call moved nothing, and this page never spends.
       </>
     ),
   },
   {
-    q: "What happens if the cap runs out mid-question?",
+    q: "Did SERV or Reppo score this run?",
     a: (
       <>
-        Kite Passport refuses the next call and Centiv works with what it already bought. Nothing is signed beyond the cap.
+        No. The recorded run happened before SERV gating and per-call Reppo scoring were added, so neither is claimed
+        for those receipts. On the live path now, SERV Reasoning can weigh each call before payment, and Reppo can
+        independently score research that was bought.
       </>
     ),
   },
@@ -41,19 +51,8 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Why Base and not Kite’s own chain?",
     a: (
       <>
-        Otto AI, the data seller in the verified run, takes x402 payment in USDC on Base or Solana, not on Kite’s chain. So
-        the run settled in USDC on Base, with Kite Passport setting the caps and refusing the call that broke them.
-      </>
-    ),
-  },
-  {
-    q: "Did Reppo verify the data Otto AI sold?",
-    a: (
-      <>
-        No. Reppo independently scored the research brief from the verified run: 86/100, accepted and sent to review
-        because its confidence was medium. It did not check Otto AI’s raw figures. The result is in the{" "}
-        <a className={a} href="#verified-run">proof above</a>. Questions you ask here still use a built-in check, labelled
-        Simulated.
+        Otto AI, the data seller in the recorded run, takes x402 payment in USDC on Base or Solana, not on Kite’s chain.
+        So the run settled in USDC on Base, with Kite Passport setting the caps and refusing the call that broke them.
       </>
     ),
   },
@@ -61,9 +60,13 @@ const items: { q: string; a: ReactNode }[] = [
     q: "What’s simulated?",
     a: (
       <>
-        In the public demo, the payments, cap checks, data and pre-written briefs are simulated, and so is the quality gate for
-        questions you ask here. See{" "}
-        <a className={a} href="#real">What’s real</a>.
+        In the public demo, payments and cap checks are simulated. The demo uses the same Otto Ethereum news example and
+        the same $0.001 / $0.002 caps as the recorded run; receipts start with sim_ so they can’t pass for on-chain
+        hashes. See{" "}
+        <a className={a} href="#real">
+          What’s real
+        </a>
+        .
       </>
     ),
   },
@@ -71,8 +74,11 @@ const items: { q: string; a: ReactNode }[] = [
     q: "Can I run it myself?",
     a: (
       <>
-        Yes. The <a className={a} href={`${GITHUB_REPO}#readme`} {...ext}>README on GitHub</a> covers setup, keys and the owner-only live
-        mode.
+        Yes. The{" "}
+        <a className={a} href={`${GITHUB_REPO}#readme`} {...ext}>
+          README on GitHub
+        </a>{" "}
+        covers setup, keys and the owner-only live mode.
       </>
     ),
   },
@@ -86,9 +92,11 @@ export default function Faq() {
           <details className="group" open={i === 0}>
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-medium tracking-[-0.015em] text-bone transition hover:bg-[#fffaf0] sm:px-6 [&::-webkit-details-marker]:hidden">
               {it.q}
-              <span aria-hidden="true" className="text-[20px] leading-none text-dim transition group-open:rotate-45">+</span>
+              <span aria-hidden="true" className="text-[20px] leading-none text-dim transition group-open:rotate-45">
+                +
+              </span>
             </summary>
-            <div className="px-5 pb-5 text-[15px] leading-[1.6] text-mute sm:px-6">{it.a}</div>
+            <div className="px-5 pb-5 text-[15px] leading-[1.65] text-mute sm:px-6">{it.a}</div>
           </details>
         </li>
       ))}

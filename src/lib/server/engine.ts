@@ -123,7 +123,7 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
       id: nextId(),
       kind: "check",
       status: ok && decision.decision === "spend" ? "done" : "blocked",
-      title: "Passport limits",
+      title: "Kite Passport limits",
       checks: checks as Check[],
     });
 

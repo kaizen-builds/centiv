@@ -1,7 +1,7 @@
 // Centiv shared types, catalogue scenarios, and helpers.
 // Live orchestration lives in src/lib/server/* and /api/*.
-// Scenarios remain the research use-case catalogue (funding / depth) and the
-// simulated fallback when API keys are absent.
+// The public-demo catalogue mirrors the recorded Otto Ethereum news run
+// ($0.001 a call, $0.002 total). Payments in that path stay simulated.
 
 export type Decision = "spend" | "skip" | "decline";
 export type Verdict = "accept" | "revise" | "reject";
@@ -30,14 +30,15 @@ export interface AgentIdentity {
 }
 
 export const AGENT: AgentIdentity = {
-  name: "centiv-research-01",
-  did: "did:kite:0x7f3a9c2e41b8d05c6e19a7f2b3d4c91e",
-  owner: "Passkey · this device",
-  network: "Kite · USDC.e (Passport session)",
-  fingerprint: "7F3A 9C2E · 41B8 D05C",
+  name: "Centiv research agent",
+  did: "simulated",
+  owner: "Passkey · this device (simulated in the public app)",
+  network: "Kite Passport session · simulated here",
+  fingerprint: "",
 };
 
-export const DEFAULT_SESSION: SessionConfig = { budget: 0.5, perTx: 0.2, windowMin: 30 };
+/** Matches the recorded run: $0.001 per call, $0.002 total. */
+export const DEFAULT_SESSION: SessionConfig = { budget: 0.002, perTx: 0.001, windowMin: 30 };
 
 export interface Candidate {
   service: string;
@@ -115,7 +116,7 @@ export interface AuditRow {
 }
 
 export interface Scenario {
-  key: "funding" | "depth";
+  key: "eth-news";
   question: string;
   candidates: Candidate[];
   outcomes: {
@@ -124,122 +125,73 @@ export interface Scenario {
   };
 }
 
+const OTTO_ENDPOINT = "GET https://x402.ottoai.services/filtered-news?topic=ethereum";
+const OTTO_SERVICE = "Otto AI · Ethereum news";
+const OTTO_YIELDS = "Otto AI ETH briefing · 146 sources. Wording from the recorded run of 12 Nov 2026. Demo payment is simulated.";
+
+const ottoCall = (rationale: string): Candidate => ({
+  service: OTTO_SERVICE,
+  endpoint: OTTO_ENDPOINT,
+  price: 0.001,
+  value: "high",
+  rationale,
+  yields: OTTO_YIELDS,
+});
+
+const ottoAnswer: Answer = {
+  headline: "Otto AI’s briefing: ETH fundamentals look stronger than the near-term tape.",
+  points: [
+    "Otto AI (146 sources, 12 Nov 2026) said the most consequential development was Deutsche Bank launching regulated BTC/ETH custody under MiCA, with the SEC also clearing Nasdaq ISE to list options on qualifying digital-commodity ETPs, ETH among them, and Amundi tokenising an equity index fund on Ethereum.",
+    "The same briefing said staking had hit an all-time high above 36% of supply, while the near-term picture was weaker: ETH around $2,400–$2,726 in a confirmed downtrend, with ETH dominance at 10.36% versus Bitcoin dominance near 60.3%.",
+    "Those figures are Otto AI’s, not independently verified by Centiv. In this public demo the payments are simulated; the wording is from the recorded run.",
+  ],
+  sources: "Otto AI /filtered-news?topic=ethereum, wording from the recorded run of 12 Nov 2026. Claims are Otto AI’s. Demo payments are simulated.",
+};
+
+// The engine runs evaluateDraft for the gate; these placeholders are unused on screen.
+const unusedGate = (note: string): GateResult => ({
+  verdict: "accept",
+  score: 0,
+  note,
+  source: "heuristic",
+});
+
 export const SCENARIOS: Record<Scenario["key"], Scenario> = {
-  funding: {
-    key: "funding",
-    question:
-      "Are ETH perpetual funding rates turning negative across the major venues this week? I need a short, data-backed brief.",
+  "eth-news": {
+    key: "eth-news",
+    question: "What’s the latest on Ethereum?",
     candidates: [
-      {
-        service: "Perp funding history · 7d",
-        endpoint: "GET /v1/funding?asset=ETH&venues=4&window=7d",
-        price: 0.18,
-        value: "high",
-        rationale:
-          "Cached rates are 3 days old and the question is about this week. Fresh 7-day funding across four venues is the core evidence — without it the brief is a guess.",
-        yields: "84 rows · 4 venues × 21 funding intervals",
-      },
-      {
-        service: "Social sentiment scrape",
-        endpoint: "POST /v1/scrape?topic=ETH%20funding&window=24h",
-        price: 0.12,
-        value: "low",
-        rationale:
-          "Sentiment would mostly restate what funding already shows. Spending 38% of what's left on it isn't justified.",
-        yields: "",
-      },
+      ottoCall("The question is about Ethereum now, and this is the primary paid briefing — worth the $0.001 inside the cap."),
+      ottoCall("A second call at $0.001 still fits the $0.002 total, as in the recorded run."),
+      ottoCall("A third call would be another $0.001 for the same endpoint. The $0.002 cap is already spent, so Kite Passport should refuse it."),
     ],
     outcomes: {
       full: {
-        gate: {
-          verdict: "accept",
-          score: 0.78,
-          note: "Every claim traces to purchased rows. No forecast stated as fact.",
-        source: "heuristic",
-        },
+        gate: unusedGate("Placeholder. The engine scores the draft separately."),
         answer: {
-          headline: "Funding is cooling, not yet negative.",
+          ...ottoAnswer,
           points: [
-            "Average 8-hour ETH funding fell from 0.011% to 0.002% over seven days across all four venues.",
-            "Venues B and D printed negative for three consecutive intervals on Sunday; both flipped back within 24 hours.",
-            "No venue has stayed negative for a full day, so the long unwind looks partial rather than complete.",
+            ...ottoAnswer.points.slice(0, 2),
+            "Those figures are Otto AI’s, not independently verified by Centiv. In this public demo the payments are simulated; the wording is from the recorded run. All requested calls fitted the session, which is not what happened on the recorded run (the third call was refused).",
           ],
-          sources: "Perp funding history · 7d (paid 0.18 USDC). Skipped: social sentiment.",
         },
       },
       partial: {
-        gate: {
-          verdict: "reject",
-          score: 0.31,
-          note: "No fresh data was bought; the draft relies on 3-day-old cache.",
-        source: "heuristic",
-        },
+        gate: unusedGate("Placeholder. The engine scores the draft separately."),
         answer: {
-          headline: "Not enough fresh data to answer.",
+          ...ottoAnswer,
           points: [
-            "Centiv could not buy funding history inside your current limits.",
-            "Raise the per-call cap or approve a new session, then ask again.",
+            ...ottoAnswer.points.slice(0, 2),
+            "A third call for the same endpoint was not bought once the $0.002 cap was spent. Those figures are Otto AI’s, not independently verified by Centiv. In this public demo the payments are simulated; the wording is from the recorded run.",
           ],
-          sources: "No paid sources used.",
-        },
-      },
-    },
-  },
-  depth: {
-    key: "depth",
-    question:
-      "Now add 1-minute order-book depth for the same venues so I can see whether shorts are getting crowded.",
-    candidates: [
-      {
-        service: "Order-book depth · 1-min",
-        endpoint: "GET /v1/depth?asset=ETH&venues=4&res=1m&window=24h",
-        price: 0.35,
-        value: "high",
-        rationale:
-          "Depth at 1-minute resolution is the only direct evidence of crowding. High value — but it has to fit your limits.",
-        yields: "5,760 snapshots · 4 venues × 1,440 minutes",
-      },
-    ],
-    outcomes: {
-      full: {
-        gate: {
-          verdict: "accept",
-          score: 0.82,
-          note: "Depth figures match purchased snapshots; crowding claim is hedged correctly.",
-        source: "heuristic",
-        },
-        answer: {
-          headline: "Short-side depth is thinning on two venues.",
-          points: [
-            "Ask depth within 1% of mid fell 22% on Venues B and D over 24 hours while funding dipped negative.",
-            "Venues A and C are flat, so crowding is concentrated rather than market-wide.",
-          ],
-          sources: "Order-book depth · 1-min (paid 0.35 USDC) + earlier funding history.",
-        },
-      },
-      partial: {
-        gate: {
-          verdict: "revise",
-          score: 0.64,
-          note: "First draft implied depth evidence it didn't have. Revised to state the gap plainly.",
-        source: "heuristic",
-        },
-        answer: {
-          headline: "Shorts don't look crowded yet — but this answer is partial.",
-          points: [
-            "Order-book depth was not bought: 0.35 USDC is above your 0.20 per-call cap and your 0.32 remaining.",
-            "From funding alone: two brief negative runs, no sustained sign of short crowding.",
-            "To finish the picture, raise the per-call cap to 0.35 USDC or approve a fresh session.",
-          ],
-          sources: "Reused: Perp funding history · 7d. Declined: order-book depth (cap).",
         },
       },
     },
   },
 };
 
-export function pickScenario(question: string): Scenario {
-  return /depth|order.?book|crowd/i.test(question) ? SCENARIOS.depth : SCENARIOS.funding;
+export function pickScenario(_question: string): Scenario {
+  return SCENARIOS["eth-news"];
 }
 
 let seed = 0x5eed;

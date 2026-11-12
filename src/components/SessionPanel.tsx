@@ -38,7 +38,7 @@ function Field({
           id={id}
           type="number"
           inputMode="decimal"
-          value={disabled && step < 1 ? value.toFixed(2) : value}
+          value={disabled && step < 1 ? (step < 0.01 || value < 0.01 ? value.toFixed(3) : value.toFixed(2)) : value}
           step={step}
           min={min}
           max={max}
@@ -92,7 +92,7 @@ export function SessionPanel({
       <div className="relative border-b hairline p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="eyebrow">Agent passport</p>
+            <p className="eyebrow">Kite Passport</p>
             <h2 id="session-title" className="mt-2 font-display text-[24px] tracking-[-0.01em]">
               {AGENT.name}
             </h2>
@@ -101,11 +101,7 @@ export function SessionPanel({
         </div>
         <dl className="mt-5 grid grid-cols-[96px_1fr] gap-y-2 text-[12.5px]">
           <dt className="text-dim">Identity</dt>
-          <dd className="num truncate text-mute" title={AGENT.did}>
-            {AGENT.did.slice(0, 22)}…{AGENT.did.slice(-6)}
-          </dd>
-          <dt className="text-dim">Key</dt>
-          <dd className="num text-mute">{AGENT.fingerprint}</dd>
+          <dd className="text-mute">Simulated — the public app has no real wallet or DID</dd>
           <dt className="text-dim">Approver</dt>
           <dd className="text-mute">{AGENT.owner}</dd>
           <dt className="text-dim">Network</dt>
@@ -122,8 +118,8 @@ export function SessionPanel({
           {locked && <span className="text-[11px] text-dim">Locked while the session is live</span>}
         </div>
         <div className="divide-y divide-[var(--line)]">
-          <Field id="budget" label="Session budget" hint="Total Centiv may spend" value={session.budget} step={0.05} min={0.05} max={5} suffix="USDC" disabled={locked} onChange={(v) => onChange({ budget: +v.toFixed(2) })} />
-          <Field id="pertx" label="Per-call cap" hint="Ceiling for any single payment" value={session.perTx} step={0.05} min={0.01} max={2} suffix="USDC" disabled={locked} onChange={(v) => onChange({ perTx: +v.toFixed(2) })} />
+          <Field id="budget" label="Session budget" hint="Total Centiv may spend" value={session.budget} step={0.001} min={0.001} max={5} suffix="USDC" disabled={locked} onChange={(v) => onChange({ budget: +v.toFixed(3) })} />
+          <Field id="pertx" label="Per-call cap" hint="Ceiling for any single payment" value={session.perTx} step={0.001} min={0.001} max={2} suffix="USDC" disabled={locked} onChange={(v) => onChange({ perTx: +v.toFixed(3) })} />
           <Field id="window" label="Time window" hint="Session expires after" value={session.windowMin} step={5} min={5} max={240} suffix="min" disabled={locked} onChange={(v) => onChange({ windowMin: Math.round(v) })} />
         </div>
       </div>

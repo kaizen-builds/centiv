@@ -4,7 +4,7 @@
  * Base: https://inference-api.openserv.ai
  */
 
-import type { Candidate, Decision } from "@/lib/centiv";
+import { usdc, type Candidate, type Decision } from "@/lib/centiv";
 
 const BASE = process.env.SERV_BASE_URL?.trim() || "https://inference-api.openserv.ai/v1";
 const MODEL = process.env.SERV_MODEL?.trim() || "gpt-5.4-mini";
@@ -53,7 +53,7 @@ function heuristic(c: Candidate, remaining: number, perTx: number, caps: CapsMod
   if (c.price > perTx || c.price > remaining) {
     return {
       decision: "decline",
-      rationale: `${c.price.toFixed(2)} USDC would breach the ${c.price > perTx ? "per-call cap" : "remaining budget"}. Decline before signing.`,
+      rationale: `${usdc(c.price)} USDC would breach the ${c.price > perTx ? "per-call cap" : "remaining budget"}. Decline before signing.`,
       source: "heuristic",
     };
   }
