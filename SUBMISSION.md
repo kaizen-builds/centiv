@@ -13,11 +13,11 @@ Agents with wallets can spend without a hard stop. A limit that lives only in ap
 
 ## What Centiv does
 
-The owner approves a Kite Passport session: a limit per call, a total budget and a time window. SERV Reasoning (live) decides whether each paid data call is worth what remains. Payments use x402 (EIP-3009, USDC). Kite Passport pays inside the cap and refuses over it, with nothing signed.
+The owner approves a Kite Passport session: a limit per call, a total budget and a time window. SERV Reasoning (live) decides whether each paid data call is worth what remains. Payments use x402 (EIP-3009, USDC). Kite Passport pays inside the cap and refuses over it, and no money moves.
 
 ## The proof
 
-On 12 November 2026, 19:38 WAT, the owner approved session `agent_session_01a1d108-037e-7c83-aebf-4da7116107eb` (request `agent_session_req_01a1d106-5485-78c3-afba-66dc092ddf9a`) with a passkey. Question: “What's moving in the crypto and ETH ETF market this week?” Caps: $0.001 per call, $0.002 in total. Expires 12 Nov 2026, 21:32:05 WAT. Scope: `GET x402.ottoai.services/filtered-news` only. SERV Reasoning chose a short topic for each call and said spend on all three. Two Otto AI calls paid in USDC on Base. Kite Passport declined the third with `session_total_exceeded`. Nothing was signed. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
+On 12 November 2026, 19:38 WAT, the owner approved session `agent_session_01a1d108-037e-7c83-aebf-4da7116107eb` (request `agent_session_req_01a1d106-5485-78c3-afba-66dc092ddf9a`) with a passkey. Question: “What's moving in the crypto and ETH ETF market this week?” Caps: $0.001 per call, $0.002 in total. Expires 12 Nov 2026, 21:32:05 WAT. Scope: `GET x402.ottoai.services/filtered-news` only. SERV Reasoning chose a short topic for each call and said spend on all three. Two Otto AI calls paid in USDC on Base. Kite Passport declined the third with `session_total_exceeded`. No money moved. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport.
 
 | Call | Topic (SERV) | SERV | Outcome | USDC | Reppo | Transaction |
 | --- | --- | --- | --- | --- | --- | --- |

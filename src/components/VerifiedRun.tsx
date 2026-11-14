@@ -249,7 +249,7 @@ export default function VerifiedRun({
                   Call {declinedCall.n} · topic “{declinedCall.topic}”
                 </p>
                 <p className="mt-1 text-[15px] font-medium tracking-[-0.015em] text-stop">
-                  Declined by Kite Passport. Nothing was signed and no money moved.
+                  Declined by Kite Passport. No money moved.
                 </p>
                 {declinedCall.serv && <ServLine decision={declinedCall.serv.decision} rationale={declinedCall.serv.rationale} />}
                 <p className="num mt-1.5 text-[12px] text-mute">

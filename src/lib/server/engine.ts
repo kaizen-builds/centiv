@@ -149,7 +149,7 @@ export async function executeResearchRun(req: RunRequest): Promise<RunResponse> 
       const reason =
         decision.decision === "decline" && ok
           ? decision.rationale
-          : `${usdc(quote.price)} USDC would breach the ${breaches.join(" and the ") || "session limits"}. Nothing was signed.`;
+          : `${usdc(quote.price)} USDC would breach the ${breaches.join(" and the ") || "session limits"}. No money moved.`;
       steps.push({
         id: nextId(),
         kind: "decline",

@@ -165,7 +165,7 @@ export function replayAuditRows(): AuditRow[] {
       amount: Number(VERIFIED_RUN.passport.caps.max_amount_per_tx),
       charged: 0,
       remaining: 0,
-      reason: `${servLine}${declinedCall.declined_by} declined: ${declinedCall.error_code} — ${declinedCall.error}. Nothing was signed and no money moved.`,
+      reason: `${servLine}${declinedCall.declined_by} declined: ${declinedCall.error_code} — ${declinedCall.error}. No money moved.`,
       provenance: "replay",
     });
   }

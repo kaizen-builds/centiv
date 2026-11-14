@@ -102,7 +102,7 @@ const steps: { k: "cap" | "weigh" | "pay"; t: string; s: string }[] = [
   {
     k: "pay",
     t: "It pays, or it stops",
-    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses: nothing is signed and no money moves. After a payment, Reppo may score what was bought, as a quality record. That score does not decide later calls, and it does not block or undo a payment.",
+    s: "Inside the cap, the payment goes through. Over it, Kite Passport refuses and no money moves. After a payment, Reppo may score what was bought, as a quality record. That score does not decide later calls, and it does not block or undo a payment.",
   },
 ];
 
@@ -402,7 +402,7 @@ export default function Landing() {
               </div>
               <div className="stat-cell">
                 <p className="num text-[15px] leading-tight text-stop md:text-[18px]">{code}</p>
-                <p className="mt-3 text-[13px] text-mute">nothing signed</p>
+                <p className="mt-3 text-[13px] text-mute">no money moved</p>
               </div>
             </Reveal>
             <Reveal delay={120} className="mt-14">

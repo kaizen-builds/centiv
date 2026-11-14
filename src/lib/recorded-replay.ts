@@ -47,7 +47,7 @@ function paidAnswer(): Answer {
   });
   if (declinedCall) {
     points.push(
-      `Call ${declinedCall.n} (“${declinedCall.topic}”) was refused by Kite Passport with ${declinedCall.error_code} — ${declinedCall.error}. Nothing was signed.`,
+      `Call ${declinedCall.n} (“${declinedCall.topic}”) was refused by Kite Passport with ${declinedCall.error_code} — ${declinedCall.error}. No money moved.`,
     );
   }
   points.push(
@@ -240,7 +240,7 @@ export function buildRecordedReplay(opts: {
       amount: price,
       charged: 0,
       remaining: 0,
-      reason: `${d.serv ? `SERV ${d.serv.decision}: ${d.serv.rationale} ` : ""}${d.declined_by} declined: ${d.error_code} — ${d.error}. Nothing was signed and no money moved.`,
+      reason: `${d.serv ? `SERV ${d.serv.decision}: ${d.serv.rationale} ` : ""}${d.declined_by} declined: ${d.error_code} — ${d.error}. No money moved.`,
       atLabel: d.attempted_at_wat?.split(", ")[1],
       provenance: "replay",
     });

@@ -3,7 +3,7 @@
   "label": "Replay · real on-chain run",
   "generated_at_utc": "2026-11-12T18:52:42Z",
   "question": "What's moving in the crypto and ETH ETF market this week?",
-  "honesty": "SERV Reasoning chose a short Otto topic for each call and weighed the call before payment (spend, spend, spend). Centiv followed SERV on every call — both paid calls were spend. Reppo scored the two paid excerpts after they settled (55/100, reject/block; 82/100, accept/review with low confidence). Both scores were returned during the request. Reppo does not block or undo a payment. In the first take, call 3 was stopped by Centiv’s own local limit (centiv_run_total_limit, CENTIV_LIVE_MAX_TOTAL_USDC=0.002) before reaching Kite Passport, and SERV was not asked to weigh that first-take call 3. Call 3 was retaken in the same fully-spent session with that local limit off (CENTIV_LIVE_MAX_TOTAL_USDC unset, default 0.05, in-process spend reset), and that retake is the refusal shown here: Kite Passport declined with session_total_exceeded (“payment amount exceeds max_total_amount”). Nothing was signed.",
+  "honesty": "SERV Reasoning chose a short Otto topic for each call and weighed the call before payment (spend, spend, spend). Centiv followed SERV on every call — both paid calls were spend. Reppo scored the two paid excerpts after they settled (55/100, reject/block; 82/100, accept/review with low confidence). Both scores were returned during the request. Reppo does not block or undo a payment. In the first take, call 3 was stopped by Centiv’s own local limit (centiv_run_total_limit, CENTIV_LIVE_MAX_TOTAL_USDC=0.002) before reaching Kite Passport, and SERV was not asked to weigh that first-take call 3. Call 3 was retaken in the same fully-spent session with that local limit off (CENTIV_LIVE_MAX_TOTAL_USDC unset, default 0.05, in-process spend reset), and that retake is the refusal shown here: Kite Passport declined with session_total_exceeded (“payment amount exceeds max_total_amount”). No money moved.",
   "passport": {
     "environment": "Kite Passport (production)",
     "session_id": "agent_session_01a1d108-037e-7c83-aebf-4da7116107eb",
@@ -180,7 +180,7 @@
       "declined_by": "Kite Passport",
       "error_code": "session_total_exceeded",
       "error": "payment amount exceeds max_total_amount",
-      "user_message": "The spending limit you approved for this task is used up. Nothing was signed and no money moved.",
+      "user_message": "The spending limit you approved for this task is used up. No money moved.",
       "money_moved": false,
       "tx_hash": null,
       "attempted_at_utc": "2026-11-12T18:46:00Z",

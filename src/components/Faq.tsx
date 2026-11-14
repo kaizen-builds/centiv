@@ -12,7 +12,7 @@ const items: { q: string; a: ReactNode }[] = [
       <>
         Yes. The refusal shown here is from a retake of call 3 in the same fully-spent session. Kite Passport returned{" "}
         <code className="num rounded bg-stop/10 px-1 text-[13px] text-stop">session_total_exceeded</code> because the
-        $0.002 session total was already spent, so Centiv never signed a payment. In the first take, call 3 was stopped
+        $0.002 session total was already spent, so no money moved. In the first take, call 3 was stopped
         by Centiv’s own local limit before it reached Kite Passport. The record is in the{" "}
         <a className={a} href="/api/evidence">
           evidence JSON
