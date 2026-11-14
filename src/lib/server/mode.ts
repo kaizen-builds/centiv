@@ -39,7 +39,7 @@ export function publicStatus() {
     mode,
     integrations: {
       serv: flags.serv ? "live" : "simulated",
-      reppo: flags.reppo ? "live" : "simulated",
+      reppo: flags.reppo ? "live" : "recorded",
       passport: "local-enforced",
       x402: flags.x402,
     },

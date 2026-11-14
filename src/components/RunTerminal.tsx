@@ -71,7 +71,7 @@ export default function RunTerminal({ className = "" }: { className?: string }) 
           )}
         </ol>
         <p className="term-foot print" style={{ animationDelay: `${200 + (paidCalls.length + 1) * 95}ms` }}>
-          Spent ${spent} of ${caps.max_total_amount}. Call 3: no money moved.
+          Spent ${spent} of ${caps.max_total_amount}. Call 3 refused.
         </p>
       </div>
     </figure>

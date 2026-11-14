@@ -253,12 +253,9 @@ export default function Landing() {
               <p className="rise mt-5 max-w-[520px] text-[15px] leading-[1.6] text-mute" style={{ animationDelay: "220ms" }}>
                 Kite Passport sets the cap. SERV decides whether a call is worth it. Reppo scores what you bought.
               </p>
-              <p className="rise mt-2 max-w-[520px] text-[14px] leading-[1.6] text-dim" style={{ animationDelay: "250ms" }}>
-                x402 is a web standard: an API replies “payment required” with a price, and the agent pays that amount in USDC, one call at a time.
-              </p>
               <div className="rise mt-9 flex flex-wrap items-center gap-3" style={{ animationDelay: "270ms" }}>
                 <Link href="/app?demo=1" className={primary}>
-                  Replay a recorded run
+                  Replay the recorded run
                 </Link>
                 <a href="#verified-run" className={outline}>
                   See the receipts
@@ -312,6 +309,9 @@ export default function Landing() {
               </h2>
               <p className="mt-7 max-w-[520px] text-[17px] leading-[1.6] text-mute">
                 You approve a spending cap with a passkey. SERV Reasoning weighs each call before payment. Kite Passport lets it through inside the cap, and refuses anything over it. After a payment, Reppo may score what was bought, as a quality record — Centiv does not use that score to decide later calls, and it does not block or undo the payment.
+              </p>
+              <p className="mt-5 max-w-[520px] text-[16px] leading-[1.6] text-mute">
+                x402 is a web standard: an API replies “payment required” with a price, and the agent pays that amount in USDC, one call at a time.
               </p>
             </Reveal>
             <Reveal delay={160} className="mt-20 md:mt-28">
@@ -381,7 +381,7 @@ export default function Landing() {
           <div className={`${shell} ${chapter}`}>
             <SectionHead label="The receipts" id="proof-title" title={<>Two paid. Call 3 <span className="serif-em">refused.</span></>}>
               <p>
-                12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. The refusal shown is the retake of call 3 in the same fully-spent session; the first take was stopped by Centiv’s own local limit before it reached Kite Passport. Call-by-call receipts are collapsed below.
+                12 Nov 2026, 19:38 WAT. SERV chose a topic and said spend on each call. Two payments of 0.001 USDC settled on Base. Kite Passport refused the third call with {code}. Call-by-call receipts are collapsed below.
               </p>
             </SectionHead>
             <Reveal delay={60} className="mx-auto mt-12 max-w-[560px]">
